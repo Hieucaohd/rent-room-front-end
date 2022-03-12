@@ -13,7 +13,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
     Form Validate: React-Hook-Form
     Data Fetching: Apollo Client
 
-## Tổ chức thư mục
+## Tổ chức thư mục:
 ├─ pages: chứa các page của web
     └─ index.tsx: trang chủ
     └─ signin.tsx: đăng nhập
