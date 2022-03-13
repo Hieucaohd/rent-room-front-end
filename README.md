@@ -9,8 +9,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Công nghệ sử dụng: 
     Framework: NextJs
     State Management: Zustand
-    Style: Ant Design, Sass
-    Form Validate: React-Hook-Form
+    Style: Ant Design, Sass, Styled Component
     Data Fetching: Apollo Client
 
 ## Tổ chức thư mục:
