@@ -1,11 +1,19 @@
 import React from 'react';
 import { Form, Input, Button, Checkbox } from 'antd';
+import { useMutation } from '@apollo/client';
+import { REGISTER } from '../lib/auth';
 
 export interface ISignUpProps {}
 
 export default function SignUp(props: ISignUpProps) {
-    const onFinish = (values: any) => {
-        console.log('Success:', values);
+    const [register] = useMutation(REGISTER);
+    const onFinish = async (values: any) => {
+        try {
+            const data = await register({variables: {email: values.email, password: values.password, fullname: values.fullname}})
+            console.log(data);
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (
@@ -19,19 +27,36 @@ export default function SignUp(props: ISignUpProps) {
                 autoComplete="off"
             >
                 <Form.Item
-                    label="Username"
-                    name="username"
-                    rules={[{ required: true, message: 'Please input your username!' }]}
+                    label="Email"
+                    name="email"
+                    rules={[
+                        {
+                            type: 'email',
+                            message: 'Nhập đúng email!',
+                        },
+                        {
+                            required: true,
+                            message: 'Cần nhập email!',
+                        },
+                    ]}
                 >
                     <Input />
                 </Form.Item>
 
                 <Form.Item
-                    label="Password"
+                    label="Mật khẩu"
                     name="password"
-                    rules={[{ required: true, message: 'Please input your password!' }]}
+                    rules={[{ required: true, message: 'Cần nhập mật khẩu!' }]}
                 >
                     <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                    label="Tên"
+                    name="fullname"
+                    rules={[{ required: true, message: 'Cần nhập tên!' }]}
+                >
+                    <Input />
                 </Form.Item>
 
                 <Form.Item
