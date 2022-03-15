@@ -2,15 +2,18 @@ import React from 'react';
 import { Form, Input, Button, Checkbox } from 'antd';
 import { useMutation } from '@apollo/client';
 import { REGISTER } from '../lib/auth';
+import userStore from '../store/userStore';
 
 export interface ISignUpProps {}
 
 export default function SignUp(props: ISignUpProps) {
     const [register] = useMutation(REGISTER);
+    const setUser = userStore(state => state.setUser);
+
     const onFinish = async (values: any) => {
         try {
-            const data = await register({variables: {email: values.email, password: values.password, fullname: values.fullname}})
-            console.log(data);
+            const userData:any = await register({variables: {email: values.email, password: values.password, fullname: values.fullname}})
+            setUser(userData?.data?.register?.user);
         } catch (err) {
             console.log(err);
         }
