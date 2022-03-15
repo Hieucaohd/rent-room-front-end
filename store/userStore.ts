@@ -1,20 +1,34 @@
 import create from 'zustand';
 
+type User = typeof initialState;
+
 interface UserStore {
-    id: string,
-    name: string,
-    login: () => void,
-    logout: () => void
+    user: User,
+    setUser: (args:User) => void,
+    removeUser: () => void
 }
 
+const initialState = function () {
+    try {
+        return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch (e) {
+        return {};
+    }
+}();
+
 const userStore = create<UserStore>((set) => ({
-    id: '',
-    name: '',
-    login: async () => {
-
+    user: initialState,
+    setUser: (args:User) => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("user", JSON.stringify(args || {}));
+        }
+        set({user: args});
     },
-    logout: async () => {
-
+    removeUser: () => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("user");
+        }
+        set({user: {}});
     }
 }));
 

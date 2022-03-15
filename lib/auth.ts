@@ -12,8 +12,8 @@ export const REGISTER = gql`
             user {
                 _id
                 email
+                fullname
             }
-            token
         }
     }
 `;
