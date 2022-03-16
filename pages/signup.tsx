@@ -1,19 +1,33 @@
-import React from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
-import { useMutation } from '@apollo/client';
-import { REGISTER } from '../lib/auth';
-import userStore from '../store/userStore';
+import { gql, useMutation } from '@apollo/client';
+import { Button, Checkbox, Form, Input } from 'antd';
+import React, { useEffect } from 'react';
 
 export interface ISignUpProps {}
 
+const REGISTER = gql`
+    mutation REGISTER($email: String!, $password: String!, $fullname: String!) {
+        register(
+            newUser: {
+                email: $email
+                password: $password
+                fullname: $fullname
+            }
+        ) {
+            user {
+                _id
+                email
+                fullname
+            }
+        }
+    }
+`;
+
 export default function SignUp(props: ISignUpProps) {
     const [register] = useMutation(REGISTER);
-    const setUser = userStore(state => state.setUser);
 
     const onFinish = async (values: any) => {
         try {
             const userData:any = await register({variables: {email: values.email, password: values.password, fullname: values.fullname}})
-            setUser(userData?.data?.register?.user);
         } catch (err) {
             console.log(err);
         }
