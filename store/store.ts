@@ -9,7 +9,6 @@ export interface UserStore {
 export const useStore = create<UserStore>((set) => ({
     user: null,
     setUser: (user:any) => {
-        console.log(user);
         set({user: user})
     },
     removeUser: () => {
