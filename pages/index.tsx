@@ -3,13 +3,15 @@ import Header from '../components/Header';
 import { withAuth } from '../lib/withAuth';
 
 export interface IHomePageProps {
-    user:any
+    user: any;
 }
 
-const Home = ({user}:IHomePageProps) => {
-    return <div>
-        <Header user={user}/>
-    </div>;
+const Home = ({ user }: IHomePageProps) => {
+    return (
+        <div>
+            <Header user={user} />
+        </div>
+    );
 };
 
 export const getServerSideProps: GetServerSideProps = withAuth(
