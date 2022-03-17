@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const LOGIN = gql`
     query LOGIN($email: String!, $password: String!) {
@@ -16,6 +16,19 @@ export const LOGOUT = gql`
     mutation LOGOUT {
         logout {
             status
+        }
+    }
+`;
+
+export const PROFILE = gql`
+    query PROFILE {
+        profile {
+            user {
+                _id
+                email
+                fullname
+            }
+            isAuth
         }
     }
 `;
