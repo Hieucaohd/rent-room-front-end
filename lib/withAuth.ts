@@ -3,16 +3,20 @@ import client from './apollo/apollo-client';
 import { PROFILE } from './apollo/auth';
 
 const checkLoggedIn = async (Cookie: string) => {
-    if (!Cookie.includes('token') || !Cookie.includes('refreshToken')) {
+    try {
+        if (!Cookie.includes('token') || !Cookie.includes('refreshToken')) {
+            return null;
+        }
+
+        const data = await client.query({
+            query: PROFILE,
+            context: { headers: { Cookie } },
+        });
+
+        return data.data.profile.user;
+    } catch (e: any) {
         return null;
     }
-
-    const data = await client.query({
-        query: PROFILE,
-        context: { headers: { Cookie } },
-    });
-
-    return data.data.profile.user;
 };
 
 export function withAuth(gssp: any) {
