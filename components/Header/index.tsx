@@ -1,20 +1,18 @@
 import { useMutation } from '@apollo/client';
+import { AnyPointerEvent } from 'framer-motion/types/gestures/PanSession';
 import Link from 'next/link';
 import React from 'react';
 import { LOGOUT } from '../../lib/apollo/auth';
-import { UserStore, useStore } from '../../store/store';
 
 export interface IHeaderProps {
-    isLoading: boolean;
+    user: any;
 }
 
-export default function Header({ isLoading }: IHeaderProps) {
-    const user = useStore((state: UserStore) => state.user);
-    const removeUser = useStore((state: UserStore) => state.removeUser);
+export default function Header({ user }: IHeaderProps) {
+    // const user = useStore((state: UserStore) => state.user);
     const [logOut] = useMutation(LOGOUT);
     const handleLogOut = async () => {
         try {
-            removeUser();
             await logOut();
         } catch (e) {
             console.log(e)
@@ -22,7 +20,7 @@ export default function Header({ isLoading }: IHeaderProps) {
     }
     return (
         <div className="header">
-            {!user && !isLoading && (
+            {!user && (
                 <>
                     <Link href="/signin">
                         <a>Đăng nhập</a>
