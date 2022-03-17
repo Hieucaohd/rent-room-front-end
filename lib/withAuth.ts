@@ -22,11 +22,7 @@ const checkLoggedIn = async (Cookie: string) => {
 export function withAuth(gssp: any) {
     return async (context: GetServerSidePropsContext) => {
         const Cookie = context.req.headers.cookie;
-
-        const user = await checkLoggedIn(Cookie || '');
-
-        const currentProps = await gssp(context);
-
+        const [user, currentProps] = await Promise.all([checkLoggedIn(Cookie || ''), gssp(context)])
         return {
             props: {
                 ...currentProps,
