@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { UserStore, useStore } from '../store/store';
-import client from './apollo-client';
+import client from './apollo/apollo-client';
 
 function useAuth() {
     const [isLoading, setIsLoading] = useState(true);
@@ -24,11 +24,10 @@ function useAuth() {
                     `,
                 });
                 setUser(data.data.profile.user);
-                setIsLoading(false);
             } catch (e) {
                 console.log(e);
-                setIsLoading(false);
             }
+            setIsLoading(false);
         };
         getData();
     }, [])
