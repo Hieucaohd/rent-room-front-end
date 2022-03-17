@@ -2,7 +2,6 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import { withAuth } from '../lib/withAuth';
 
 const Home: NextPage = (props) => {
-    console.log(props);
     return <div>Home page</div>;
 };
 
