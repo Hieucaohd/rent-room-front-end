@@ -1,8 +1,15 @@
-import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Header from '../components/Header';
 import { withAuth } from '../lib/withAuth';
 
-const Home: NextPage = (props) => {
-    return <div>Home page</div>;
+export interface IHomePageProps {
+    user:any
+}
+
+const Home = ({user}:IHomePageProps) => {
+    return <div>
+        <Header user={user}/>
+    </div>;
 };
 
 export const getServerSideProps: GetServerSideProps = withAuth(
