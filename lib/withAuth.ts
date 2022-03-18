@@ -2,6 +2,13 @@ import { GetServerSidePropsContext } from 'next';
 import client from './apollo/apollo-client';
 import { PROFILE } from './apollo/auth';
 
+export interface User {
+    _id?: string,
+    avatar?: string,
+    email?: string,
+    fullname?: string
+}
+
 const checkLoggedIn = async (Cookie: string) => {
     try {
         if (!Cookie.includes('token') || !Cookie.includes('refreshToken')) {

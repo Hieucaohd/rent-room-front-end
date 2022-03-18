@@ -1,5 +1,14 @@
-.header {
-    border-bottom: 1px solid #ccc;
-    padding: 4px;
-    height: 36px;
+.navbar {
+    height: var(--app-navbar-height);
+    padding: 10px 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &-right{
+        height: 100%;
+        display: flex;
+        gap: 10px;
+    }
 }   

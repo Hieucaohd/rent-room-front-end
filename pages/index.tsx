@@ -10,6 +10,7 @@ const Home = ({ user }: IHomePageProps) => {
     return (
         <div>
             <Header user={user} />
+            hello day la home page
         </div>
     );
 };
