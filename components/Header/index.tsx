@@ -1,85 +1,180 @@
 import { useMutation } from '@apollo/client';
-import { Button, ButtonProps } from '@chakra-ui/react';
-import { AnyPointerEvent } from 'framer-motion/types/gestures/PanSession';
+import {
+    Avatar,
+    Button,
+    ButtonProps,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+} from '@chakra-ui/react';
+import { useCycle } from 'framer-motion';
+
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { LinkBtnStyle, MenuBtnStyle, signInBtnStyle, signUpBtnStyle } from '../../chakra';
 import { LOGOUT } from '../../lib/apollo/auth';
+import useResize from '../../lib/use-resize';
+import { User } from '../../lib/withAuth';
 
 export interface IHeaderProps {
-    user: any;
+    user: User;
 }
 
-const signUpBtnStyle: ButtonProps = {
-    height: '100%',
-    borderRadius: '5px',
-    backgroundColor: 'var(--app-btn-bgcolor)',
-    color: 'var(--app-btn-color)',
-    paddingLeft: '25px',
-    paddingRight: '25px',
-    fontWeight: 'normal',
-    _hover: {
-        backgroundColor: 'var(--app-btn-bgcolor--hover)',
-    },
-    _active: {
-        backgroundColor: 'var(--app-btn-bgcolor--active)',
-    },
-    _focus: {
-        boxShadow: 'none',
-    },
+const getPath = (path: string): number => {
+    const index = path.split('/');
+    if (index.length <= 0) {
+        return 0;
+    }
+    switch (index[0]) {
+        case '':
+            return 0;
+        case '/home':
+            return 1;
+        case '/store':
+            return 2;
+        case '/contact':
+            return 3;
+        case '/about':
+            return 4;
+        default:
+            return 0;
+    }
 };
 
-const signInBtnStyle: ButtonProps = {
-    height: '100%',
-    color: 'var(--app-btn-bgcolor)',
-    paddingLeft: '25px',
-    paddingRight: '25px',
-    fontWeight: 'normal',
-    _active: {
-        color: 'var(--app-btn-bgcolor)'
-    },
-    _focus: {
-        boxShadow: 'none',
-    },
-};
-
-const LinkBtnStyle: ButtonProps = {
-    height: '100%',
-    color: 'black',
-    paddingLeft: '25px',
-    paddingRight: '25px',
-    fontWeight: 'normal',
-    _focus: {
-        boxShadow: 'none',
-    },
-}
+const Path = (props: any) => (
+    <motion.path
+        fill="transparent"
+        strokeWidth="3"
+        stroke="hsl(0, 0%, 18%)"
+        strokeLinecap="round"
+        {...props}
+    />
+);
 
 export default function Header({ user }: IHeaderProps) {
     const router = useRouter();
+    const path = getPath(router.pathname);
+    const [menuShowing, openMenu] = useCycle(false, true);
     const [logOut] = useMutation(LOGOUT);
+    const [mobilemode] = useResize();
+
     const handleLogOut = async () => {
+        console.log('logout');
         try {
             await logOut();
+            window.location.href = '/signin';
         } catch (e) {
             console.log(e);
         }
     };
 
+    const sidebar = useMemo(() => {
+        const positionX = mobilemode ? 30 : 40;
+        return {
+            open: (height = 1000) => ({
+                clipPath: `circle(${height * 2 + 200}px at ${positionX}px -10px)`,
+                transition: {
+                    type: 'spring',
+                    stiffness: 20,
+                    restDelta: 2,
+                },
+            }),
+            closed: {
+                clipPath: `circle(10px at ${positionX}px -10px)`,
+                transition: {
+                    delay: 0.5,
+                    type: 'spring',
+                    stiffness: 400,
+                    damping: 40,
+                },
+            },
+        };
+    }, [mobilemode]);
+
+    const menuTransition = {
+        open: {
+            transition: { staggerChildren: 0.07, delayChildren: 0.2 },
+        },
+        closed: {
+            transition: { staggerChildren: 0.05, staggerDirection: -1 },
+        },
+    };
+
+    const itemTransition = {
+        open: {
+            opacity: 1,
+            transition: {
+                y: { stiffness: 1000, velocity: -100 },
+            },
+        },
+        closed: {
+            opacity: 0,
+            transition: {
+                y: { stiffness: 1000 },
+            },
+        },
+    };
+
     return (
-        <div className="navbar">
-            <div className="navbar-left">Rent Room</div>
+        <motion.nav style={{ boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)' }} className="navbar">
+            <div className="navbar-left">
+                <motion.div className="navbar-menu" animate={menuShowing ? 'open' : 'closed'}>
+                    <Button {...MenuBtnStyle} onClick={() => openMenu()}>
+                        <svg width="23" height="21" viewBox="0 -3 23 23">
+                            <Path
+                                variants={{
+                                    closed: { d: 'M 2 2.5 L 20 2.5' },
+                                    open: { d: 'M 3 16.5 L 17 2.5' },
+                                }}
+                            />
+                            <Path
+                                d="M 2 9.423 L 20 9.423"
+                                variants={{
+                                    closed: { opacity: 1 },
+                                    open: { opacity: 0 },
+                                }}
+                                transition={{ duration: 0.1 }}
+                            />
+                            <Path
+                                variants={{
+                                    closed: { d: 'M 2 16.346 L 20 16.346' },
+                                    open: { d: 'M 3 2.5 L 17 16.346' },
+                                }}
+                            />
+                        </svg>
+                    </Button>
+                </motion.div>
+                <div>
+                    <Link href="/">
+                        <a className="app-logo">
+                            <span>Rent </span> <span>Room</span>
+                        </a>
+                    </Link>
+                </div>
+            </div>
             <div className="navbar-center">
-                <Button {...LinkBtnStyle} fontWeight='medium' variant='link'>Home</Button>
-                <Button {...LinkBtnStyle} variant='link'>Store</Button>
-                <Button {...LinkBtnStyle} variant='link'>Contact</Button>
-                <Button {...LinkBtnStyle} variant='link'>About</Button>
+                <Button {...LinkBtnStyle} fontWeight="700" variant="link">
+                    Home
+                </Button>
+                <Button {...LinkBtnStyle} variant="link">
+                    Store
+                </Button>
+                <Button {...LinkBtnStyle} variant="link">
+                    Contact
+                </Button>
+                <Button {...LinkBtnStyle} variant="link">
+                    About
+                </Button>
             </div>
             {!user && (
                 <div className="navbar-right">
                     <Button
                         onClick={() => router.push('/signin')}
                         {...signInBtnStyle}
-                        variant='link'
+                        variant="link"
                     >
                         Log In
                     </Button>
@@ -90,10 +185,107 @@ export default function Header({ user }: IHeaderProps) {
             )}
 
             {user && (
-                <h3>
-                    {user.email} <button onClick={handleLogOut}>Đăng xuất</button>
-                </h3>
+                <div className="navbar-right navbar-right--user">
+                    {!mobilemode && <div>{user.fullname}</div>}
+                    <Menu>
+                        <MenuButton>
+                            <Avatar
+                                name={user.fullname}
+                                src={user.avatar}
+                                borderWidth="2px"
+                                borderColor="gray"
+                                size="sm"
+                            />
+                        </MenuButton>
+                        <MenuList>
+                            {mobilemode && <div className="username">{user.fullname}</div>}
+                            <MenuItem
+                                icon={
+                                    <i
+                                        style={{ paddingLeft: '10px' }}
+                                        className="fi fi-br-user"
+                                    ></i>
+                                }
+                            >
+                                Profile
+                            </MenuItem>
+                            <MenuItem
+                                icon={
+                                    <i
+                                        style={{ paddingLeft: '10px' }}
+                                        className="fi fi-br-interrogation"
+                                    ></i>
+                                }
+                            >
+                                Help
+                            </MenuItem>
+                            <MenuItem
+                                icon={
+                                    <i
+                                        style={{ paddingLeft: '10px' }}
+                                        className="fi fi-br-sign-out-alt"
+                                    />
+                                }
+                                onClick={handleLogOut}
+                            >
+                                Logout
+                            </MenuItem>
+                        </MenuList>
+                    </Menu>
+                </div>
             )}
-        </div>
+            <motion.div className="navbar-dropdown" animate={menuShowing ? 'open' : 'closed'}>
+                <div className="navbar-dropdown__bg"></div>
+                <motion.div
+                    animate={{
+                        boxShadow: '0 0px 10px rgba(0, 0, 0, 0.2)',
+                    }}
+                    variants={sidebar}
+                    className="navbar-dropdown__menu"
+                >
+                    <motion.div variants={menuTransition}>
+                        <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            variants={itemTransition}
+                        >
+                            <Button {...LinkBtnStyle} variant="link">
+                                <i className="fi fi-br-home"></i>Home
+                            </Button>
+                        </motion.div>
+                        <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            variants={itemTransition}
+                        >
+                            <Button {...LinkBtnStyle} variant="link">
+                                <i className="fi fi-br-shopping-cart"></i>
+                                Store
+                            </Button>
+                        </motion.div>
+                        <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            variants={itemTransition}
+                        >
+                            <Button {...LinkBtnStyle} variant="link">
+                                <i className="fi fi-br-form"></i>
+                                Contact
+                            </Button>
+                        </motion.div>
+                        <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            variants={itemTransition}
+                        >
+                            <Button {...LinkBtnStyle} variant="link">
+                                <i className="fi fi-br-info"></i>
+                                About
+                            </Button>
+                        </motion.div>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
+        </motion.nav>
     );
 }

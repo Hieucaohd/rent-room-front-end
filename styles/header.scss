@@ -1,14 +1,152 @@
+.app-logo {
+    position: relative;
+    & > span {
+        font-size: var(--app-navbar-logo-fontsize);
+        font-family: 'Bubblegum Sans', sans-serif;
+        background-color: white;
+        line-height: var(--app-navbar-logo-fontsize);
+
+        z-index: 1;
+
+        &:nth-of-type(2) {
+            color: var(--app-btn-bgcolor--hover);
+        }
+    }
+    
+}
+
 .navbar {
+    position: fixed;
+    top: 0;
     height: var(--app-navbar-height);
-    padding: 10px 30px;
+    width: 100%;
+    padding: var(--app-navbar-padding);
+    background-color: white;
+    background-color: aqua;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    &-right{
+    &-menu {
+        height: 100%;
+        width: min-content;
+        margin-right: 5px;
+    }
+
+    &-left {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 150px;
+        white-space: nowrap;
+
+        @media screen and (max-width: 500px) {
+            max-width: 120px;
+        }
+
+        & svg {
+            height: 21px;
+
+            @media screen and (max-width: 500px) {
+                height: 18px;
+            }
+        }
+    }
+
+    &-right {
         height: 100%;
         display: flex;
         gap: 10px;
+
+        &--user{
+            display: flex;
+            align-items: center;
+            
+            & > div{
+                font-weight: 600;
+            }
+        }
     }
-}   
+
+    &-center {
+        display: flex;
+        @media screen and (max-width: 1000px) {
+            display: none;
+        }
+    }
+
+    &-menu {
+        display: none;
+        @media screen and (max-width: 1000px) {
+            display: flex;
+        }
+    }
+
+    &-dropdown {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        z-index: -1;
+        width: 100%;
+        height: var(--app-navbar-height);
+
+        &__bg {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 10;
+        }
+
+        &__menu {
+            width: calc(100%);
+
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: -1;
+            background-color: white;
+
+            & > div {
+                display: flex;
+                justify-content: space-around;
+                padding: 10px;
+
+                @media screen and (max-width: 500px) {
+                    flex-direction: column;
+                    gap: 20px;
+                    align-items: center;
+                    padding: 10px 10px 15px 10px;
+
+                    & > div {
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        transform-origin: 20px center;
+
+                        & > button {
+                            width: 100%;
+                            display: flex;
+                            justify-content: flex-start;
+                            height: 20px;
+                        }
+                    }
+                }
+            }
+            @media screen and (min-width: 1000px) {
+                display: none;
+            }
+        }
+    }
+}
+
+.username{
+    display: flex;
+    justify-content: center;
+
+    font-weight: 600;
+    
+}

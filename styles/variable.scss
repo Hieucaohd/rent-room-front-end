@@ -6,4 +6,21 @@
 
     //header
     --app-navbar-height: 50px;
+    --app-navbar-padding: 10px 30px;
+    --app-navbar-authbtn-padding: 0 25px;
+    --app-navbar-logo-fontsize: 20px;
+    
+    //app
+    --app-fontsize: 16px;
+    --app-color: #2F3367;
+
+    //login
+
+    @media screen and (max-width: 500px) {
+        --app-navbar-height: 40px;
+        --app-navbar-padding: 7px 20px;
+        --app-navbar-logo-fontsize: 18px;
+        --app-navbar-authbtn-padding: 0 15px;
+        --app-fontsize: 13px;
+    }
 }
