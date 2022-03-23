@@ -1,0 +1,135 @@
+$display-query1: 800px;
+
+.signup {
+    position: relative;
+    min-height: 100vh;
+    &-bg {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+
+        & > img {
+            height: 100%;
+            width: 100%;
+            object-position: calc(100% + 100px);
+            object-fit: cover;
+        }
+
+        z-index: -1;
+
+        @media screen and (max-width: $display-query1) {
+            display: none;
+        }
+    }
+
+    &-base {
+        background-color: white;
+        width: 60%;
+        height: 100vh;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 30px;
+
+        & > div {
+            width: min(600px, 100%);
+        }
+
+        &__label {
+            & > div:nth-child(1) {
+                font-weight: 700;
+                font-size: var(--app-login-logo2size);
+                margin-bottom: 10px;
+            }
+
+            & > div:nth-child(2) {
+                font-weight: 600;
+                font-size: var(--app-login-labelsize);
+                margin-bottom: 40px;
+            }
+        }
+
+        @media screen and (max-width: $display-query1) {
+            width: 100%;
+        }
+    }
+
+    &-form {
+        display: grid;
+        grid-template-areas:
+            'email email'
+            'password confirmpassword'
+            'fullname phone'
+            'tinh tinh'
+            'submit submit';
+        gap: 15px;
+
+        @media screen and (max-width: 500px) {
+            grid-template-areas:
+                'email'
+                'password'
+                'confirmpassword'
+                'fullname'
+                'phone'
+                'tinh'
+                'submit';
+        }
+
+        &__locate {
+            width: 100%;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+
+            & > div:nth-child(1) {
+                margin-left: 5px;
+            }
+
+            & > div:nth-child(2) {
+                width: 100%;
+                display: flex;
+                gap: 15px;
+            }
+        }
+
+        & > button {
+            grid-area: submit;
+            height: 50px;
+        }
+
+        & > div {
+            display: flex;
+            &:nth-of-type(1) {
+                grid-area: email;
+            }
+            &:nth-of-type(2) {
+                grid-area: password;
+            }
+            &:nth-of-type(3) {
+                grid-area: confirmpassword;
+            }
+            &:nth-of-type(4) {
+                grid-area: fullname;
+            }
+            &:nth-of-type(5) {
+                grid-area: phone;
+            }
+            &:nth-of-type(6) {
+                grid-area: tinh;
+            }
+
+            & > div {
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            & > input {
+                height: 50px;
+            }
+        }
+    }
+}

@@ -1,10 +1,3 @@
-:root {
-    --app-login-logo1size: 30px;
-    --app-login-logo2size: 20px;
-    --app-login-labelsize: 14px;
-    --app-login-icon-fontsize: 12px;
-    --app-login-icon-size: 24px;
-}
 
 .signin {
     height: 100vh;
@@ -168,10 +161,24 @@
             }
         }
     }
+
+    &-errorlog{
+        margin-top: -20px;
+        margin-bottom: -20px;
+        height: 24px;
+        font-size: var(--app-login-labelsize);
+        & > span{
+            animation: showError 0.7s;
+            font-weight: 600;
+            color: red;
+        }
+    }
 }
 
 button.signin-form__forgot{
     font-size: var(--app-login-labelsize);
+    margin-top: 10px;
+    margin-bottom: -10px;
 }
 
 .lb-form__ocw{
@@ -187,5 +194,27 @@ button.signin-form__forgot{
        background-color: white;
        padding: 0 10px;
        color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+
+@keyframes showError {
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(20px);
+    }
+    40% {
+        transform: translateX(-20px);
+    }
+    60% {
+        transform: translateX(10px);
+    }
+    80% {
+        transform: translateX(-10px);
+    }
+    100% {
+        transform: translateX(0);
     }
 }

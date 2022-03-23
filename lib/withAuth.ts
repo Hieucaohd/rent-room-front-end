@@ -9,7 +9,7 @@ export interface User {
     fullname?: string
 }
 
-const checkLoggedIn = async (Cookie: string) => {
+export const checkLoggedIn = async (Cookie: string) => {
     try {
         if (!Cookie.includes('token') || !Cookie.includes('refreshToken')) {
             return null;

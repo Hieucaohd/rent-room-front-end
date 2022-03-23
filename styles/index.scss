@@ -5,7 +5,12 @@
 @import "variable";
 @import "header";
 @import "signin";
+@import "loadingSpinner";
+@import "signup";
 
+html{
+    overflow-y: scroll;
+}
 
 *, *:not(i):before, *::after {
     // font-family: 'Roboto Slab', sans-serif;
@@ -13,6 +18,7 @@
     margin: 0;
     padding: 0;
     font-weight: 500;
+    font-size: var(--app-fontsize);
     color: var(--app-color);
 }
 .chakra-avatar > div{

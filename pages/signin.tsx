@@ -15,6 +15,7 @@ import {
     InputRightElement,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
+import { ConnectWithBtnStyle, InputStyle } from '../chakra';
 
 export interface ISignInProps {
     user: User;
@@ -26,24 +27,6 @@ export const getServerSideProps: GetServerSideProps = withAuth(
     }
 );
 
-const InputStyle: InputProps = {
-    backgroundColor: '#e8f0fe',
-    borderColor: '#e8f0fe',
-    borderWidth: '3px',
-    fontSize: 'var(--app-login-labelsize)',
-    _focus: {
-        backgroundColor: 'white',
-        borderColor: '#80BEFC',
-    },
-};
-
-const ConnectWithBtnStyle: ButtonProps = {
-    padding: '10px',
-    height: '50px',
-    borderWidth: '1px',
-    width: '100px',
-};
-
 const SignInBtnAnimation = {};
 
 interface LoginForm {
@@ -51,14 +34,54 @@ interface LoginForm {
     password: string;
 }
 
+interface ErrorLog {
+    type: 'user' | 'password';
+    message: string | null;
+}
+
+const addError = (message: string): ErrorLog => {
+    if (message.indexOf('This email is not registed') != -1) {
+        return {
+            type: 'user',
+            message: message,
+        };
+    }
+
+    if (message.indexOf('Password is incorrect') != -1) {
+        return {
+            type: 'password',
+            message: message,
+        };
+    }
+
+    return {
+        type: 'user',
+        message: null,
+    };
+};
+
+const removeError = (): ErrorLog => {
+    return {
+        type: 'user',
+        message: null,
+    };
+};
+
 export default function SignIn({ user }: ISignInProps) {
-    const [login, { data, error }] = useLazyQuery(LOGIN);
+    const [login, { data }] = useLazyQuery(LOGIN);
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit } = useForm<LoginForm>();
+    const emailField = register('email');
+    const passwordField = register('password');
+
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<ErrorLog>({ type: 'user', message: null });
+    const emailError = !!(error.type === 'user' && error.message);
+    const passwordError = !!(error.type === 'password' && error.message);
 
     const loginSubmit = (e: LoginForm) => {
+        console.log(e);
         setLoading(true);
         login({
             variables: {
@@ -68,6 +91,7 @@ export default function SignIn({ user }: ISignInProps) {
         }).catch((error) => {
             console.log(error);
             setLoading(false);
+            setError(addError(error.message));
         });
     };
 
@@ -83,7 +107,16 @@ export default function SignIn({ user }: ISignInProps) {
 
     return (
         <motion.div className="signin">
-            <motion.div className="signin-bg">
+            <motion.div
+                exit={{
+                    opacity: 0,
+                    translateX: '-100%',
+                }}
+                transition={{
+                    duration: 0.5,
+                }}
+                className="signin-bg"
+            >
                 <motion.img
                     initial={{
                         opacity: 0,
@@ -159,7 +192,16 @@ export default function SignIn({ user }: ISignInProps) {
                     ></motion.i>
                 </div>
             </motion.div>
-            <div className="signin-base">
+            <motion.div
+                exit={{
+                    opacity: 0,
+                    translateX: '100%',
+                }}
+                transition={{
+                    duration: 0.5,
+                }}
+                className="signin-base"
+            >
                 <motion.div>
                     <motion.h1
                         initial={{
@@ -173,7 +215,7 @@ export default function SignIn({ user }: ISignInProps) {
                             delay: 1.4,
                         }}
                     >
-                        Sign In
+                        Đăng Nhập
                     </motion.h1>
                     <motion.div
                         initial={{
@@ -187,7 +229,7 @@ export default function SignIn({ user }: ISignInProps) {
                             delay: 1.5,
                         }}
                     >
-                        Please fill your information below
+                        Vui lòng điền thông tin của bạn vào bên dưới
                     </motion.div>
                     <motion.form
                         initial={{
@@ -208,8 +250,22 @@ export default function SignIn({ user }: ISignInProps) {
                                 pointerEvents="none"
                                 children={<i className="fi fi-br-envelope"></i>}
                             />
-                            <Input {...InputStyle} {...register('email')} placeholder="email" />
+                            <Input
+                                {...InputStyle}
+                                {...(emailError ? { borderColor: 'red' } : {})}
+                                {...emailField}
+                                onChange={(e) => {
+                                    if (error.message) {
+                                        setError(removeError());
+                                    }
+                                    emailField.onChange(e);
+                                }}
+                                placeholder="email"
+                            />
                         </InputGroup>
+                        <div className="signin-errorlog">
+                            {emailError && <span>{error.message}</span>}
+                        </div>
                         <InputGroup>
                             <InputLeftElement
                                 pointerEvents="none"
@@ -217,7 +273,14 @@ export default function SignIn({ user }: ISignInProps) {
                             />
                             <Input
                                 {...InputStyle}
-                                {...register('password')}
+                                {...(passwordError ? { borderColor: 'red' } : {})}
+                                {...passwordField}
+                                onChange={(e) => {
+                                    if (passwordError) {
+                                        setError(removeError());
+                                    }
+                                    passwordField.onChange(e);
+                                }}
                                 placeholder="password"
                                 type={showPassword ? 'text' : 'password'}
                             />
@@ -240,6 +303,9 @@ export default function SignIn({ user }: ISignInProps) {
                                 }
                             />
                         </InputGroup>
+                        <div className="signin-errorlog">
+                            {passwordError && <span>{error.message}</span>}
+                        </div>
                         <Button
                             type="button"
                             display="flex"
@@ -250,7 +316,7 @@ export default function SignIn({ user }: ISignInProps) {
                             className="signin-form__forgot"
                             variant="link"
                         >
-                            Forgot your password?
+                            Bạn quên mật khẩu?
                         </Button>
                         <motion.div
                             {...(!loading
@@ -258,7 +324,7 @@ export default function SignIn({ user }: ISignInProps) {
                                 : {})}
                         >
                             <Button isLoading={loading} type="submit">
-                                Sign In
+                                Đăng Nhập
                             </Button>
                         </motion.div>
                     </motion.form>
@@ -275,18 +341,19 @@ export default function SignIn({ user }: ISignInProps) {
                         }}
                         className="signin__create-account"
                     >
-                        <div>You haven't an account?</div>
+                        <div>Bạn không có tài khoản?</div>
                         <Button
                             type="button"
                             display="flex"
                             justifyContent="flex-start"
+                            fontSize="var(--app-login-labelsize)"
                             _focus={{
                                 outline: 'none',
                             }}
-                            className="signin-form__forgot"
                             variant="link"
+                            onClick={() => router.push('/signup')}
                         >
-                            Create an account
+                            Đăng ký
                         </Button>
                     </motion.div>
                     <motion.div
@@ -328,7 +395,7 @@ export default function SignIn({ user }: ISignInProps) {
                         </Button>
                     </motion.div>
                 </motion.div>
-            </div>
+            </motion.div>
         </motion.div>
     );
 }

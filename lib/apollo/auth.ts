@@ -12,6 +12,16 @@ export const LOGIN = gql`
     }
 `;
 
+export const SIGNUP = gql`
+    mutation Register($newUser: UserInput!) {
+        register(newUser: $newUser) {
+            user {
+                _id
+            }
+        }
+    }
+`;
+
 export const LOGOUT = gql`
     mutation LOGOUT {
         logout {

@@ -1,4 +1,4 @@
-:root{
+:root {
     --app-btn-bgcolor: #18a0fb;
     --app-btn-bgcolor--hover: #057bca;
     --app-btn-bgcolor--active: #008deb;
@@ -9,18 +9,23 @@
     --app-navbar-padding: 10px 30px;
     --app-navbar-authbtn-padding: 0 25px;
     --app-navbar-logo-fontsize: 20px;
-    
+
     //app
-    --app-fontsize: 16px;
-    --app-color: #2F3367;
+    --app-fontsize: 14px;
+    --app-color: #2f3367;
 
     //login
+    --app-login-logo1size: 30px;
+    --app-login-logo2size: 20px;
+    --app-login-labelsize: 14px;
+    --app-login-icon-fontsize: 12px;
+    --app-login-icon-size: 24px;
 
     @media screen and (max-width: 500px) {
         --app-navbar-height: 40px;
         --app-navbar-padding: 7px 20px;
         --app-navbar-logo-fontsize: 18px;
         --app-navbar-authbtn-padding: 0 15px;
-        --app-fontsize: 13px;
+        --app-fontsize: 12px;
     }
 }

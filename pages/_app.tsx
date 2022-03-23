@@ -1,23 +1,86 @@
 import { ApolloProvider } from '@apollo/client';
 import { ChakraProvider } from '@chakra-ui/react';
 import { AnimatePresence } from 'framer-motion';
-import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
+import type { AppContext, AppProps } from 'next/app';
+import { NextRouter, useRouter } from 'next/router';
 import client from '../lib/apollo/apollo-client';
 import '../styles/index.scss';
 import { motion } from 'framer-motion';
+import { checkLoggedIn, User } from '../lib/withAuth';
+import App from 'next/app';
+import useStore from '../store/useStore';
+import { useCallback, useEffect } from 'react';
+import Header from '../components/Header';
 
-function MyApp({ Component, pageProps }: AppProps) {
+interface MyAppProps extends AppProps {
+    myProps: {
+        user: User | null;
+    };
+}
+
+const getPath = (path: string) => {
+    console.log(path);
+    const pathname = path.split('/')[1];
+    return '/' + pathname;
+};
+
+function MyApp({ Component, pageProps, myProps }: MyAppProps) {
+    const { user, addUser } = useStore((state) => ({ user: state.user, addUser: state.addUser }));
     const router = useRouter();
+
+    useEffect(() => {
+        if (user.SSR && myProps.user) {
+            console.clear();
+            addUser(myProps.user);
+            console.log(user, myProps);
+        }
+    }, [user.SSR]);
+
+    const withoutPage = useCallback((router: NextRouter) => {
+        const path = getPath(router.pathname);
+        const without = ['/signin', '/signup'];
+        const isCurrent = without.find((item) => item === path);
+        return !isCurrent;
+    }, []);
+
     return (
         <ChakraProvider>
             <ApolloProvider client={client}>
-                <AnimatePresence exitBeforeEnter>
-                    <Component {...pageProps}  key={router.pathname}/>
+                <AnimatePresence>
+                    {withoutPage(router) && <Header user={user.info} />}
                 </AnimatePresence>
+                <div style={withoutPage(router) ? { marginTop: 'var(--app-navbar-height)' } : {}}>
+                    <AnimatePresence exitBeforeEnter>
+                        <Component {...pageProps} key={router.pathname} />
+                    </AnimatePresence>
+                </div>
             </ApolloProvider>
         </ChakraProvider>
     );
 }
+
+MyApp.getInitialProps = async (context: AppContext) => {
+    const pageProps = await App.getInitialProps(context);
+    const req = context.ctx.req;
+    if (req) {
+        const cookie = req.headers.cookie;
+        // console.log(cookie);
+        const user = await checkLoggedIn(cookie || '');
+        // console.log(user);
+        return {
+            myProps: {
+                user,
+            },
+            ...pageProps,
+        };
+    }
+
+    return {
+        ...pageProps,
+        myProps: {
+            user: null,
+        },
+    };
+};
 
 export default MyApp;

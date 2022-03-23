@@ -1,7 +1,8 @@
-import { ButtonProps } from '@chakra-ui/react';
+import { ButtonProps, InputProps } from '@chakra-ui/react';
 
+type HeaderStyle = ButtonProps | InputProps
 
-export const signUpBtnStyle: ButtonProps = {
+const signUpBtnStyle: ButtonProps = {
     height: '100%',
     borderRadius: '5px',
     backgroundColor: 'var(--app-btn-bgcolor)',
@@ -20,7 +21,7 @@ export const signUpBtnStyle: ButtonProps = {
     },
 };
 
-export const signInBtnStyle: ButtonProps = {
+const signInBtnStyle: ButtonProps = {
     height: '100%',
     color: 'var(--app-btn-bgcolor)',
     padding: 'var(--app-navbar-authbtn-padding)',
@@ -34,7 +35,7 @@ export const signInBtnStyle: ButtonProps = {
     },
 };
 
-export const LinkBtnStyle: ButtonProps = {
+const linkBtnStyle: ButtonProps = {
     height: '100%',
     display: 'flex',
     alignItems: 'center',
@@ -52,7 +53,7 @@ export const LinkBtnStyle: ButtonProps = {
     },
 };
 
-export const MenuBtnStyle: ButtonProps = {
+const menuBtnStyle: ButtonProps = {
     height: '100%',
     minWidth: '10px',
     backgroundColor: 'transparent',
@@ -71,3 +72,30 @@ export const MenuBtnStyle: ButtonProps = {
         boxShadow: 'none',
     },
 };
+
+const headerStyle = {
+    signUpBtnStyle,
+    signInBtnStyle,
+    linkBtnStyle,
+    menuBtnStyle
+}
+
+export const InputStyle: InputProps = {
+    backgroundColor: '#e8f0fe',
+    borderColor: '#e8f0fe',
+    borderWidth: '3px',
+    fontSize: 'var(--app-login-labelsize)',
+    _focus: {
+        backgroundColor: 'white',
+        borderColor: '#80BEFC',
+    },
+};
+
+export const ConnectWithBtnStyle: ButtonProps = {
+    padding: '10px',
+    height: '50px',
+    borderWidth: '1px',
+    width: '100px',
+};
+
+export default headerStyle
