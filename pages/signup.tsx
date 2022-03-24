@@ -10,10 +10,11 @@ import {
     Select,
     Tooltip,
 } from '@chakra-ui/react';
-import { InputStyle } from '../chakra';
+import { ConnectWithBtnStyle, InputStyle, linkBtnStyle } from '../chakra';
 import { useMutation } from '@apollo/client';
 import { SIGNUP } from '../lib/apollo/auth';
 import useStore from '../store/useStore';
+import { useRouter } from 'next/router';
 
 export interface ISignUpProps {}
 
@@ -49,17 +50,6 @@ const formError: FormError = {
     district: false,
     ward: false,
 };
-
-enum ActionError {
-    email = 'email',
-    password = 'password',
-    passwordConfirm = 'passwordConfirm',
-    fullname = 'fullname',
-    callNumber = 'callNumber',
-    province = 'province',
-    district = 'district',
-    ward = 'ward',
-}
 
 const errorReducer = (state: FormError, data: FormError) => {
     if (data) {
@@ -97,11 +87,39 @@ const checkCallNumber = (mobile: string) => {
     }
 };
 
+const container = {
+    hidden: {},
+    visible: {
+        transition: {
+            delayChildren: 0.4,
+            staggerChildren: 0.1,
+        },
+    },
+    out: {
+        transition: {
+            staggerChildren: 0.05,
+        },
+    },
+};
+
+const containerChild = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+    },
+    out: {
+        opacity: 0,
+        x: -100,
+    },
+};
+
 export default function SignUp(props: ISignUpProps) {
     const [signUpHandle] = useMutation(SIGNUP);
     const { user } = useStore();
+    const router = useRouter();
     //#region form
-    const { register, handleSubmit, watch } = useForm<FormSignUp>();
+    const { register, handleSubmit } = useForm<FormSignUp>();
     const emailField = register('email');
     const passwordField = register('password');
     const passwordConfirmField = register('passwordConfirm');
@@ -265,105 +283,80 @@ export default function SignUp(props: ISignUpProps) {
 
     return (
         <motion.div className="signup">
-            <motion.div className="signup-bg">
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    x: 100,
+                }}
+                animate={{
+                    opacity: 1,
+                    x: 0,
+                }}
+                exit={{
+                    opacity: 0,
+                    x: 100,
+                }}
+                transition={{
+                    duration: 0.5,
+                    delayChildren: 0.2,
+                    staggerChildren: 0.2,
+                }}
+                className="signup-bg"
+            >
                 <img src="/signupbg.svg" alt="" />
             </motion.div>
             <motion.div className="signup-base">
-                <div>
-                    <div className="signup-base__label">
+                <motion.div variants={container} initial="hidden" animate="visible" exit="out">
+                    <motion.div variants={containerChild} className="signup-base__label">
                         <div>Đăng Ký</div>
                         <div>Vui lòng điền thông tin của bạn vào bên dưới</div>
-                    </div>
+                    </motion.div>
                     <motion.form className="signup-form" onSubmit={handleSubmit(submitForm)}>
-                        <Tooltip
-                            label="tài khoản này đã tồn tại"
-                            borderRadius="3px"
-                            isDisabled={!errorState.email}
-                            placement="bottom"
-                            bg="red"
-                            hasArrow
-                        >
-                            <InputGroup>
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<i className="fi fi-br-envelope"></i>}
-                                />
-                                <Input
-                                    {...InputStyle}
-                                    {...emailField}
-                                    {...(errorState.email ? { borderColor: 'red' } : {})}
-                                    onChange={(e) => {
-                                        if (errorState.email) {
-                                            dispatch({
-                                                email: false,
-                                            });
-                                        }
-                                        emailField.onChange(e);
-                                    }}
-                                    type="email"
-                                    placeholder="email"
-                                />
-                            </InputGroup>
-                        </Tooltip>
-                        <InputGroup>
-                            <InputLeftElement
-                                pointerEvents="none"
-                                children={<i className="fi fi-br-key"></i>}
-                            />
-                            <Input
-                                {...InputStyle}
-                                {...passwordField}
-                                onChange={(e) => {
-                                    passwordField.onChange(e);
-                                }}
-                                placeholder="mật khẩu"
-                                type={showPassword ? 'text' : 'password'}
-                            />
-                            <InputRightElement
-                                onClick={() => setShowPassword(!showPassword)}
-                                cursor="pointer"
-                                children={
-                                    <Button
-                                        backgroundColor="transparent"
-                                        _focus={{ outline: 'none' }}
-                                        _active={{ backgroundColor: 'transparent' }}
-                                        _hover={{ backgroundColor: 'transparent' }}
-                                    >
-                                        {showPassword ? (
-                                            <i className="fi fi-bs-eye"></i>
-                                        ) : (
-                                            <i className="fi fi-bs-eye-crossed"></i>
-                                        )}
-                                    </Button>
-                                }
-                            />
-                        </InputGroup>
-                        <Tooltip
-                            label="mật khẩu xác nhận sai"
-                            borderRadius="3px"
-                            isDisabled={!errorState.passwordConfirm}
-                            placement="bottom"
-                            bg="red"
-                            hasArrow
-                        >
-                            <InputGroup>
+                        <motion.div variants={containerChild}>
+                            <Tooltip
+                                label="tài khoản này đã tồn tại"
+                                borderRadius="3px"
+                                isDisabled={!errorState.email}
+                                placement="bottom"
+                                bg="red"
+                                hasArrow
+                            >
+                                <InputGroup className="signup-form__child">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fi fi-br-envelope"></i>}
+                                    />
+                                    <Input
+                                        {...InputStyle}
+                                        {...emailField}
+                                        {...(errorState.email ? { borderColor: 'red' } : {})}
+                                        onChange={(e) => {
+                                            if (errorState.email) {
+                                                dispatch({
+                                                    email: false,
+                                                });
+                                            }
+                                            emailField.onChange(e);
+                                        }}
+                                        type="email"
+                                        placeholder="email"
+                                    />
+                                </InputGroup>
+                            </Tooltip>
+                        </motion.div>
+                        <motion.div variants={containerChild}>
+                            <InputGroup className="signup-form__child">
                                 <InputLeftElement
                                     pointerEvents="none"
                                     children={<i className="fi fi-br-key"></i>}
                                 />
                                 <Input
                                     {...InputStyle}
-                                    {...passwordConfirmField}
-                                    {...(errorState.passwordConfirm ? { borderColor: 'red' } : {})}
+                                    {...passwordField}
                                     onChange={(e) => {
-                                        if (errorState.passwordConfirm) {
-                                            dispatch({
-                                                passwordConfirm: false,
-                                            });
-                                        }
-                                        passwordConfirmField.onChange(e);
+                                        passwordField.onChange(e);
                                     }}
-                                    placeholder="xác nhận mật khẩu"
+                                    placeholder="mật khẩu"
                                     type={showPassword ? 'text' : 'password'}
                                 />
                                 <InputRightElement
@@ -385,65 +378,121 @@ export default function SignUp(props: ISignUpProps) {
                                     }
                                 />
                             </InputGroup>
-                        </Tooltip>
-                        <Tooltip
-                            label="Họ và Tên không hợp lệ"
-                            borderRadius="3px"
-                            isDisabled={!errorState.fullname}
-                            placement="bottom"
-                            bg="red"
-                            hasArrow
-                        >
-                            <InputGroup>
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<i className="fi fi-bs-user"></i>}
-                                />
-                                <Input
-                                    {...InputStyle}
-                                    {...fullnameField}
-                                    {...(errorState.fullname ? { borderColor: 'red' } : {})}
-                                    onChange={(e) => {
-                                        if (errorState.fullname) {
-                                            dispatch({ fullname: false });
+                        </motion.div>
+                        <motion.div variants={containerChild}>
+                            <Tooltip
+                                label="mật khẩu xác nhận sai"
+                                borderRadius="3px"
+                                isDisabled={!errorState.passwordConfirm}
+                                placement="bottom"
+                                bg="red"
+                                hasArrow
+                            >
+                                <InputGroup className="signup-form__child">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fi fi-br-key"></i>}
+                                    />
+                                    <Input
+                                        {...InputStyle}
+                                        {...passwordConfirmField}
+                                        {...(errorState.passwordConfirm
+                                            ? { borderColor: 'red' }
+                                            : {})}
+                                        onChange={(e) => {
+                                            if (errorState.passwordConfirm) {
+                                                dispatch({
+                                                    passwordConfirm: false,
+                                                });
+                                            }
+                                            passwordConfirmField.onChange(e);
+                                        }}
+                                        placeholder="xác nhận mật khẩu"
+                                        type={showPassword ? 'text' : 'password'}
+                                    />
+                                    <InputRightElement
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        cursor="pointer"
+                                        children={
+                                            <Button
+                                                backgroundColor="transparent"
+                                                _focus={{ outline: 'none' }}
+                                                _active={{ backgroundColor: 'transparent' }}
+                                                _hover={{ backgroundColor: 'transparent' }}
+                                            >
+                                                {showPassword ? (
+                                                    <i className="fi fi-bs-eye"></i>
+                                                ) : (
+                                                    <i className="fi fi-bs-eye-crossed"></i>
+                                                )}
+                                            </Button>
                                         }
-                                        fullnameField.onChange(e);
-                                    }}
-                                    placeholder="Họ và Tên"
-                                />
-                            </InputGroup>
-                        </Tooltip>
-                        <Tooltip
-                            label="Số điện thoại không hợp lệ"
-                            borderRadius="3px"
-                            isDisabled={!errorState.callNumber}
-                            placement="bottom"
-                            bg="red"
-                            hasArrow
-                        >
-                            <InputGroup>
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<i className="fi fi-br-call-history"></i>}
-                                />
-                                <Input
-                                    {...InputStyle}
-                                    {...numberPhoneField}
-                                    {...(errorState.callNumber ? { borderColor: 'red' } : {})}
-                                    onChange={(e) => {
-                                        if (errorState.callNumber) {
-                                            dispatch({
-                                                callNumber: false,
-                                            });
-                                        }
-                                        numberPhoneField.onChange(e);
-                                    }}
-                                    type="number"
-                                    placeholder="SĐT"
-                                />
-                            </InputGroup>
-                        </Tooltip>
-                        <div className="signup-form__locate">
+                                    />
+                                </InputGroup>
+                            </Tooltip>
+                        </motion.div>
+                        <motion.div variants={containerChild}>
+                            <Tooltip
+                                label="Họ và Tên không hợp lệ"
+                                borderRadius="3px"
+                                isDisabled={!errorState.fullname}
+                                placement="bottom"
+                                bg="red"
+                                hasArrow
+                            >
+                                <InputGroup className="signup-form__child">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fi fi-bs-user"></i>}
+                                    />
+                                    <Input
+                                        {...InputStyle}
+                                        {...fullnameField}
+                                        {...(errorState.fullname ? { borderColor: 'red' } : {})}
+                                        onChange={(e) => {
+                                            if (errorState.fullname) {
+                                                dispatch({ fullname: false });
+                                            }
+                                            fullnameField.onChange(e);
+                                        }}
+                                        placeholder="Họ và Tên"
+                                    />
+                                </InputGroup>
+                            </Tooltip>
+                        </motion.div>
+                        <motion.div variants={containerChild}>
+                            <Tooltip
+                                label="Số điện thoại không hợp lệ"
+                                borderRadius="3px"
+                                isDisabled={!errorState.callNumber}
+                                placement="bottom"
+                                bg="red"
+                                hasArrow
+                            >
+                                <InputGroup className="signup-form__child">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fi fi-br-call-history"></i>}
+                                    />
+                                    <Input
+                                        {...InputStyle}
+                                        {...numberPhoneField}
+                                        {...(errorState.callNumber ? { borderColor: 'red' } : {})}
+                                        onChange={(e) => {
+                                            if (errorState.callNumber) {
+                                                dispatch({
+                                                    callNumber: false,
+                                                });
+                                            }
+                                            numberPhoneField.onChange(e);
+                                        }}
+                                        type="number"
+                                        placeholder="SĐT"
+                                    />
+                                </InputGroup>
+                            </Tooltip>
+                        </motion.div>
+                        <motion.div variants={containerChild} className="signup-form__locate">
                             <div>Vị trí của bạn</div>
                             <div>
                                 <Tooltip
@@ -460,7 +509,7 @@ export default function SignUp(props: ISignUpProps) {
                                         cursor="pointer"
                                         _focus={{
                                             outline: 'none',
-                                            borderColor: '#80befc'
+                                            borderColor: '#80befc',
                                         }}
                                         placeholder="Tỉnh/TP"
                                         {...provinceField}
@@ -492,7 +541,7 @@ export default function SignUp(props: ISignUpProps) {
                                         cursor="pointer"
                                         _focus={{
                                             outline: 'none',
-                                            borderColor: '#80befc'
+                                            borderColor: '#80befc',
                                         }}
                                         placeholder="Quận/Huyện"
                                         {...districtField}
@@ -524,7 +573,7 @@ export default function SignUp(props: ISignUpProps) {
                                         cursor="pointer"
                                         _focus={{
                                             outline: 'none',
-                                            borderColor: '#80befc'
+                                            borderColor: '#80befc',
                                         }}
                                         placeholder="Xã/Phường"
                                         {...wardField}
@@ -542,12 +591,44 @@ export default function SignUp(props: ISignUpProps) {
                                     </Select>
                                 </Tooltip>
                             </div>
-                        </div>
-                        <Button isLoading={loading} width={'100%'} type="submit">
-                            Đăng Ký
-                        </Button>
+                        </motion.div>
+                        <motion.div
+                            className="signup-form__submit"
+                            variants={containerChild}
+                            {...(!loading
+                                ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } }
+                                : {})}
+                        >
+                            <Button isLoading={loading} width={'100%'} type="submit">
+                                Đăng Ký
+                            </Button>
+                        </motion.div>
                     </motion.form>
-                </div>
+                    <motion.div variants={containerChild}>
+                        <Button
+                            marginTop="20px"
+                            _focus={{ outline: 'none' }}
+                            onClick={() => router.push('/signin')}
+                            variant="link"
+                        >
+                            Bạn đã có tài khoản?
+                        </Button>
+                    </motion.div>
+                    <motion.div variants={containerChild} className="lb-form__ocw">
+                        <span>or continue with</span>
+                    </motion.div>
+                    <motion.div variants={containerChild} className="signin__connect-with">
+                        <Button {...ConnectWithBtnStyle}>
+                            <img src="/google.svg" alt="" />
+                        </Button>
+                        <Button {...ConnectWithBtnStyle}>
+                            <img src="/apple.svg" alt="" />
+                        </Button>
+                        <Button {...ConnectWithBtnStyle}>
+                            <img src="/facebook.svg" alt="" />
+                        </Button>
+                    </motion.div>
+                </motion.div>
             </motion.div>
         </motion.div>
     );
