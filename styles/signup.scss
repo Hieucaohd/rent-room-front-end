@@ -4,7 +4,7 @@ $display-query2: 500px;
 .signup {
     position: relative;
     min-height: 100vh;
-    
+
     &-bg {
         position: fixed;
         left: 0;
@@ -38,6 +38,14 @@ $display-query2: 500px;
 
         & > div {
             width: min(600px, 100%);
+
+            & > .signin__connect-with{
+                gap: 15px;
+                
+                & > button{
+                    width: 100%;
+                }
+            }
         }
 
         &__label {
@@ -85,6 +93,7 @@ $display-query2: 500px;
             flex-direction: column;
             align-items: flex-start;
             justify-content: flex-start;
+            gap: 5px;
 
             & > div:nth-child(1) {
                 margin-left: 5px;
@@ -101,9 +110,34 @@ $display-query2: 500px;
             }
         }
 
-        & > button {
+        &__child {
+            & > div {
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+            & > input {
+                height: 50px;
+            }
+        }
+
+        &__submit {
             grid-area: submit;
-            height: 50px;
+            & > button {
+                width: 100%;
+                color: white;
+                height: 50px;
+                margin-top: 10px;
+                background-color: var(--app-btn-bgcolor);
+
+                &:hover {
+                    background-color: var(--app-btn-bgcolor--hover);
+                }
+
+                &:active {
+                    background-color: var(--app-btn-bgcolor--active);
+                }
+            }
         }
 
         & > div {
@@ -128,13 +162,6 @@ $display-query2: 500px;
             }
 
             & > div {
-                height: 100%;
-                display: flex;
-                align-items: center;
-            }
-
-            & > input {
-                height: 50px;
             }
         }
     }

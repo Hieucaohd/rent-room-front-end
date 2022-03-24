@@ -2,7 +2,7 @@ import { ButtonProps, InputProps } from '@chakra-ui/react';
 
 type HeaderStyle = ButtonProps | InputProps
 
-const signUpBtnStyle: ButtonProps = {
+export const signUpBtnStyle: ButtonProps = {
     height: '100%',
     borderRadius: '5px',
     backgroundColor: 'var(--app-btn-bgcolor)',
@@ -21,7 +21,7 @@ const signUpBtnStyle: ButtonProps = {
     },
 };
 
-const signInBtnStyle: ButtonProps = {
+export const signInBtnStyle: ButtonProps = {
     height: '100%',
     color: 'var(--app-btn-bgcolor)',
     padding: 'var(--app-navbar-authbtn-padding)',
@@ -35,7 +35,7 @@ const signInBtnStyle: ButtonProps = {
     },
 };
 
-const linkBtnStyle: ButtonProps = {
+export const linkBtnStyle: ButtonProps = {
     height: '100%',
     display: 'flex',
     alignItems: 'center',
@@ -53,7 +53,7 @@ const linkBtnStyle: ButtonProps = {
     },
 };
 
-const menuBtnStyle: ButtonProps = {
+export const menuBtnStyle: ButtonProps = {
     height: '100%',
     minWidth: '10px',
     backgroundColor: 'transparent',
@@ -73,7 +73,7 @@ const menuBtnStyle: ButtonProps = {
     },
 };
 
-const headerStyle = {
+export const headerStyle = {
     signUpBtnStyle,
     signInBtnStyle,
     linkBtnStyle,
