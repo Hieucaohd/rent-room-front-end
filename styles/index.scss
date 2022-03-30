@@ -4,9 +4,11 @@
 @import "icons";
 @import "variable";
 @import "header";
+@import "mainpage";
 @import "signin";
 @import "loadingSpinner";
 @import "signup";
+@import "user/home";
 
 html{
     overflow-y: scroll;
@@ -25,6 +27,8 @@ html{
     color: unset;
 }
 
-.app{
-    margin-top: var(--app-navbar-height);
+.main{
+    &.bar{
+        margin-top: var(--app-navbar-height);
+    }
 }

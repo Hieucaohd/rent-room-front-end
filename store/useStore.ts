@@ -23,6 +23,7 @@ const useStore = create<Store>((set, get) => ({
     })),
     removeUser: () => set((state) => {
         state.user.info = null
+        state.user.SSR = false
     })
 }))
 

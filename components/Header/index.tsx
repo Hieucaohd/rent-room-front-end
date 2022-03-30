@@ -134,7 +134,7 @@ export default function Header({ user }: IHeaderProps) {
             <motion.nav
                 exit={{ y: '-100%' }}
                 transition={{
-                    duration: 0.5
+                    duration: 0.5,
                 }}
                 style={{ boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)' }}
                 className="navbar"
@@ -222,6 +222,9 @@ export default function Header({ user }: IHeaderProps) {
                             <MenuList>
                                 {mobilemode && <div className="username">{user.fullname}</div>}
                                 <MenuItem
+                                    onClick={() => {
+                                        router.push(`/user/${user._id}/homes`);
+                                    }}
                                     icon={
                                         <i
                                             style={{ paddingLeft: '10px' }}
@@ -314,7 +317,7 @@ export default function Header({ user }: IHeaderProps) {
                 motionPreset="slideInBottom"
                 leastDestructiveRef={cancelRef}
                 onClose={onClose}
-                size={mobilemode ? "sm" : "lg"}
+                size={mobilemode ? 'sm' : 'lg'}
             >
                 <AlertDialogOverlay>
                     <AlertDialogContent>
@@ -322,9 +325,7 @@ export default function Header({ user }: IHeaderProps) {
                             Đăng xuất
                         </AlertDialogHeader>
 
-                        <AlertDialogBody>
-                            Bạn có chắc chắn muốn đăng xuất?
-                        </AlertDialogBody>
+                        <AlertDialogBody>Bạn có chắc chắn muốn đăng xuất?</AlertDialogBody>
 
                         <AlertDialogFooter>
                             <Button ref={cancelRef} onClick={onClose}>

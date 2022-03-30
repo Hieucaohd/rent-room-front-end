@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Thành phố Hà Nội",
+        "code": 1,
+        "division_type": "thành phố trung ương",
+        "codename": "thanh_pho_ha_noi",
+        "phone_code": 24,
+        "districts": []
+    },
+    {
+        "name": "Thành phố Đà Nẵng",
+        "code": 48,
+        "division_type": "thành phố trung ương",
+        "codename": "thanh_pho_da_nang",
+        "phone_code": 236,
+        "districts": []
+    },
+    {
+        "name": "Thành phố Hồ Chí Minh",
+        "code": 79,
+        "division_type": "thành phố trung ương",
+        "codename": "thanh_pho_ho_chi_minh",
+        "phone_code": 28,
+        "districts": []
+    }
+]

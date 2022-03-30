@@ -16,16 +16,17 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { ConnectWithBtnStyle, InputStyle } from '../chakra';
+import useStore from '../store/useStore';
 
 export interface ISignInProps {
     user: User;
 }
 
-export const getServerSideProps: GetServerSideProps = withAuth(
-    (context: GetServerSidePropsContext) => {
-        return {};
-    }
-);
+export const getServerSideProps = (context: GetServerSidePropsContext) => {
+    return {
+        props: {}
+    };
+}
 
 const SignInBtnAnimation = {};
 
@@ -67,9 +68,10 @@ const removeError = (): ErrorLog => {
     };
 };
 
-export default function SignIn({ user }: ISignInProps) {
+export default function SignIn() {
     const [login, { data }] = useLazyQuery(LOGIN);
     const router = useRouter();
+    const { info: user } = useStore(state => state.user)
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit } = useForm<LoginForm>();
     const emailField = register('email');
@@ -79,6 +81,9 @@ export default function SignIn({ user }: ISignInProps) {
     const [error, setError] = useState<ErrorLog>({ type: 'user', message: null });
     const emailError = !!(error.type === 'user' && error.message);
     const passwordError = !!(error.type === 'password' && error.message);
+
+    //quay trở lại page đang truy cập nếu có
+    const { p: currentPage } = router.query
 
     const loginSubmit = (e: LoginForm) => {
         console.log(e);
@@ -96,8 +101,13 @@ export default function SignIn({ user }: ISignInProps) {
     };
 
     useEffect(() => {
+        console.log(data, user)
         if (data || user) {
-            window.location.href = '/';
+            if (currentPage) {
+                window.location.href = currentPage.toString();
+            } else {
+                window.location.href = '/';
+            }
         }
     }, [data, user]);
 

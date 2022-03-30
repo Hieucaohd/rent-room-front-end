@@ -5,12 +5,12 @@ import type { AppContext, AppProps } from 'next/app';
 import { NextRouter, useRouter } from 'next/router';
 import client from '../lib/apollo/apollo-client';
 import '../styles/index.scss';
-import { motion } from 'framer-motion';
 import { checkLoggedIn, User } from '../lib/withAuth';
 import App from 'next/app';
 import useStore from '../store/useStore';
 import { useCallback, useEffect } from 'react';
 import Header from '../components/Header';
+import Head from 'next/head';
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -19,20 +19,21 @@ interface MyAppProps extends AppProps {
 }
 
 const getPath = (path: string) => {
-    console.log(path);
     const pathname = path.split('/')[1];
     return '/' + pathname;
 };
 
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
-    const { user, addUser } = useStore((state) => ({ user: state.user, addUser: state.addUser }));
+    const { user, addUser, removeUser } = useStore();
     const router = useRouter();
 
     useEffect(() => {
         if (user.SSR && myProps.user) {
-            console.clear();
+            // console.clear();
             addUser(myProps.user);
             console.log(user, myProps);
+        } else if (user.SSR) {
+            removeUser()
         }
     }, [user.SSR]);
 
@@ -46,10 +47,13 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     return (
         <ChakraProvider>
             <ApolloProvider client={client}>
+                <Head>
+                    <title>Rent Zoom</title>
+                </Head>
                 <AnimatePresence>
                     {withoutPage(router) && <Header user={user.info} />}
                 </AnimatePresence>
-                <div style={withoutPage(router) ? { marginTop: 'var(--app-navbar-height)' } : {}}>
+                <div className={`main${withoutPage(router) ? ' bar' : ''}`}>
                     <AnimatePresence exitBeforeEnter>
                         <Component {...pageProps} key={router.pathname} />
                     </AnimatePresence>
