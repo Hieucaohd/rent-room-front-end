@@ -52,7 +52,7 @@ export default function MyHomes(props: any) {
                 </div>
 
                 <AnimatePresence>
-                    {showAddForm && <AddHome onClose={() => setShowAddForm(false)} />}
+                    {showAddForm && <AddHome afterUpload={getMyHomes} onClose={() => setShowAddForm(false)} />}
                 </AnimatePresence>
                 <div className='user-homes__listhome'>
                     {!loading ? (

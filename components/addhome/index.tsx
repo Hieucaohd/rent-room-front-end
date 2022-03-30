@@ -12,6 +12,7 @@ import FormLocation from '../location';
 
 interface AddHomeProps {
     onClose?: () => any;
+    afterUpload?: () => any;
 }
 
 const container: Variants = {
@@ -213,19 +214,22 @@ export default function AddHome(props: AddHomeProps) {
                 setUpLoading(true);
                 upLoadAllFile(listImage, user?._id!)
                     .then((res) => {
-                        e.images = res
+                        e.images = res;
                         createHome({
-                            variables: createNewHome.variable(e)
-                        }).then(() => {
-                            props.onClose && props.onClose();
-                        }).catch(error => {
-                            alert(error.message)
-                            setUpLoading(false)
+                            variables: createNewHome.variable(e),
                         })
+                            .then(() => {
+                                props.afterUpload && props.afterUpload()
+                                props.onClose && props.onClose();
+                            })
+                            .catch((error) => {
+                                alert(error.message);
+                                setUpLoading(false);
+                            });
                     })
                     .catch((error) => {
                         setUpLoading(false);
-                        console.log(error)
+                        console.log(error);
                     });
                 /*  */
             }
@@ -251,7 +255,9 @@ export default function AddHome(props: AddHomeProps) {
                     className="addhome-form"
                 >
                     <motion.form onSubmit={handleSubmit(submitForm)}>
-                        <Text className='addhome-form__label'>Địa chỉ trọ<span>{" "}*</span></Text>
+                        <Text className="addhome-form__label">
+                            Địa chỉ trọ<span> *</span>
+                        </Text>
                         <div className="addhome-form__location">
                             <FormLocation
                                 provinceField={register('province')}
@@ -275,7 +281,9 @@ export default function AddHome(props: AddHomeProps) {
                             <option value="true">Sống với chủ trọ</option>
                             <option value="false">Không sống với chủ trọ</option>
                         </Select>
-                        <Text className='addhome-form__label'>Tiền điện (VNĐ)<span>{" "}*</span></Text>
+                        <Text className="addhome-form__label">
+                            Tiền điện (VNĐ)<span> *</span>
+                        </Text>
                         <Tooltip
                             label="Bạn chưa nhập giá tiền điện"
                             borderRadius="3px"
@@ -302,7 +310,9 @@ export default function AddHome(props: AddHomeProps) {
                                 type="number"
                             />
                         </Tooltip>
-                        <Text className='addhome-form__label'>Tiền nước (VNĐ)<span>{" "}*</span></Text>
+                        <Text className="addhome-form__label">
+                            Tiền nước (VNĐ)<span> *</span>
+                        </Text>
                         <Tooltip
                             label="Bạn chưa nhập giá tiền nước"
                             borderRadius="3px"
@@ -329,8 +339,8 @@ export default function AddHome(props: AddHomeProps) {
                                 type="number"
                             />
                         </Tooltip>
-                        <Text className='addhome-form__label'>
-                            Ảnh phòng (tối đa 6)<span>{" "}*</span>
+                        <Text className="addhome-form__label">
+                            Ảnh phòng (tối đa 6)<span> *</span>
                         </Text>
                         <div className="addhome-form__upload">
                             <div className="image-preview">
