@@ -1,20 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap');
-@import "icons";
-@import "variable";
-@import "header";
-@import "mainpage";
-@import "signin";
-@import "loadingSpinner";
-@import "signup";
-@import "user/home";
+@import 'icons';
+@import 'variable';
+@import 'header';
+@import 'mainpage';
+@import 'signin';
+@import 'loadingSpinner';
+@import 'signup';
+@import 'user/home';
 
-html{
+html {
     overflow-y: scroll;
 }
 
-*, *:not(i):before, *::after {
+*,
+*:not(i):before,
+*::after {
     // font-family: 'Roboto Slab', sans-serif;
     font-family: 'Quicksand', sans-serif;
     margin: 0;
@@ -23,12 +25,12 @@ html{
     font-size: var(--app-fontsize);
     color: var(--app-color);
 }
-.chakra-avatar > div{
+.chakra-avatar > div {
     color: unset;
 }
 
-.main{
-    &.bar{
+.main {
+    &.bar {
         margin-top: var(--app-navbar-height);
     }
 }

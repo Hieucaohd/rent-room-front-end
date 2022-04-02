@@ -219,7 +219,7 @@ export default function AddHome(props: AddHomeProps) {
                             variables: createNewHome.variable(e),
                         })
                             .then(() => {
-                                props.afterUpload && props.afterUpload()
+                                props.afterUpload && props.afterUpload();
                                 props.onClose && props.onClose();
                             })
                             .catch((error) => {

@@ -1,5 +1,14 @@
-:root{
+:root {
     --homecard-height: 350px;
+    --userhomes-padding: 20px 50px;
+
+    @media screen and (max-width: 1000px) {
+        --userhomes-padding: 20px 30px;
+    }
+
+    @media screen and (max-width: 500px) {
+        --userhomes-padding: 15px 15px;
+    }
 }
 
 .user-homes {
@@ -8,7 +17,7 @@
     gap: 20px;
 
     height: calc(100vh - var(--app-navbar-height));
-    padding: 10px;
+    padding: var(--userhomes-padding);
 
     & > div:nth-child(1) {
         width: 100%;
@@ -32,6 +41,13 @@
         @media screen and (max-width: 550px) {
             grid-template-columns: repeat(1, minmax(0px, 1fr));
         }
+    }
+
+    &__loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 70vh;
     }
 }
 
@@ -181,14 +197,19 @@
     height: 350px;
     overflow-x: hidden;
 
-    &.loading{
+    &.loading {
         display: none;
     }
 
     &-main {
         position: relative;
+        padding-right: 30px;
         &__label {
             font-weight: 700;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         &__action {
@@ -202,7 +223,7 @@
                 padding: 10px;
                 transition-property: opacity, visibility, background-color;
                 transition-delay: 0s, 0s, 0s;
-                &:not([aria-expanded=true]){
+                &:not([aria-expanded='true']) {
                     opacity: 0;
                     visibility: hidden;
                 }
@@ -212,14 +233,14 @@
                 }
             }
 
-            & > .css-r6z5ec{
+            & > .css-r6z5ec {
                 visibility: hidden;
             }
         }
 
         &:hover {
             & > .homecard-main__action {
-                & > button{
+                & > button {
                     opacity: 1;
                     visibility: unset;
                     transition-delay: 0.5s, 0.5s, 0s;

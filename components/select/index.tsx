@@ -8,7 +8,6 @@ interface SelectionProps {
 }
 
 export default function SelectComponent({ children, className, option }: SelectionProps) {
-
     return (
         <>
             <div>

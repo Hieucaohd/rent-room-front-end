@@ -73,7 +73,7 @@
             box-sizing: content-box;
             overflow: hidden;
             background-color: white;
-            
+
             & > input {
                 background-color: white;
                 padding-right: 75px;
@@ -86,18 +86,17 @@
                 display: flex;
                 gap: 10px;
 
-                & > button{
+                & > button {
                     width: calc(2rem - 6px);
 
                     &:nth-child(1) {
                         background-color: transparent;
-
                     }
 
                     &:nth-child(2) {
                         border-radius: 100%;
                         background-color: var(--app-btn-bgcolor);
-                        
+
                         & > i {
                             color: white;
                         }

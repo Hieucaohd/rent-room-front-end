@@ -8,7 +8,7 @@ export interface IHomePageProps {
 }
 
 const Home = ({ user }: IHomePageProps) => {
-    const router = useRouter()
+    const router = useRouter();
     return (
         <>
             <a onClick={() => router.push('/')}>index</a>

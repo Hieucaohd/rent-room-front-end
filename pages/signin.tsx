@@ -24,9 +24,9 @@ export interface ISignInProps {
 
 export const getServerSideProps = (context: GetServerSidePropsContext) => {
     return {
-        props: {}
+        props: {},
     };
-}
+};
 
 const SignInBtnAnimation = {};
 
@@ -71,7 +71,7 @@ const removeError = (): ErrorLog => {
 export default function SignIn() {
     const [login, { data }] = useLazyQuery(LOGIN);
     const router = useRouter();
-    const { info: user } = useStore(state => state.user)
+    const { info: user } = useStore((state) => state.user);
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit } = useForm<LoginForm>();
     const emailField = register('email');
@@ -83,7 +83,7 @@ export default function SignIn() {
     const passwordError = !!(error.type === 'password' && error.message);
 
     //quay trở lại page đang truy cập nếu có
-    const { p: currentPage } = router.query
+    const { p: currentPage } = router.query;
 
     const loginSubmit = (e: LoginForm) => {
         console.log(e);
@@ -101,7 +101,7 @@ export default function SignIn() {
     };
 
     useEffect(() => {
-        console.log(data, user)
+        console.log(data, user);
         if (data || user) {
             if (currentPage) {
                 window.location.href = currentPage.toString();

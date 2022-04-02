@@ -1,12 +1,7 @@
 import React from 'react';
 
-export interface IRoomProps {
-}
+export interface IRoomProps {}
 
-export default function Room (props: IRoomProps) {
-  return (
-    <div>
-      phong tro
-    </div>
-  );
+export default function Room(props: IRoomProps) {
+    return <div>phong tro</div>;
 }

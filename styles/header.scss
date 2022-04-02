@@ -12,7 +12,6 @@
             color: var(--app-btn-bgcolor--hover);
         }
     }
-    
 }
 
 .navbar {
@@ -62,11 +61,11 @@
         display: flex;
         gap: 10px;
 
-        &--user{
+        &--user {
             display: flex;
             align-items: center;
-            
-            & > div{
+
+            & > div {
                 font-weight: 600;
             }
         }
@@ -144,10 +143,9 @@
     }
 }
 
-.username{
+.username {
     display: flex;
     justify-content: center;
 
     font-weight: 600;
-    
 }

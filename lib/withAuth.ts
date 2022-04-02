@@ -3,10 +3,10 @@ import client from './apollo/apollo-client';
 import { PROFILE } from './apollo/auth';
 
 export interface User {
-    _id?: string,
-    avatar?: string,
-    email?: string,
-    fullname?: string
+    _id?: string;
+    avatar?: string;
+    email?: string;
+    fullname?: string;
 }
 
 export const checkLoggedIn = async (Cookie: string) => {
@@ -29,7 +29,10 @@ export const checkLoggedIn = async (Cookie: string) => {
 export function withAuth(gssp: any) {
     return async (context: GetServerSidePropsContext) => {
         const Cookie = context.req.headers.cookie;
-        const [user, currentProps] = await Promise.all([checkLoggedIn(Cookie || ''), gssp(context)])
+        const [user, currentProps] = await Promise.all([
+            checkLoggedIn(Cookie || ''),
+            gssp(context),
+        ]);
         return {
             props: {
                 ...currentProps,

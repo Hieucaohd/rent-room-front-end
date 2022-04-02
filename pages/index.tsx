@@ -51,8 +51,8 @@ const Home = ({ user }: IHomePageProps) => {
 
 export const getServerSideProps = (context: GetServerSidePropsContext) => {
     return {
-        props: {}
+        props: {},
     };
-}
+};
 
 export default Home;

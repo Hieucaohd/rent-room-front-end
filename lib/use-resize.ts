@@ -1,25 +1,24 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState } from 'react';
 
 const useResize = (size = 500) => {
-    const [mobile, setMobile] = useState(false)
+    const [mobile, setMobile] = useState(false);
     useEffect(() => {
         const rz = () => {
             if (!mobile && window.innerWidth < size) {
-                setMobile(true)
+                setMobile(true);
             } else if (mobile && window.innerWidth >= size) {
-                setMobile(false)
+                setMobile(false);
             }
-        }
-        rz()
-        window.addEventListener('resize', rz)
+        };
+        rz();
+        window.addEventListener('resize', rz);
 
         return () => {
-            window.removeEventListener('resize', rz)
-        }
-    })
+            window.removeEventListener('resize', rz);
+        };
+    });
 
     return [mobile];
 };
 
-export default useResize
+export default useResize;

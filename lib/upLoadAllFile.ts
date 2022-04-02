@@ -1,4 +1,11 @@
-import { getDownloadURL, ref, uploadBytesResumable, getMetadata, list } from 'firebase/storage';
+import {
+    getDownloadURL,
+    ref,
+    uploadBytesResumable,
+    getMetadata,
+    list,
+    deleteObject,
+} from 'firebase/storage';
 import { fStorage } from '../firebase';
 import randomkey, { getTypeFile } from './randomkey';
 
@@ -25,3 +32,31 @@ export default function upLoadAllFile(files: { file: File }[], id: string) {
         })
     );
 }
+
+export const getPathFileFromLink = (link: string) => {
+    if (!link) {
+        return null;
+    }
+    const start = link.indexOf('.appspot.com/o/');
+    const end = link.indexOf('?alt=media');
+    const path = link.substring(start + 15, end).replaceAll('%2F', '/');
+    return path;
+};
+
+export const deleteFile = (link: string) => {
+    const fileRef = ref(fStorage, link);
+    deleteObject(fileRef).catch((error) => {
+        console.log(error);
+    });
+};
+
+export const deleteAllFile = (links: (string | null)[]) => {
+    return Promise.all(
+        links.map((link) => {
+            if (link) {
+                const fileRef = ref(fStorage, link);
+                return deleteObject(fileRef);
+            }
+        })
+    );
+};

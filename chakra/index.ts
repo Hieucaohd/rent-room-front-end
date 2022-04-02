@@ -1,6 +1,6 @@
 import { ButtonProps, InputProps } from '@chakra-ui/react';
 
-type HeaderStyle = ButtonProps | InputProps
+type HeaderStyle = ButtonProps | InputProps;
 
 export const signUpBtnStyle: ButtonProps = {
     height: '100%',
@@ -77,8 +77,8 @@ export const headerStyle = {
     signUpBtnStyle,
     signInBtnStyle,
     linkBtnStyle,
-    menuBtnStyle
-}
+    menuBtnStyle,
+};
 
 export const InputStyle: InputProps = {
     backgroundColor: '#e8f0fe',
@@ -98,4 +98,4 @@ export const ConnectWithBtnStyle: ButtonProps = {
     width: '100px',
 };
 
-export default headerStyle
+export default headerStyle;

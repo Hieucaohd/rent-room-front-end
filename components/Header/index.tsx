@@ -223,7 +223,7 @@ export default function Header({ user }: IHeaderProps) {
                                 {mobilemode && <div className="username">{user.fullname}</div>}
                                 <MenuItem
                                     onClick={() => {
-                                        router.push(`/user/${user._id}/homes`);
+                                        router.push(`/user/${user._id}/homes?page=1`);
                                     }}
                                     icon={
                                         <i

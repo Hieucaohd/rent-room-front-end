@@ -37,10 +37,10 @@ export const createNewHome = {
 
 export const getUserHomes = {
     command: gql`
-        query Profile {
+        query Profile($page: Int, $limit: Int) {
             profile {
                 user {
-                    listHomes {
+                    listHomes(page: $page, limit: $limit) {
                         docs {
                             _id
                             province
@@ -57,20 +57,27 @@ export const getUserHomes = {
             }
         }
     `,
-    variable: (data: NewHome) => {
+    variable: (page: string, limit: number) => {
+        const currentPage = parseInt(page);
+        if (isNaN(currentPage)) {
+            throw new Error('wrong page');
+        }
         return {
-            newHome: {
-                province: data.province,
-                district: data.district,
-                ward: data.ward,
-                liveWithOwner: data.liveWithOwner,
-                electricityPrice: data.electricityPrice,
-                waterPrice: data.waterPrice,
-                images: data.images,
-                totalRooms: data.totalRooms,
-            },
+            page: currentPage,
+            limit,
         };
     },
+};
+
+export const deleteHome = {
+    command: gql`
+        mutation DeleteHome($deleteHomeId: ID!) {
+            deleteHome(id: $deleteHomeId)
+        }
+    `,
+    variable: (_id: string) => ({
+        deleteHomeId: _id,
+    }),
 };
 
 export default {};
