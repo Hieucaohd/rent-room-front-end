@@ -37,6 +37,22 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
         }
     }, [user.SSR]);
 
+    useEffect(() => {
+        const handleLoading = () => {
+            document.body.style.cursor = 'wait';
+        };
+        const handleComplete = () => {
+            document.body.style.cursor = 'default';
+        };
+        router.events.on('routeChangeStart', handleLoading);
+        router.events.on('routeChangeComplete', handleComplete);
+
+        return () => {
+            router.events.off('routeChangeStart', handleLoading);
+            router.events.off('routeChangeComplete', handleComplete);
+        };
+    }, [router.pathname]);
+
     const withoutPage = useCallback((router: NextRouter) => {
         const path = getPath(router.pathname);
         const without = ['/signin', '/signup'];

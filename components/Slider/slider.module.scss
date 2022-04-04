@@ -39,7 +39,8 @@
         padding: 9px;
         background-color: white;
         border-radius: 50%;
-        transition: 0.3s;
+        transition-property: opacity, transform;
+        transition-duration: 0.5s, 0.1s;
         opacity: 0;
         visibility: hidden;
         & i {
@@ -52,6 +53,10 @@
         &:hover {
             cursor: pointer;
             background-color: rgb(233, 231, 231);
+            transform: translateY(-50%) scale(1.1);
+        }
+        &:active {
+            transform: translateY(-50%) scale(0.9);
         }
     }
 

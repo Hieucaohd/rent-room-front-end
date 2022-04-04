@@ -19,8 +19,8 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { deleteHome } from '../../lib/apollo/home';
-import { deleteAllFile, deleteFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
-import NextImage from '../nextimage/image';
+import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
+import { motion } from 'framer-motion';
 import Slider from '../Slider';
 
 export interface HomeCardProps {
@@ -35,6 +35,7 @@ export interface HomeCardProps {
     totalRooms?: number;
     __typename?: any;
     afterDelete?: () => any;
+    onClick?: () => any;
 }
 
 export default function HomeCard(props: HomeCardProps) {
@@ -112,18 +113,19 @@ export default function HomeCard(props: HomeCardProps) {
 
     return (
         <>
-            <div className={`homecard${loading ? ' loading' : ''}`}>
+            <motion.div className={`homecard${loading ? ' loading' : ''}`}>
                 <div className="homecard__imgslider">
                     <Slider images={props.images} width="100%" height="280px" />
                 </div>
                 <div className="homecard-main">
                     <Text className="homecard-main__label">
-                        {loading
-                            ? 'Loading...'
-                            : nameWard + ', ' + nameDistrict + ', ' + nameProvince}
+                        {nameWard + ', ' + nameDistrict + ', ' + nameProvince}
                     </Text>
                     <Text>Tiền điện: {props.electricityPrice} VNĐ</Text>
                     <Text>Tiền nước: {props.waterPrice} VNĐ</Text>
+                    <a className='homecard-main__setprev' onClick={() => {
+                        props.onClick && props.onClick()
+                    }}></a>
                     <div className="homecard-main__action">
                         <Menu placement="bottom-end">
                             <MenuButton>
@@ -135,7 +137,7 @@ export default function HomeCard(props: HomeCardProps) {
                         </Menu>
                     </div>
                 </div>
-            </div>
+            </motion.div>
             {loading && (
                 <Box>
                     <Skeleton borderRadius={'10px'} height="270px"></Skeleton>

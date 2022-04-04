@@ -17,10 +17,4 @@ const Home = ({ user }: IHomePageProps) => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps = withAuth(
-    (context: GetServerSidePropsContext) => {
-        return {};
-    }
-);
-
 export default Home;

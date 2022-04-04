@@ -52,6 +52,17 @@ export const getUserHomes = {
                             images
                             totalRooms
                         }
+                        paginator {
+                            limit
+                            page
+                            nextPage
+                            prevPage
+                            totalPages
+                            pagingCounter
+                            hasPrevPage
+                            hasNextPage
+                            totalDocs
+                        }
                     }
                 }
             }
