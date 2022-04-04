@@ -123,9 +123,12 @@ export default function HomeCard(props: HomeCardProps) {
                     </Text>
                     <Text>Tiền điện: {props.electricityPrice} VNĐ</Text>
                     <Text>Tiền nước: {props.waterPrice} VNĐ</Text>
-                    <a className='homecard-main__setprev' onClick={() => {
-                        props.onClick && props.onClick()
-                    }}></a>
+                    <a
+                        className="homecard-main__setprev"
+                        onClick={() => {
+                            props.onClick && props.onClick();
+                        }}
+                    ></a>
                     <div className="homecard-main__action">
                         <Menu placement="bottom-end">
                             <MenuButton>
