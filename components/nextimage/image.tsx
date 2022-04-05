@@ -16,8 +16,8 @@ export default function NextImage(props: NextImageProps) {
             />
             {loading && (
                 <Skeleton
-                    width={props.width ? props.width : 'inherit'}
-                    height={props.height ? props.height : 'inherit'}
+                    width={props.width ? props.width : ''}
+                    height={props.height ? props.height : ''}
                 />
             )}
         </>

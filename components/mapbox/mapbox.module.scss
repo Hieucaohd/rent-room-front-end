@@ -1,0 +1,57 @@
+.info {
+    display: table;
+    position: relative;
+    margin: 0px auto;
+    word-wrap: anywhere;
+    white-space: pre-wrap;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: center;
+    color: #222;
+    background: #fff;
+}
+
+.mapbox {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+
+    & > div:nth-child(1) {
+        height: 100%;
+        width: 100%;
+    }
+
+    &__alert {
+        width: 100%;
+        padding-right: 50px;
+        z-index: 10;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background-color: white;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        border-left-width: 0;
+        border-right-width: 0;
+        border-bottom-width: 0;
+
+        & > button {
+            &[aria-label='Close'] {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+            &:not([aria-label='Close']) {
+                width: 100%;
+                text-align: left;
+                overflow: hidden;
+                display: block;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+}

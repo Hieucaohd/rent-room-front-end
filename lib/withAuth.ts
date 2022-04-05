@@ -7,6 +7,11 @@ export interface User {
     avatar?: string;
     email?: string;
     fullname?: string;
+    province: number;
+    position: {
+        lng: number;
+        lat: number;
+    };
 }
 
 export const checkLoggedIn = async (Cookie: string) => {

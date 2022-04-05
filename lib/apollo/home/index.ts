@@ -19,7 +19,7 @@ export const createNewHome = {
             }
         }
     `,
-    variable: (data: NewHome) => {
+    variable: (data: NewHome, position: [number, number]) => {
         return {
             newHome: {
                 province: data.province,
@@ -30,6 +30,12 @@ export const createNewHome = {
                 waterPrice: data.waterPrice,
                 images: data.images,
                 totalRooms: data.totalRooms,
+                position: {
+                    x: 0.0,
+                    y: 0.0,
+                    lng: parseFloat(position[0].toString()),
+                    lat: parseFloat(position[1].toString()),
+                },
             },
         };
     },
@@ -51,6 +57,10 @@ export const getUserHomes = {
                             waterPrice
                             images
                             totalRooms
+                            position {
+                                lng
+                                lat
+                            }
                         }
                         paginator {
                             limit

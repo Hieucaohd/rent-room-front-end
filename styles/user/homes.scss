@@ -1,0 +1,354 @@
+:root {
+    --homecard-height: 350px;
+    --userhomes-padding: 20px 50px;
+    --addhome-mapheight: 450px;
+
+    @media screen and (max-width: 1000px) {
+        --userhomes-padding: 20px 30px;
+    }
+
+    @media screen and (max-width: 500px) {
+        --userhomes-padding: 15px 15px;
+    }
+}
+
+.user-homes {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    height: calc(100vh - var(--app-navbar-height));
+    padding: var(--userhomes-padding);
+
+    & > div:nth-child(1) {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__listhome {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0px, 1fr));
+        gap: 20px;
+
+        @media screen and (max-width: 1200px) {
+            grid-template-columns: repeat(3, minmax(0px, 1fr));
+        }
+
+        @media screen and (max-width: 850px) {
+            grid-template-columns: repeat(2, minmax(0px, 1fr));
+        }
+
+        @media screen and (max-width: 550px) {
+            grid-template-columns: repeat(1, minmax(0px, 1fr));
+        }
+    }
+
+    &__routerpage {
+        display: flex;
+        justify-content: center;
+
+        & > ul {
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+        }
+    }
+
+    &__preview {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > a {
+            background-color: rgba(0, 0, 0, 0.3);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        & > div {
+            width: min(400px, 100%);
+
+            & > .homecard {
+                position: relative;
+                background-color: white;
+                border-radius: 10px;
+            }
+        }
+    }
+
+    &__loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 70vh;
+    }
+}
+
+.addhome {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+
+    &__bg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.2);
+        z-index: -1;
+    }
+
+    &-form {
+        position: relative;
+        width: min(510px, 100%);
+        height: 580px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 7px;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        &::-webkit-scrollbar {
+            -webkit-appearance: none;
+
+            &-thumb {
+                background-color: rgba(0, 0, 0, 0.2);
+                border: 4px solid white;
+                border-radius: 20px;
+            }
+        }
+
+        & > form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__location {
+            display: flex;
+            gap: 10px;
+
+            @media screen and (max-width: 500px) {
+                flex-direction: column;
+            }
+        }
+
+        &__submit {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        &__label {
+            & > span {
+                color: red;
+            }
+        }
+
+        &__map {
+            & > div {
+                height: 100%;
+                & > a {
+                    cursor: pointer;
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                }
+            }
+        }
+
+        &__mapbox {
+            position: absolute;
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            & > div:nth-of-type(1) {
+                height: var(--addhome-mapheight);
+            }
+
+            & > div:last-of-type {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+            }
+        }
+    }
+}
+
+.image-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 70px);
+    grid-gap: 10px;
+
+    &__item {
+        position: relative;
+
+        width: 70px;
+        height: 70px;
+        padding: 5px;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+
+        & > div {
+            & > div {
+                transition: 0.3s;
+            }
+        }
+
+        &-action {
+            position: absolute;
+            left: -1.5px;
+            top: -1.5px;
+            width: calc(100% + 3px);
+            height: calc(100% + 3px);
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.4s;
+
+            & i {
+                font-size: 15px;
+                color: white;
+            }
+        }
+
+        &:hover {
+            & > .image-preview__item-action {
+                opacity: 1;
+                visibility: unset;
+            }
+        }
+
+        & > img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__btn {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px dashed rgba(0, 0, 0, 0.2);
+
+        & > i {
+            font-size: 12px;
+            height: 15px;
+        }
+    }
+}
+
+//components/homecard/index.tsx
+.homecard {
+    height: 350px;
+    max-width: 500px;
+    overflow-x: hidden;
+
+    &.loading {
+        display: none;
+    }
+
+    &-main {
+        position: relative;
+        padding-right: 30px;
+        &__label {
+            font-weight: 700;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &__setprev {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        &__action {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            transition: 0.3s;
+
+            & > button {
+                border-radius: 20px;
+                padding: 10px;
+                transition-property: opacity, visibility, background-color;
+                transition-delay: 0s, 0s, 0s;
+                &:not([aria-expanded='true']) {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.09);
+                }
+            }
+
+            & > .css-r6z5ec {
+                visibility: hidden;
+            }
+        }
+
+        &:hover {
+            & > .homecard-main__action {
+                & > button {
+                    opacity: 1;
+                    visibility: unset;
+                    transition-delay: 0.5s, 0.5s, 0s;
+                }
+            }
+        }
+    }
+
+    &__imgslider {
+        border-radius: 10px;
+        overflow: hidden;
+        & > img {
+            width: 100%;
+            height: 280px;
+        }
+    }
+}
