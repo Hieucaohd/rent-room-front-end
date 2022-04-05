@@ -1,5 +1,14 @@
 import { useMutation } from '@apollo/client';
-import { Button, Input, Progress, Select, Text, Tooltip } from '@chakra-ui/react';
+import {
+    Button,
+    Input,
+    InputGroup,
+    InputRightElement,
+    Progress,
+    Select,
+    Text,
+    Tooltip,
+} from '@chakra-ui/react';
 import { getDownloadURL, list, ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -7,8 +16,10 @@ import { useForm } from 'react-hook-form';
 import { fStorage } from '../../firebase';
 import { createNewHome, NewHome } from '../../lib/apollo/home';
 import randomkey, { getTypeFile } from '../../lib/randomkey';
+import { deleteAllFile } from '../../lib/upLoadAllFile';
 import useStore from '../../store/useStore';
 import FormLocation from '../location';
+import MapBox, { MapField } from '../mapbox';
 
 interface AddHomeProps {
     onClose?: () => any;
@@ -21,6 +32,15 @@ const container: Variants = {
     },
     hidden: {
         opacity: 0,
+    },
+};
+
+const hideFormAnimate: Variants = {
+    showForm: {
+        x: '0',
+    },
+    hiddenForm: {
+        x: '-120%',
     },
 };
 
@@ -44,6 +64,7 @@ interface ErrorAction {
     waterPrice: boolean;
     images: boolean;
     totalRooms: boolean;
+    position: boolean;
 }
 
 interface Image {
@@ -59,6 +80,9 @@ export default function AddHome(props: AddHomeProps) {
     const [upLoading, setUpLoading] = useState(false);
     const [createHome] = useMutation(createNewHome.command);
     const [listImage, setListImage] = useState<Image[]>([]);
+    const [showMap, setShowMap] = useState(false);
+    const [mapData, setMapData] = useState<MapField | null>(null);
+    const [prevMapData, setPrevMapData] = useState<MapField | null>(null);
 
     const provinceField = watch('province');
     const districtField = watch('district');
@@ -76,6 +100,10 @@ export default function AddHome(props: AddHomeProps) {
         setErrorAction({ ...errorAction, ward: false });
     }, [wardField]);
 
+    useEffect(() => {
+        setErrorAction({ ...errorAction, position: false });
+    }, [mapData]);
+
     const [errorAction, setErrorAction] = useState<ErrorAction>({
         province: false,
         district: false,
@@ -85,6 +113,7 @@ export default function AddHome(props: AddHomeProps) {
         waterPrice: false,
         images: false,
         totalRooms: false,
+        position: false,
     });
 
     const renderListImage = useMemo(() => {
@@ -168,6 +197,7 @@ export default function AddHome(props: AddHomeProps) {
                 waterPrice: false,
                 images: false,
                 totalRooms: false,
+                position: false,
             };
             if (e.district == '') {
                 error.district = true;
@@ -203,12 +233,16 @@ export default function AddHome(props: AddHomeProps) {
             } else {
                 e.waterPrice = parseInt(e.waterPrice);
             }
+            if (!mapData) {
+                error.position = true;
+                hasError = true;
+            }
             if (e.liveWithOwner == 'true') {
                 e.liveWithOwner = true;
             } else {
                 e.liveWithOwner = false;
             }
-            if (hasError) {
+            if (hasError || !mapData) {
                 setErrorAction(error);
             } else {
                 setUpLoading(true);
@@ -216,13 +250,14 @@ export default function AddHome(props: AddHomeProps) {
                     .then((res) => {
                         e.images = res;
                         createHome({
-                            variables: createNewHome.variable(e),
+                            variables: createNewHome.variable(e, mapData.center),
                         })
                             .then(() => {
                                 props.afterUpload && props.afterUpload();
                                 props.onClose && props.onClose();
                             })
                             .catch((error) => {
+                                deleteAllFile(e.images).catch((err) => {});
                                 alert(error.message);
                                 setUpLoading(false);
                             });
@@ -234,8 +269,16 @@ export default function AddHome(props: AddHomeProps) {
                 /*  */
             }
         },
-        [listImage]
+        [listImage, prevMapData]
     );
+
+    const mapSetProvince = useMemo(() => {
+        if (prevMapData?.center) {
+            return { center: prevMapData.center };
+        }
+        const province = parseInt(provinceField);
+        return province && !isNaN(province) ? { province: province } : {};
+    }, [provinceField, prevMapData]);
 
     return (
         <>
@@ -254,7 +297,14 @@ export default function AddHome(props: AddHomeProps) {
                     exit="hidden"
                     className="addhome-form"
                 >
-                    <motion.form onSubmit={handleSubmit(submitForm)}>
+                    <motion.form
+                        variants={hideFormAnimate}
+                        animate={showMap ? 'hiddenForm' : 'showForm'}
+                        transition={{
+                            duration: 0.5,
+                        }}
+                        onSubmit={handleSubmit(submitForm)}
+                    >
                         <Text className="addhome-form__label">
                             Địa chỉ trọ<span> *</span>
                         </Text>
@@ -266,6 +316,34 @@ export default function AddHome(props: AddHomeProps) {
                                 errorEvent={errorAction}
                             />
                         </div>
+                        <Tooltip
+                            label="Vui lòng chọn địa điểm trên bản đồ"
+                            borderRadius="3px"
+                            isDisabled={!errorAction.position}
+                            placement="bottom"
+                            bg="red"
+                            hasArrow
+                        >
+                            <InputGroup className="addhome-form__map">
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    readOnly
+                                    placeholder="Vị trí cụ thể"
+                                    cursor="pointer"
+                                    onClick={() => setShowMap(true)}
+                                    {...(errorAction.position ? { borderColor: 'red' } : {})}
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    value={mapData ? mapData.place_name : ''}
+                                />
+                                <InputRightElement>
+                                    <a onClick={() => setShowMap(true)}>{'>'}</a>
+                                </InputRightElement>
+                            </InputGroup>
+                        </Tooltip>
 
                         <Select
                             height="50px"
@@ -412,6 +490,7 @@ export default function AddHome(props: AddHomeProps) {
                                 accept="image/*"
                             />
                         </div>
+
                         <div className="addhome-form__submit">
                             <Button onClick={() => (props.onClose ? props.onClose() : null)}>
                                 Hủy
@@ -421,6 +500,41 @@ export default function AddHome(props: AddHomeProps) {
                             </Button>
                         </div>
                     </motion.form>
+                    {showMap && (
+                        <motion.div
+                            initial={{
+                                x: '120%',
+                            }}
+                            animate={{
+                                x: '0',
+                            }}
+                            transition={{
+                                duration: 0.5,
+                            }}
+                            className="addhome-form__mapbox"
+                        >
+                            <MapBox delay={1000} onChange={setMapData} {...mapSetProvince} />
+                            <div>
+                                <Button
+                                    onClick={() => {
+                                        setShowMap(false);
+                                        setMapData(prevMapData);
+                                    }}
+                                >
+                                    Hủy
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setShowMap(false);
+                                        setPrevMapData(mapData);
+                                    }}
+                                    colorScheme="red"
+                                >
+                                    Tiếp tục
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
                 </motion.div>
             </motion.div>
         </>

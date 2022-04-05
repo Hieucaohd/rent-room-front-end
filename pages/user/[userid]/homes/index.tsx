@@ -55,7 +55,7 @@ export default function MyHomes(props: any) {
     const pageRouter: PageData = getPages(data);
 
     const router = useRouter();
-    const { page, id } = router.query;
+    const { page, userid } = router.query;
 
     const { info: user, SSR } = useStore((state) => state.user);
     const [showAddForm, setShowAddForm] = useState(false);
@@ -90,10 +90,17 @@ export default function MyHomes(props: any) {
     }, [page]);
 
     const renderListHome = useMemo(() => {
+        console.log(listHome);
         return listHome.map((item, index) => {
             return (
                 <motion.div key={item._id}>
-                    <HomeCard {...item} afterDelete={dataCallback} onClick={() => {}} />
+                    <HomeCard
+                        {...item}
+                        afterDelete={dataCallback}
+                        onClick={() => {
+                            router.push(`/home/${item._id}`);
+                        }}
+                    />
                 </motion.div>
             );
         });
@@ -101,6 +108,7 @@ export default function MyHomes(props: any) {
 
     const renderListPage = useMemo(() => {
         if (pageRouter) {
+            console.log(pageRouter);
             const limit = pageRouter.totalPages;
             const p = pageRouter.page;
             let listPage = [pageRouter.page];
@@ -112,7 +120,7 @@ export default function MyHomes(props: any) {
                     listPage.push(p + i);
                 }
             }
-            const path = router.pathname.replace('[id]', `${id}`);
+            const path = router.pathname.replace('[id]', `${userid}`);
             return listPage.map((item, index) => (
                 <li key={index}>
                     <Button
@@ -161,7 +169,10 @@ export default function MyHomes(props: any) {
                                     <Button
                                         onClick={() => {
                                             router.push(
-                                                `${router.pathname.replace('[id]', `${id}`)}?page=0`
+                                                `${router.pathname.replace(
+                                                    '[id]',
+                                                    `${userid}`
+                                                )}?page=0`
                                             );
                                         }}
                                         variant="link"
@@ -177,9 +188,10 @@ export default function MyHomes(props: any) {
                                     <Button
                                         onClick={() => {
                                             router.push(
-                                                `${router.pathname.replace('[id]', `${id}`)}?page=${
-                                                    pageRouter.prevPage
-                                                }`
+                                                `${router.pathname.replace(
+                                                    '[id]',
+                                                    `${userid}`
+                                                )}?page=${pageRouter.prevPage}`
                                             );
                                         }}
                                         variant="link"
@@ -191,14 +203,15 @@ export default function MyHomes(props: any) {
                                         {'<'}
                                     </Button>
                                 )}
-                                {renderListPage}
+                                {pageRouter && pageRouter.totalDocs > 0 && renderListPage}
                                 {pageRouter && pageRouter.hasNextPage && (
                                     <Button
                                         onClick={() => {
                                             router.push(
-                                                `${router.pathname.replace('[id]', `${id}`)}?page=${
-                                                    pageRouter.nextPage
-                                                }`
+                                                `${router.pathname.replace(
+                                                    '[id]',
+                                                    `${userid}`
+                                                )}?page=${pageRouter.nextPage}`
                                             );
                                         }}
                                         variant="link"
@@ -214,9 +227,10 @@ export default function MyHomes(props: any) {
                                     <Button
                                         onClick={() => {
                                             router.push(
-                                                `${router.pathname.replace('[id]', `${id}`)}?page=${
-                                                    pageRouter.totalPages
-                                                }`
+                                                `${router.pathname.replace(
+                                                    '[id]',
+                                                    `${userid}`
+                                                )}?page=${pageRouter.totalPages}`
                                             );
                                         }}
                                         variant="link"

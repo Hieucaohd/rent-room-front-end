@@ -8,6 +8,7 @@
 @import 'signin';
 @import 'loadingSpinner';
 @import 'signup';
+@import 'user/homes';
 @import 'user/home';
 
 html {
@@ -15,8 +16,8 @@ html {
 }
 
 *,
-*:not(i):before,
-*::after {
+*:not(i)::before,
+*:not(.swiper-button-next, .swiper-button-prev)::after {
     // font-family: 'Roboto Slab', sans-serif;
     font-family: 'Quicksand', sans-serif;
     margin: 0;

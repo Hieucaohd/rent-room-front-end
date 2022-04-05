@@ -5,16 +5,20 @@ import type { AppContext, AppProps } from 'next/app';
 import { NextRouter, useRouter } from 'next/router';
 import client from '../lib/apollo/apollo-client';
 import '../styles/index.scss';
+import 'swiper/css/bundle';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { checkLoggedIn, User } from '../lib/withAuth';
 import App from 'next/app';
 import useStore from '../store/useStore';
 import { useCallback, useEffect } from 'react';
 import Header from '../components/Header';
 import Head from 'next/head';
+import { getPosition } from '../lib/getPosition';
 
 interface MyAppProps extends AppProps {
     myProps: {
         user: User | null;
+        position: any;
     };
 }
 
@@ -30,8 +34,16 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     useEffect(() => {
         if (user.SSR && myProps.user) {
             // console.clear();
-            addUser(myProps.user);
-            console.log(user, myProps);
+            if (myProps.position) {
+                const position = {
+                    lng: myProps.position.longitude,
+                    lat: myProps.position.latitude,
+                };
+                addUser({ ...myProps.user, position });
+            } else {
+                addUser(myProps.user);
+            }
+            console.log(myProps.user);
         } else if (user.SSR) {
             removeUser();
         }
@@ -85,11 +97,16 @@ MyApp.getInitialProps = async (context: AppContext) => {
     if (req) {
         const cookie = req.headers.cookie;
         // console.log(cookie);
-        const user = await checkLoggedIn(cookie || '');
+        const user: User = await checkLoggedIn(cookie || '');
+        let position: any = null;
+        if (user && user.province) {
+            position = await getPosition(user.province);
+        }
         // console.log(user);
         return {
             myProps: {
                 user,
+                position,
             },
             ...pageProps,
         };

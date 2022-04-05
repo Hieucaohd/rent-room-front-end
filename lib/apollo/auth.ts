@@ -31,14 +31,18 @@ export const LOGOUT = gql`
 `;
 
 export const PROFILE = gql`
-    query PROFILE {
+    query Profile {
         profile {
-            user {
-                _id
-                email
-                fullname
-            }
             isAuth
+            user {
+                fullname
+                email
+                numberPhone
+                province
+                district
+                ward
+                _id
+            }
         }
     }
 `;

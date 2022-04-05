@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import NextImage from '../nextimage/image';
 import styles from './slider.module.scss';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Pagination, Navigation } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import useResize from '../../lib/use-resize';
 
 export interface ISliderProps {
     images: string[];
@@ -9,30 +15,23 @@ export interface ISliderProps {
     autoplay?: boolean;
 }
 
-export default function Slider({ images, width, height, autoplay }: ISliderProps) {
+export default function Slider({ images, width, height }: ISliderProps) {
     const [index, setIndex] = useState<number>(0);
-
-    const handlePrev = () => {
-        if (index === 0) return;
-        setIndex(index - 1);
-    };
-
-    const handleNext = () => {
-        if (index + 1 === images.length) return;
-        setIndex(index + 1);
-    };
+    const [mobilemode] = useResize();
 
     return (
         <div className={styles.slideshow} style={{ width: width, height: height }}>
-            <div
-                className={styles.slideshow__slider}
-                style={{
-                    transform: `translate3d(${-index * 100}%, 0, 0)`,
-                    transition: 'all 0.3s linear 0s',
+            <Swiper
+                pagination={{
+                    clickable: !mobilemode,
+                    dynamicBullets: true,
                 }}
+                navigation={!mobilemode}
+                modules={!mobilemode ? [Pagination, Navigation] : [Pagination]}
+                className={styles.slideshow__slider}
             >
                 {images.map((url, index) => (
-                    <div className={styles.slideshow__content} key={index}>
+                    <SwiperSlide key={index} className={styles.slideshow__content}>
                         <NextImage
                             style={{
                                 userSelect: 'none',
@@ -42,27 +41,9 @@ export default function Slider({ images, width, height, autoplay }: ISliderProps
                             width={width}
                             height={height}
                         />
-                    </div>
+                    </SwiperSlide>
                 ))}
-            </div>
-            {index !== 0 && (
-                <div className={styles.slideshow__prev} onClick={handlePrev}>
-                    <i className="fi fi-rr-angle-left"></i>
-                </div>
-            )}
-            {index !== images.length - 1 && (
-                <div className={styles.slideshow__next} onClick={handleNext}>
-                    <i className="fi fi-rr-angle-right"></i>
-                </div>
-            )}
-            <div className={styles.slideshow__dots}>
-                {images.map((_, i) => (
-                    <div
-                        key={i}
-                        style={{ backgroundColor: index === i ? '#fff' : '#ADB3B8' }}
-                    ></div>
-                ))}
-            </div>
+            </Swiper>
         </div>
     );
 }

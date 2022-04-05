@@ -3,10 +3,17 @@
     border-radius: 4%;
     margin: 0 auto;
     position: relative;
+    --slider__btn-size: 20px;
+
     &__slider {
         white-space: nowrap;
         height: 100%;
         width: 100%;
+        --swiper-navigation-color: #fff;
+        --swiper-pagination-color: #fff;
+        --swiper-navigation-size: var(--slider__btn-size);
+        --swiper-pagination-bullet-inactive-color: #fff;
+        --swiper-pagination-bullet-inactive-opacity: 0.5;
     }
 
     &__content {
@@ -20,6 +27,11 @@
             height: 100%;
             object-fit: cover;
         }
+
+        & > div.chakra-skeleton {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     &:hover {
@@ -27,59 +39,6 @@
         .slideshow__next {
             opacity: 1;
             visibility: unset;
-        }
-    }
-
-    &__prev,
-    &__next {
-        display: block;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 9px;
-        background-color: white;
-        border-radius: 50%;
-        transition-property: opacity, transform;
-        transition-duration: 0.5s, 0.1s;
-        opacity: 0;
-        visibility: hidden;
-        & i {
-            font-size: 12px;
-            &::before {
-                font-weight: 1000 !important;
-            }
-        }
-
-        &:hover {
-            cursor: pointer;
-            background-color: rgb(233, 231, 231);
-            transform: translateY(-50%) scale(1.1);
-        }
-        &:active {
-            transform: translateY(-50%) scale(0.9);
-        }
-    }
-
-    &__prev {
-        left: 2%;
-    }
-
-    &__next {
-        right: 2%;
-    }
-
-    &__dots {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 2%;
-        display: flex;
-        & div {
-            width: 6px;
-            height: 6px;
-            background-color: white;
-            border-radius: 50%;
-            margin: 0px 4px;
         }
     }
 }
