@@ -120,7 +120,8 @@ export default function MyHomes(props: any) {
                     listPage.push(p + i);
                 }
             }
-            const path = router.pathname.replace('[id]', `${userid}`);
+            const path = router.pathname.replace('[userid]', `${userid}`);
+            console.log(path);
             return listPage.map((item, index) => (
                 <li key={index}>
                     <Button
@@ -139,7 +140,7 @@ export default function MyHomes(props: any) {
             ));
         }
         return [];
-    }, [pageRouter]);
+    }, [pageRouter, userid]);
 
     useEffect(() => {}, [data]);
 
