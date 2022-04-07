@@ -8,6 +8,12 @@ interface Store {
     };
     addUser: (user: User) => void;
     removeUser: () => void;
+    image: {
+        src: string;
+        layoutid: any;
+    } | null;
+    setImage: (img: { src: string; layoutid: any }) => void;
+    closeImage: () => void;
 }
 
 const useStore = create<Store>((set, get) => ({
@@ -27,6 +33,17 @@ const useStore = create<Store>((set, get) => ({
             state.user.info = null;
             state.user.SSR = false;
         }),
+    image: null,
+    setImage: (img) => {
+        set((state) => {
+            state.image = img;
+        });
+    },
+    closeImage: () => {
+        set((state) => {
+            state.image = null;
+        });
+    },
 }));
 
 export default useStore;
