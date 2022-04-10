@@ -25,10 +25,12 @@ export interface MapSourcePlace {
 
 interface MapboxProps {
     province?: number;
+    district?: number;
+    ward?: number;
     center?: number[];
     delay?: number;
     onChange?: (data: MapField | null) => any;
-    hasMarker: boolean;
+    hasMarker?: boolean;
     source?: any[];
 }
 
@@ -40,11 +42,12 @@ interface Place {
 
 export default function MapBox({
     province,
+    district,
+    ward,
     center,
     delay,
     onChange,
     hasMarker = true,
-    source,
 }: MapboxProps) {
     const { info: user } = useStore((state) => state.user);
     const mount = useRef(false);
@@ -72,11 +75,12 @@ export default function MapBox({
 
     useEffect(() => {
         if (province) {
-            getPosition(province).then((pos) => {
+            getPosition(province, district, ward).then((pos) => {
                 if (!mount.current) {
                     return;
                 }
-                setProvinceData([pos.longitude, pos.latitude]);
+                console.log(pos);
+                setProvinceData([...pos]);
                 setLoadingProvince(false);
             });
         } else {
@@ -169,7 +173,6 @@ export default function MapBox({
             mapbox.current.remove();
         }
         if (!isDelay && !loadingProvince) {
-            console.log(center);
             if (center) {
                 mapbox.current = new mapboxgl.Map({
                     container: 'mapbox', // container id
