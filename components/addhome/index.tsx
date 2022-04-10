@@ -277,8 +277,16 @@ export default function AddHome(props: AddHomeProps) {
             return { center: prevMapData.center };
         }
         const province = parseInt(provinceField);
-        return province && !isNaN(province) ? { province: province } : {};
-    }, [provinceField, prevMapData]);
+        const district = parseInt(districtField);
+        const ward = parseInt(wardField);
+        if (ward && !isNaN(ward)) {
+            return district && !isNaN(district) ? { province, district, ward } : {};
+        }
+        if (district && !isNaN(district)) {
+            return province && !isNaN(province) ? { province, district } : {};
+        }
+        return province && !isNaN(province) ? { province } : {};
+    }, [provinceField, districtField, wardField, prevMapData]);
 
     return (
         <>
@@ -513,7 +521,12 @@ export default function AddHome(props: AddHomeProps) {
                             }}
                             className="addhome-form__mapbox"
                         >
-                            <MapBox delay={1000} onChange={setMapData} {...mapSetProvince} />
+                            <MapBox
+                                delay={1000}
+                                district={0}
+                                onChange={setMapData}
+                                {...mapSetProvince}
+                            />
                             <div>
                                 <Button
                                     onClick={() => {
