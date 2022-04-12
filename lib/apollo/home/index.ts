@@ -57,6 +57,9 @@ export const getUserHomes = {
                             waterPrice
                             images
                             totalRooms
+                            internetPrice
+                            cleaningPrice
+                            totalRooms
                             position {
                                 lng
                                 lat
