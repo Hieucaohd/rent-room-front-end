@@ -122,6 +122,10 @@
             );
         grid-gap: var(--home__sprice-gap);
 
+        & > div:nth-of-type(1){
+            z-index: 10;
+        }
+
         @media screen and (max-width: 750px) {
             grid-template-columns: 100%;
         }
@@ -197,6 +201,21 @@
     }
 
     &-about {
-        height: 1000px;
+        height: 100px;
+    }
+}
+
+
+.homezooms{
+
+    &-add{
+        display: flex;
+        justify-content: flex-end;
+
+        & > button{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     }
 }

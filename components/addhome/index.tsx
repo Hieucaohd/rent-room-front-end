@@ -67,7 +67,7 @@ interface ErrorAction {
     position: boolean;
 }
 
-interface Image {
+export interface Image {
     file: File;
     link: string;
     uploading: number;
@@ -205,7 +205,7 @@ export default function AddHome(props: AddHomeProps) {
             } else {
                 e.district = parseInt(e.district);
             }
-            if (listImage.length == 0) {
+            if (listImage.length < 5) {
                 error.images = true;
                 hasError = true;
             }
@@ -426,7 +426,7 @@ export default function AddHome(props: AddHomeProps) {
                             />
                         </Tooltip>
                         <Text className="addhome-form__label">
-                            Ảnh phòng (tối đa 6)<span> *</span>
+                            Ảnh trọ (tối đa 6)<span> *</span>
                         </Text>
                         <div className="addhome-form__upload">
                             <div className="image-preview">
