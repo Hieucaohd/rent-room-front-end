@@ -137,7 +137,7 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
     const submitForm = useCallback(
         (e: AddZoomForm) => {
             let errorSubmit = false;
-            console.log(e)
+            console.log(e);
             let errorHandleForm: ErrorAction = {
                 price: false,
                 square: false,
@@ -146,40 +146,42 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                 images: false,
             };
             if (isNaN(e.square)) {
-                errorHandleForm.square = true
-                errorSubmit = true
+                errorHandleForm.square = true;
+                errorSubmit = true;
             }
             if (isNaN(e.floor)) {
-                errorHandleForm.floor = true
-                errorSubmit = true
+                errorHandleForm.floor = true;
+                errorSubmit = true;
             }
             if (isNaN(e.price)) {
-                errorHandleForm.price = true
-                errorSubmit = true
+                errorHandleForm.price = true;
+                errorSubmit = true;
             }
             if (isNaN(e.zoomnumber)) {
-                errorHandleForm.zoomnumber = true
-                errorSubmit = true
+                errorHandleForm.zoomnumber = true;
+                errorSubmit = true;
             }
             if (listImage.length == 0) {
-                errorHandleForm.images = true
-                errorSubmit = true
+                errorHandleForm.images = true;
+                errorSubmit = true;
             }
             if (errorSubmit) {
-                setErrorAction(errorHandleForm)
+                setErrorAction(errorHandleForm);
             } else {
                 setUpLoading(true);
                 upLoadAllFile(listImage, user._id + '/' + homeId).then((res) => {
                     e.images = res;
                     createNewZoom({
-                        variables: createZoom.variables(e, homeId)
-                    }).then(() => {
-                        closeForm()
-                    }).catch(error => {
-                        deleteAllFile(e.images)
-                        setUpLoading(false)
-                        console.log(error)
+                        variables: createZoom.variables(e, homeId),
                     })
+                        .then(() => {
+                            closeForm();
+                        })
+                        .catch((error) => {
+                            deleteAllFile(e.images);
+                            setUpLoading(false);
+                            console.log(error);
+                        });
                 });
             }
         },

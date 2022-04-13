@@ -1,0 +1,39 @@
+.zoomcard {
+    --name-fontsize: 16px;
+
+    &__name {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 5px;
+
+        font-size: var(--name-fontsize);
+
+        & > div {
+            &:nth-of-type(1) {
+                font-size: 1em;
+                font-weight: 700;
+            }
+
+            &:nth-of-type(2) {
+                font-weight: 600;
+            }
+        }
+    }
+
+    &__moreinfo {
+        display: flex;
+        justify-content: space-between;
+
+        & > div:nth-of-type(1) {
+            display: flex;
+            & > div {
+                display: flex;
+
+                & > span {
+                    font-size: 0.7em;
+                }
+            }
+        }
+    }
+}

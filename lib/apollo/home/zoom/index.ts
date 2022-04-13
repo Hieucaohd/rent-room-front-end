@@ -20,7 +20,7 @@ export const createZoom = {
         newRoom: {
             price: e.price,
             square: e.square,
-            isRented: true,
+            isRented: false,
             floor: e.floor,
             images: e.images,
             roomNumber: e.zoomnumber,

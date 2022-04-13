@@ -10,8 +10,8 @@ import useResize from '../../lib/use-resize';
 
 export interface ISliderProps {
     images: string[];
-    width: number | string;
-    height: number | string;
+    width?: number | string;
+    height?: number | string;
     autoplay?: boolean;
 }
 
@@ -20,7 +20,10 @@ export default function Slider({ images, width, height }: ISliderProps) {
     const [mobilemode] = useResize();
 
     return (
-        <div className={styles.slideshow} style={{ width: width, height: height }}>
+        <div
+            className={styles.slideshow}
+            style={{ ...(width ? { width } : {}), ...(height ? { height } : {}) }}
+        >
             <Swiper
                 pagination={{
                     clickable: !mobilemode,
