@@ -59,6 +59,7 @@ export default function MyHomes(props: any) {
 
     const { info: user, SSR } = useStore((state) => state.user);
     const [showAddForm, setShowAddForm] = useState(false);
+    const mount = useRef<boolean>(false)
 
     useEffect(() => {
         if (!user && !SSR) {
@@ -67,11 +68,26 @@ export default function MyHomes(props: any) {
     }, [SSR]);
 
     useEffect(() => {
+        mount.current = true
+
+        return () => {
+            mount.current = false
+        }
+    })
+
+    useEffect(() => {
+        console.log(router.asPath)
+        const path = router.asPath.split('/')[1]
+        if (!mount.current || path != 'user') {
+            return
+        }
         if (page && typeof page == 'string') {
+            console.log('call line 72', router.asPath)
             getMyHomes({
                 variables: getUserHomes.variable(page, 12),
             }).then((res) => {});
         } else {
+            console.log('call line 77', router.asPath)
             getMyHomes({
                 variables: getUserHomes.variable('1', 12),
             }).then((res) => {});
@@ -79,6 +95,7 @@ export default function MyHomes(props: any) {
     }, [router.asPath]);
 
     const dataCallback = useCallback(async () => {
+        console.log('call line 83')
         if (page && typeof page == 'string') {
             return await getMyHomes({
                 variables: getUserHomes.variable(page, 12),
@@ -91,7 +108,7 @@ export default function MyHomes(props: any) {
 
     const renderListHome = useMemo(() => {
         console.log(listHome);
-        return listHome.map((item, index) => {
+        return listHome && listHome.map((item, index) => {
             return (
                 <motion.div key={item._id}>
                     <HomeCard

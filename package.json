@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
@@ -16,6 +16,7 @@
         "@emotion/styled": "^11",
         "@types/mapbox-gl": "^2.6.3",
         "clsx": "^1.1.1",
+        "cross-env": "^7.0.3",
         "firebase": "^9.6.10",
         "framer-motion": "^6",
         "graphql": "^16.3.0",

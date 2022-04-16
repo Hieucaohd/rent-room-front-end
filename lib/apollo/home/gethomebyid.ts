@@ -36,12 +36,15 @@ export const getHomeById = {
                         roomNumber
                     }
                     paginator {
-                        totalDocs
                         limit
                         page
                         nextPage
                         prevPage
                         totalPages
+                        pagingCounter
+                        hasPrevPage
+                        hasNextPage
+                        totalDocs
                     }
                 }
             }

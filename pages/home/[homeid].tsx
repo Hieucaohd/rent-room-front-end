@@ -4,10 +4,26 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { signUpBtnStyle } from '../../chakra';
 import AddZoom from '../../components/addhome/addzoom';
+import ZoomCard, { ZoomData } from '../../components/homecard/zoomcard';
 import NextImage from '../../components/nextimage/image';
 import { getHomeById } from '../../lib/apollo/home/gethomebyid';
 import { getPlaceName } from '../../lib/getPosition';
 import useStore from '../../store/useStore';
+
+export interface ListZoomData {
+    docs: ZoomData[];
+    paginator: {
+        limit: number;
+        page: number;
+        nextPage: number;
+        prevPage: number;
+        totalPages: number;
+        pagingCounter: number;
+        hasPrevPage: boolean;
+        hasNextPage: boolean;
+        totalDocs: number;
+    };
+}
 
 export interface HomeData {
     _id: string;
@@ -30,10 +46,16 @@ export interface HomeData {
         lng: number;
         lat: number;
     };
+    listRooms: ListZoomData;
 }
 
 const getData = (data: any) => {
     const dt = data?.getHomeById;
+    return dt;
+};
+
+const getListZoom = (data: any) => {
+    const dt = data?.getHomeById?.listRooms;
     return dt;
 };
 
@@ -44,18 +66,21 @@ const Home = () => {
     const [getHomeData, { data, loading: loadingData }] = useLazyQuery(getHomeById.command);
 
     const homeData: HomeData = getData(data);
+    const listZoom: ListZoomData = getListZoom(data);
     const [province, setProvince] = useState<string>('');
     const [district, setDistrict] = useState<string>('');
     const [ward, setWard] = useState<string>('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getHomeData({
+        if (homeid) {
+            getHomeData({
             variables: getHomeById.variables(homeid?.toString()!),
         }).catch((error: Error) => {
             console.log(error.message);
         });
-    }, []);
+        }
+    }, [homeid]);
 
     useEffect(() => {
         if (homeData) {
@@ -73,7 +98,7 @@ const Home = () => {
     return (
         <div className="homepage-base">
             <div className="homepage">
-                {(!loading && homeid) ? (
+                {!loading && homeid ? (
                     <>
                         <div className="homepage__title">
                             <h1>{ward + ', ' + district + ', ' + province}</h1>
@@ -122,10 +147,19 @@ const Home = () => {
                                 <div className="homepage-about"></div>
                                 <div className="homerooms">
                                     {/* show zoom */}
-                                    {user && <div className="homezooms-add">
-                                        {/*@ts-ignore */}
-                                        <AddZoom homeId={homeid} user={user}/>
-                                    </div>}
+                                    {user && (
+                                        <div className="homezooms-add">
+                                            {/*@ts-ignore */}
+                                            <AddZoom homeId={homeid} user={user} />
+                                        </div>
+                                    )}
+                                    <div>Danh sách phòng</div>
+                                    <div className="homezooms-list">
+                                        {listZoom?.docs &&
+                                            listZoom.docs.map((item, index) => (
+                                                <ZoomCard data={item} key={index} />
+                                            ))}
+                                    </div>
                                 </div>
                             </div>
                             <div className="homepage-sprice">

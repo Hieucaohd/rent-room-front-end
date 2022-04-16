@@ -49,7 +49,6 @@ export default function MapBox({
     onChange,
     hasMarker = true,
 }: MapboxProps) {
-    const { info: user } = useStore((state) => state.user);
     const mount = useRef(false);
     const mapbox = useRef<mapboxgl.Map | null>(null);
     const marker = useRef<mapboxgl.Marker | null>(null);
@@ -185,14 +184,6 @@ export default function MapBox({
                         .setLngLat([center[0], center[1]])
                         .addTo(mapbox.current);
                 }
-            } else if (user && user.position && !province) {
-                mapbox.current = new mapboxgl.Map({
-                    container: 'mapbox', // container id
-                    style: 'mapbox://styles/mapbox/streets-v11',
-                    center: [user.position.lng, user.position.lat], // starting position
-                    zoom: 12, // starting zoom
-                });
-                marker.current = null;
             } else if (provinceData) {
                 mapbox.current = new mapboxgl.Map({
                     container: 'mapbox', // container id
@@ -212,7 +203,7 @@ export default function MapBox({
             }
             return addMap(mapbox.current, marker);
         }
-    }, [user?.position, provinceData, isDelay, loadingProvince]);
+    }, [provinceData, isDelay, loadingProvince]);
 
     if (isDelay || loadingProvince) {
         return <Skeleton height="var(--addhome-mapheight)"></Skeleton>;
