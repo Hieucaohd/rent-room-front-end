@@ -73,12 +73,14 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getHomeData({
+        if (homeid) {
+            getHomeData({
             variables: getHomeById.variables(homeid?.toString()!),
         }).catch((error: Error) => {
             console.log(error.message);
         });
-    }, []);
+        }
+    }, [homeid]);
 
     useEffect(() => {
         if (homeData) {
