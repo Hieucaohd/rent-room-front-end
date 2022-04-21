@@ -4,7 +4,7 @@ import { AnimatePresence, AnimateSharedLayout, Variants } from 'framer-motion';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import AddHome from '../../../../components/addhome';
+import AddHome from '../../../../components/home/addhome';
 import HomeCard, { HomeCardProps } from '../../../../components/homecard';
 import LoadingSpinner from '../../../../components/loadingSpinner';
 import { getUserHomes } from '../../../../lib/apollo/home';
@@ -59,7 +59,7 @@ export default function MyHomes(props: any) {
 
     const { info: user, SSR } = useStore((state) => state.user);
     const [showAddForm, setShowAddForm] = useState(false);
-    const mount = useRef<boolean>(false)
+    const mount = useRef<boolean>(false);
 
     useEffect(() => {
         if (!user && !SSR) {
@@ -68,26 +68,26 @@ export default function MyHomes(props: any) {
     }, [SSR]);
 
     useEffect(() => {
-        mount.current = true
+        mount.current = true;
 
         return () => {
-            mount.current = false
-        }
-    })
+            mount.current = false;
+        };
+    });
 
     useEffect(() => {
-        console.log(router.asPath)
-        const path = router.asPath.split('/')[1]
+        console.log(router.asPath);
+        const path = router.asPath.split('/')[1];
         if (!mount.current || path != 'user') {
-            return
+            return;
         }
         if (page && typeof page == 'string') {
-            console.log('call line 72', router.asPath)
+            console.log('call line 72', router.asPath);
             getMyHomes({
                 variables: getUserHomes.variable(page, 12),
             }).then((res) => {});
         } else {
-            console.log('call line 77', router.asPath)
+            console.log('call line 77', router.asPath);
             getMyHomes({
                 variables: getUserHomes.variable('1', 12),
             }).then((res) => {});
@@ -95,7 +95,7 @@ export default function MyHomes(props: any) {
     }, [router.asPath]);
 
     const dataCallback = useCallback(async () => {
-        console.log('call line 83')
+        console.log('call line 83');
         if (page && typeof page == 'string') {
             return await getMyHomes({
                 variables: getUserHomes.variable(page, 12),
@@ -108,19 +108,22 @@ export default function MyHomes(props: any) {
 
     const renderListHome = useMemo(() => {
         console.log(listHome);
-        return listHome && listHome.map((item, index) => {
-            return (
-                <motion.div key={item._id}>
-                    <HomeCard
-                        {...item}
-                        afterDelete={dataCallback}
-                        onClick={() => {
-                            router.push(`/home/${item._id}`);
-                        }}
-                    />
-                </motion.div>
-            );
-        });
+        return (
+            listHome &&
+            listHome.map((item, index) => {
+                return (
+                    <motion.div key={item._id}>
+                        <HomeCard
+                            {...item}
+                            afterDelete={dataCallback}
+                            onClick={() => {
+                                router.push(`/home/${item._id}`);
+                            }}
+                        />
+                    </motion.div>
+                );
+            })
+        );
     }, [listHome]);
 
     const renderListPage = useMemo(() => {
@@ -138,13 +141,13 @@ export default function MyHomes(props: any) {
                 }
             }
             const path = router.pathname.replace('[userid]', `${userid}`);
-            console.log(path);
             return listPage.map((item, index) => (
                 <li key={index}>
                     <Button
                         onClick={() => {
                             router.push(`${path}?page=${item}`);
                         }}
+                        isDisabled={page?.toString() == item.toString()}
                         variant="link"
                         _focus={{
                             boxShadow: 'none',
@@ -157,7 +160,7 @@ export default function MyHomes(props: any) {
             ));
         }
         return [];
-    }, [pageRouter, userid]);
+    }, [pageRouter, userid, page]);
 
     useEffect(() => {}, [data]);
 
@@ -188,7 +191,7 @@ export default function MyHomes(props: any) {
                                         onClick={() => {
                                             router.push(
                                                 `${router.pathname.replace(
-                                                    '[id]',
+                                                    '[userid]',
                                                     `${userid}`
                                                 )}?page=0`
                                             );
@@ -207,7 +210,7 @@ export default function MyHomes(props: any) {
                                         onClick={() => {
                                             router.push(
                                                 `${router.pathname.replace(
-                                                    '[id]',
+                                                    '[userid]',
                                                     `${userid}`
                                                 )}?page=${pageRouter.prevPage}`
                                             );
@@ -227,7 +230,7 @@ export default function MyHomes(props: any) {
                                         onClick={() => {
                                             router.push(
                                                 `${router.pathname.replace(
-                                                    '[id]',
+                                                    '[userid]',
                                                     `${userid}`
                                                 )}?page=${pageRouter.nextPage}`
                                             );
@@ -246,7 +249,7 @@ export default function MyHomes(props: any) {
                                         onClick={() => {
                                             router.push(
                                                 `${router.pathname.replace(
-                                                    '[id]',
+                                                    '[userid]',
                                                     `${userid}`
                                                 )}?page=${pageRouter.totalPages}`
                                             );

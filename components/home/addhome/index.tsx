@@ -13,13 +13,14 @@ import { getDownloadURL, list, ref, uploadBytes, uploadBytesResumable } from 'fi
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { fStorage } from '../../firebase';
-import { createNewHome, NewHome } from '../../lib/apollo/home';
-import randomkey, { getTypeFile } from '../../lib/randomkey';
-import { deleteAllFile } from '../../lib/upLoadAllFile';
-import useStore from '../../store/useStore';
-import FormLocation from '../location';
-import MapBox, { MapField } from '../mapbox';
+import { fStorage } from '../../../firebase';
+import { createNewHome, NewHome } from '../../../lib/apollo/home';
+import useScrollController from '../../../lib/useScrollController';
+import randomkey, { getTypeFile } from '../../../lib/randomkey';
+import { deleteAllFile, getPathFileFromLink } from '../../../lib/upLoadAllFile';
+import useStore from '../../../store/useStore';
+import FormLocation from '../../location';
+import MapBox, { MapField } from '../../mapbox';
 
 interface AddHomeProps {
     onClose?: () => any;
@@ -75,6 +76,7 @@ export interface Image {
 
 export default function AddHome(props: AddHomeProps) {
     const mount = useRef(false);
+    const scroll = useScrollController();
     const { register, handleSubmit, watch } = useForm<NewHome>();
     const { info: user } = useStore((state) => state.user);
     const [upLoading, setUpLoading] = useState(false);
@@ -143,8 +145,11 @@ export default function AddHome(props: AddHomeProps) {
 
     useEffect(() => {
         mount.current = true;
+        scroll.disableScroll();
+
         return () => {
             mount.current = false;
+            scroll.enableScroll();
         };
     }, []);
 
@@ -205,7 +210,7 @@ export default function AddHome(props: AddHomeProps) {
             } else {
                 e.district = parseInt(e.district);
             }
-            if (listImage.length < 5) {
+            if (listImage.length < 2) {
                 error.images = true;
                 hasError = true;
             }
@@ -257,7 +262,12 @@ export default function AddHome(props: AddHomeProps) {
                                 props.onClose && props.onClose();
                             })
                             .catch((error) => {
-                                deleteAllFile(e.images).catch((err) => {});
+                                const paths = e.images.map((item) => {
+                                    return getPathFileFromLink(item);
+                                });
+                                deleteAllFile(paths).catch((err) => {
+                                    console.log(err);
+                                });
                                 alert(error.message);
                                 setUpLoading(false);
                             });
@@ -432,7 +442,7 @@ export default function AddHome(props: AddHomeProps) {
                             <div className="image-preview">
                                 {renderListImage}
                                 <Tooltip
-                                    label="Cần tải lên ít nhất 1 ảnh của trọ"
+                                    label="Cần tải lên ít nhất 2 ảnh của trọ"
                                     borderRadius="3px"
                                     placement="bottom"
                                     isDisabled={!errorAction.images}

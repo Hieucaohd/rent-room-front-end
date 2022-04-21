@@ -11,12 +11,14 @@
 @import 'user/homes';
 @import 'user/home';
 @import 'user/zoom';
+@import 'gallery';
 
 html {
     overflow-y: scroll;
 }
 
 *,
+*:not(svg),
 *:not(i)::before,
 *:not(.swiper-button-next, .swiper-button-prev)::after {
     // font-family: 'Roboto Slab', sans-serif;
@@ -27,6 +29,12 @@ html {
     font-size: var(--app-fontsize);
     color: var(--app-color);
 }
+
+input[type='text'],
+input[type='number'] {
+    cursor: text;
+}
+
 .chakra-avatar > div {
     color: unset;
 }
@@ -35,4 +43,13 @@ html {
     &.bar {
         margin-top: var(--app-navbar-height);
     }
+}
+
+#popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    height: 100vh;
+    width: 100vw;
 }

@@ -10,7 +10,7 @@ const transition = {
     stiffness: 120,
 };
 
-export default function NextImage(props: NextImageProps) {
+export default function MotionImage(props: NextImageProps) {
     const [loading, setLoading] = useState(true);
     const imageProps = { ...props, preview: undefined };
 
