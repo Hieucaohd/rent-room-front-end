@@ -175,36 +175,34 @@ const Home = () => {
         if (!homeDescription || homeDescription.length == 0) {
             return null;
         }
-        let limit = showMoreDes ? homeDescription.length : 0;
+        let limit = 0;
         if (homeDescription[0].des == '') {
-            limit = showMoreDes ? homeDescription.length : 1;
+            limit = 1;
         }
-        return homeDescription.map((item, index) => {
-            if (!showMoreDes && index > limit) {
-                return null;
-            }
-            return (
-                <motion.div
-                    key={index}
-                    style={{
-                        overflow: 'hidden',
-                    }}
-                    initial={{ height: 0 }}
-                    animate={{
-                        height: 'auto',
-                    }}
-                    exit={{
-                        height: 0,
-                    }}
-                    transition={{
-                        duration: 0.25,
-                    }}
-                >
-                    <h1>{item.key}</h1>
-                    <p>{item.des}</p>
-                </motion.div>
-            );
-        });
+        return [
+            homeDescription.map((item, index) => {
+                if (index > limit) {
+                    return null;
+                }
+                return (
+                    <motion.div key={index}>
+                        <h1>{item.key}</h1>
+                        <p>{item.des}</p>
+                    </motion.div>
+                );
+            }),
+            homeDescription.map((item, index) => {
+                if (index <= limit) {
+                    return null;
+                }
+                return (
+                    <motion.div key={index}>
+                        <h1>{item.key}</h1>
+                        <p>{item.des}</p>
+                    </motion.div>
+                );
+            }),
+        ];
     }, [homeDescription, showMoreDes]);
 
     return (
@@ -320,16 +318,40 @@ const Home = () => {
                                             )}
                                         </h1>
                                         <div className="homepage-about__description">
-                                            <AnimatePresence>
-                                                {homeData.description ? (
-                                                    renderDescription
-                                                ) : (
-                                                    <div className="homepage-about__empty">
-                                                        <i className="fi fi-br-browser"></i>
-                                                        chưa có dữ liệu
-                                                    </div>
-                                                )}
-                                            </AnimatePresence>
+                                            {homeData.description ? (
+                                                <>
+                                                    {renderDescription && renderDescription[0]}
+                                                    <AnimatePresence>
+                                                        {renderDescription && showMoreDes && (
+                                                            <motion.div
+                                                                style={{
+                                                                    overflow: 'hidden',
+                                                                }}
+                                                                initial={{ height: 0 }}
+                                                                animate={{
+                                                                    height: 'auto',
+                                                                    opacity: 1,
+                                                                }}
+                                                                exit={{
+                                                                    height: 0,
+                                                                    opacity: 0,
+                                                                }}
+                                                                transition={{
+                                                                    duration: 0.25,
+                                                                }}
+                                                                className="homepage-about__description"
+                                                            >
+                                                                {renderDescription[1]}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </>
+                                            ) : (
+                                                <div className="homepage-about__empty">
+                                                    <i className="fi fi-br-browser"></i>
+                                                    chưa có dữ liệu
+                                                </div>
+                                            )}
                                         </div>
                                         {homeData.description && (
                                             <Button
@@ -339,7 +361,7 @@ const Home = () => {
                                                     setShowMoreDes((prev) => !prev);
                                                 }}
                                             >
-                                                Hiển thị thêm
+                                                {showMoreDes ? 'Thu gọn' : 'Hiển thị thêm'}
                                             </Button>
                                         )}
                                         <hr />
