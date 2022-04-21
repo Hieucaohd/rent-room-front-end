@@ -13,9 +13,10 @@ export interface ISliderProps {
     width?: number | string;
     height?: number | string;
     autoplay?: boolean;
+    showPreview?: boolean;
 }
 
-export default function Slider({ images, width, height }: ISliderProps) {
+export default function Slider({ images, width, height, showPreview }: ISliderProps) {
     const [index, setIndex] = useState<number>(0);
     const [mobilemode] = useResize();
 

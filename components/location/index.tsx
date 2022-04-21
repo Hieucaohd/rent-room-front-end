@@ -11,6 +11,7 @@ interface FormLocationProps {
         district: boolean;
         ward: boolean;
     };
+    disable?: boolean;
 }
 
 export default function FormLocation({
@@ -18,6 +19,7 @@ export default function FormLocation({
     districtField,
     wardField,
     errorEvent,
+    disable,
 }: FormLocationProps) {
     const [provinceList, setProvinceList] = useState<any[]>([]);
     const [provinceActive, setProvinceActive] = useState<any>(null);
@@ -101,7 +103,7 @@ export default function FormLocation({
                 label="Tỉnh/TP không hợp lệ"
                 borderRadius="3px"
                 placement="bottom"
-                isDisabled={errorEvent ? !errorEvent.province : true}
+                isDisabled={errorEvent ? !errorEvent.province : true && !disable}
                 bg="red"
                 hasArrow
             >
@@ -113,7 +115,14 @@ export default function FormLocation({
                         outline: 'none',
                         borderColor: '#80befc',
                     }}
-                    borderColor={errorEvent ? (errorEvent.province ? 'red' : 'inherit') : 'inherit'}
+                    isDisabled={disable}
+                    borderColor={
+                        errorEvent && !disable
+                            ? errorEvent.province
+                                ? 'red'
+                                : 'inherit'
+                            : 'inherit'
+                    }
                     placeholder="Tỉnh/TP"
                     {...provinceField}
                     onChange={(e) => {
@@ -128,7 +137,7 @@ export default function FormLocation({
                 label="Quận/Huyện không hợp lệ"
                 borderRadius="3px"
                 placement="bottom"
-                isDisabled={errorEvent ? !errorEvent.district : true}
+                isDisabled={!disable && errorEvent ? !errorEvent.district : true}
                 bg="red"
                 hasArrow
             >
@@ -140,7 +149,14 @@ export default function FormLocation({
                         outline: 'none',
                         borderColor: '#80befc',
                     }}
-                    borderColor={errorEvent ? (errorEvent.district ? 'red' : 'inherit') : 'inherit'}
+                    isDisabled={disable}
+                    borderColor={
+                        errorEvent && !disable
+                            ? errorEvent.district
+                                ? 'red'
+                                : 'inherit'
+                            : 'inherit'
+                    }
                     placeholder="Quận/Huyện"
                     {...districtField}
                     onChange={(e) => {
@@ -155,7 +171,7 @@ export default function FormLocation({
                 label="Xã/Phường không hợp lệ"
                 borderRadius="3px"
                 placement="bottom"
-                isDisabled={errorEvent ? !errorEvent.ward : true}
+                isDisabled={!disable && errorEvent ? !errorEvent.ward : true}
                 bg="red"
                 hasArrow
             >
@@ -167,7 +183,10 @@ export default function FormLocation({
                         outline: 'none',
                         borderColor: '#80befc',
                     }}
-                    borderColor={errorEvent ? (errorEvent.ward ? 'red' : 'inherit') : 'inherit'}
+                    isDisabled={disable}
+                    borderColor={
+                        errorEvent && !disable ? (errorEvent.ward ? 'red' : 'inherit') : 'inherit'
+                    }
                     placeholder="Xã/Phường"
                     {...wardField}
                     onChange={(e) => {

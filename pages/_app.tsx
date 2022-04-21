@@ -10,10 +10,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { checkLoggedIn, User } from '../lib/withAuth';
 import App from 'next/app';
 import useStore from '../store/useStore';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Header from '../components/Header';
 import Head from 'next/head';
 import { getPosition } from '../lib/getPosition';
+import Slider from '../components/Slider';
+import ImagePreivew from '../components/image-preview';
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -28,7 +30,7 @@ const getPath = (path: string) => {
 };
 
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
-    const { user, addUser, removeUser } = useStore();
+    const { user, addUser, removeUser, imageprev, closeImages, popup } = useStore();
     const router = useRouter();
 
     useEffect(() => {
@@ -72,6 +74,20 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
         return !isCurrent;
     }, []);
 
+    useEffect(() => {
+        if (imageprev) {
+            const next = document.querySelector('html');
+            if (next) {
+                next.style.overflowY = 'hidden';
+            }
+        } else {
+            const next = document.querySelector('html');
+            if (next) {
+                next.style.overflowY = 'unset';
+            }
+        }
+    }, [imageprev]);
+
     return (
         <ChakraProvider>
             <ApolloProvider client={client}>
@@ -81,11 +97,17 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                 <AnimatePresence>
                     {withoutPage(router) && <Header user={user.info} />}
                 </AnimatePresence>
-                <div className={`main${withoutPage(router) ? ' bar' : ''}`}>
+                <div id="main" className={`main${withoutPage(router) ? ' bar' : ''}`}>
                     <AnimatePresence exitBeforeEnter>
                         <Component {...pageProps} key={router.pathname} />
                     </AnimatePresence>
                 </div>
+                <AnimatePresence>
+                    {imageprev && (
+                        <ImagePreivew key={imageprev.homeId} {...imageprev} close={closeImages} />
+                    )}
+                </AnimatePresence>
+                <AnimatePresence>{popup}</AnimatePresence>
             </ApolloProvider>
         </ChakraProvider>
     );

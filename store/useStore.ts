@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import create from 'zustand';
 import { User } from '../lib/withAuth';
 
@@ -8,12 +9,22 @@ interface Store {
     };
     addUser: (user: User) => void;
     removeUser: () => void;
-    image: {
-        src: string;
-        layoutid: any;
+    imageprev: {
+        images: string[];
+        homeId: string;
+        owner?: string;
+        onChange?: () => void;
     } | null;
-    setImage: (img: { src: string; layoutid: any }) => void;
-    closeImage: () => void;
+    setImages: (img: {
+        images: string[];
+        homeId: string;
+        owner?: string;
+        onChange?: () => void;
+    }) => void;
+    closeImages: () => void;
+    popup: ReactNode | null;
+    createPopup: (popup: ReactNode) => void;
+    removePopup: () => void;
 }
 
 const useStore = create<Store>((set, get) => ({
@@ -33,15 +44,26 @@ const useStore = create<Store>((set, get) => ({
             state.user.info = null;
             state.user.SSR = false;
         }),
-    image: null,
-    setImage: (img) => {
+    imageprev: null,
+    setImages: (imgs) => {
         set((state) => {
-            state.image = img;
+            state.imageprev = imgs;
         });
     },
-    closeImage: () => {
+    closeImages: () => {
         set((state) => {
-            state.image = null;
+            state.imageprev = null;
+        });
+    },
+    popup: null,
+    createPopup: (popup) => {
+        set((state) => {
+            state.popup = popup;
+        });
+    },
+    removePopup: () => {
+        set((state) => {
+            state.popup = null;
         });
     },
 }));

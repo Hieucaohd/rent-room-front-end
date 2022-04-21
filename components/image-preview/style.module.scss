@@ -1,0 +1,123 @@
+.imgprev {
+    width: calc(100% - 124px);
+    height: calc(90% - 100px);
+    // background-color: white;
+
+    @media screen and (max-width: 500px) {
+        width: calc(100% - 100px);
+    }
+
+    &-base {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 1);
+        z-index: 50;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__prev {
+        transform: rotateZ(180deg);
+
+        & > i {
+            height: 100%;
+
+            &::before {
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+        }
+    }
+
+    &__next {
+        & > i {
+            height: 100%;
+
+            &::before {
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+        }
+    }
+
+    &__image {
+        display: flex;
+        height: 100%;
+        user-select: none;
+
+        & > div {
+            width: 100%;
+            height: 100%;
+            display: flex;
+
+            & > img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                pointer-events: none;
+            }
+        }
+    }
+
+    &-listprev {
+        height: 50px;
+        width: calc(100% - 20px);
+
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+
+        display: flex;
+        justify-content: center;
+        & > div {
+            height: 50px;
+            width: 50px;
+        }
+
+        &__items {
+            display: flex;
+            gap: 10px;
+            user-select: none;
+
+            & > div {
+                position: relative;
+                width: 50px;
+                height: 50px;
+                background-color: white;
+                border-radius: 7px;
+                overflow: hidden;
+
+                & > img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                &::before {
+                    content: '';
+                    width: 100%;
+                    height: 100%;
+
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    opacity: 1;
+                }
+                &.active {
+                    border: 4px solid gray;
+                    &::before {
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+    }
+}

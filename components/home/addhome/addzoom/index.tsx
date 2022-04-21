@@ -4,18 +4,15 @@ import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from '..';
 import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storage';
-import randomkey, { getTypeFile } from '../../../lib/randomkey';
-import { fStorage } from '../../../firebase';
+import randomkey, { getTypeFile } from '../../../../lib/randomkey';
+import { fStorage } from '../../../../firebase';
 import { useForm } from 'react-hook-form';
-import useStore from '../../../store/useStore';
-import { AddZoomForm, createZoom } from '../../../lib/apollo/home/zoom';
+import { AddZoomForm, createZoom } from '../../../../lib/apollo/home/zoom';
 import { useMutation } from '@apollo/client';
-import { User } from '../../../lib/withAuth';
-import { deleteAllFile } from '../../../lib/upLoadAllFile';
-
-const className = (name: string) => {
-    return { className: styles[name] };
-};
+import { User } from '../../../../lib/withAuth';
+import { deleteAllFile, getPathFileFromLink } from '../../../../lib/upLoadAllFile';
+import useClassName from '../../../../lib/useClassName';
+import useScrollController from '../../../../lib/useScrollController';
 
 const container: Variants = {
     show: {
@@ -53,6 +50,7 @@ interface FormProps {
 
 const Form = ({ closeForm, homeId, user }: FormProps) => {
     const mount = useRef(false);
+    const scroll = useScrollController();
     const [createNewZoom, { data }] = useMutation(createZoom.command);
     const { register, handleSubmit } = useForm<AddZoomForm>();
     const [listImage, setListImage] = useState<Image[]>([]);
@@ -65,10 +63,14 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
         images: false,
     });
 
+    const [className] = useClassName(styles);
+
     useEffect(() => {
         mount.current = true;
+        scroll.disableScroll();
         return () => {
             mount.current = false;
+            scroll.enableScroll();
         };
     }, []);
 
@@ -161,7 +163,7 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                 errorHandleForm.zoomnumber = true;
                 errorSubmit = true;
             }
-            if (listImage.length == 0) {
+            if (listImage.length < 2) {
                 errorHandleForm.images = true;
                 errorSubmit = true;
             }
@@ -178,7 +180,12 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                             closeForm();
                         })
                         .catch((error) => {
-                            deleteAllFile(e.images);
+                            const paths = e.images.map((item) => {
+                                return getPathFileFromLink(item);
+                            });
+                            deleteAllFile(paths).catch((err) => {
+                                console.log(err);
+                            });
                             setUpLoading(false);
                             console.log(error);
                         });
@@ -329,7 +336,7 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                         <div className="image-preview">
                             {renderListImage}
                             <Tooltip
-                                label="Cần tải lên ít nhất 1 ảnh của phòng"
+                                label="Cần tải lên ít nhất 2 ảnh của phòng"
                                 borderRadius="3px"
                                 placement="bottom"
                                 isDisabled={!errorAction.images}

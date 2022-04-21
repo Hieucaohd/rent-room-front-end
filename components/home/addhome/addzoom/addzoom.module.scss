@@ -25,13 +25,27 @@
         --addzoom__form-padding: 25px;
         --addzoom__form__label-fontsize: 18px;
         position: relative;
-        width: min(500px, 90%);
+        width: min(540px, 90%);
         height: min-content;
         min-height: 400px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
         background-color: white;
         border-radius: 7px;
 
         padding: var(--addzoom__form-padding);
+
+        @media screen and (min-width: 500px) {
+            &::-webkit-scrollbar {
+                -webkit-appearance: none;
+            }
+            &::-webkit-scrollbar-thumb {
+                width: 14px;
+                border-radius: 13px;
+                background-color: rgba(128, 128, 128, 0.536);
+                border: 5px solid white;
+            }
+        }
 
         & > form {
             display: flex;

@@ -2,9 +2,12 @@ import {
     getDownloadURL,
     ref,
     uploadBytesResumable,
-    getMetadata,
     list,
     deleteObject,
+    getMetadata,
+    getBlob,
+    getBytes,
+    getStream,
 } from 'firebase/storage';
 import { fStorage } from '../firebase';
 import randomkey, { getTypeFile } from './randomkey';
@@ -34,9 +37,6 @@ export default function upLoadAllFile(files: { file: File }[], id: string) {
 }
 
 export const getPathFileFromLink = (link: string) => {
-    if (!link) {
-        return null;
-    }
     const start = link.indexOf('.appspot.com/o/');
     const end = link.indexOf('?alt=media');
     const path = link.substring(start + 15, end).replaceAll('%2F', '/');
@@ -45,9 +45,7 @@ export const getPathFileFromLink = (link: string) => {
 
 export const deleteFile = (link: string) => {
     const fileRef = ref(fStorage, link);
-    deleteObject(fileRef).catch((error) => {
-        console.log(error);
-    });
+    return deleteObject(fileRef);
 };
 
 export const deleteAllFile = (links: (string | null)[]) => {
@@ -59,4 +57,10 @@ export const deleteAllFile = (links: (string | null)[]) => {
             }
         })
     );
+};
+
+export const getMetaDataFile = (link: string) => {
+    const path = getPathFileFromLink(link);
+    const fileRef = ref(fStorage, path);
+    return Promise.all([getBlob(fileRef), getMetadata(fileRef)]);
 };

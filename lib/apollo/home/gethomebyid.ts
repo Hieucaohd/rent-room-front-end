@@ -21,6 +21,7 @@ export const getHomeById = {
                 internetPrice
                 cleaningPrice
                 totalRooms
+                description
                 position {
                     lng
                     lat

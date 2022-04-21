@@ -1,0 +1,118 @@
+.homeform {
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 20;
+
+    overflow-y: scroll;
+
+    &__bg {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        width: 100%;
+        height: 100%;
+
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    &-description {
+        &__property {
+            & > h1 {
+                margin: 20px 0 10px 0;
+                font-weight: 600;
+            }
+        }
+    }
+
+    &-form {
+        --addzoom__form-padding: 25px;
+        --addzoom__form__label-fontsize: 18px;
+        position: relative;
+        width: min(520px, 90%);
+
+        background-color: white;
+        border-radius: 7px;
+
+        padding: var(--addzoom__form-padding);
+
+        &.description {
+            overflow: hidden;
+            padding: 0;
+
+            & > form {
+                display: block;
+                padding: var(--addzoom__form-padding);
+
+                & > input {
+                    min-height: 35px;
+                    margin: 10px 0;
+                }
+
+                & > button {
+                    min-height: 35px;
+                    width: 100%;
+                    margin: 10px 0;
+                }
+            }
+        }
+
+        & > form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: min-content;
+            min-height: 40vh;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        &__h1 {
+            font-size: var(--addzoom__form__label-fontsize);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        &__label {
+            & > span {
+                color: red;
+            }
+
+            & > label {
+                cursor: pointer;
+                user-select: none;
+                display: flex;
+                flex-flow: row-reverse;
+                gap: 5px;
+                & > span {
+                    box-shadow: none !important;
+                    &:last-of-type {
+                        margin: 0;
+                    }
+
+                    & > div > svg > polyline {
+                        color: white;
+                    }
+                }
+            }
+        }
+
+        &__lb {
+            font-weight: 600;
+        }
+
+        &__more-property {
+            display: flex;
+            gap: 5px;
+        }
+    }
+}
