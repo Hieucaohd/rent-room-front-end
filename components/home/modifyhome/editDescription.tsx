@@ -47,10 +47,13 @@ interface FormProps {
     closeForm: () => void;
     homeId: string;
     callback?: () => void;
-    des?: string;
+    defautDes?: {
+        key: string;
+        des: string;
+    }[];
 }
 
-const EditDescription = ({ closeForm, homeId, callback }: FormProps) => {
+const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) => {
     const mount = useRef(false);
     const [updateHome, { data }] = useMutation(updateHomeDescription.command, {
         update(cache, { data: { updateHome } }) {
@@ -86,7 +89,7 @@ const EditDescription = ({ closeForm, homeId, callback }: FormProps) => {
             key: string;
             des: string;
         }[]
-    >([]);
+    >(defautDes ?? []);
 
     const newDes = useCallback(
         (key, description) => {
