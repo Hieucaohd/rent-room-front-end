@@ -309,6 +309,7 @@ const Home = () => {
                                                                 }}
                                                                 homeId={homeData._id}
                                                                 callback={refreshData}
+                                                                defautDes={homeDescription}
                                                             />
                                                         );
                                                     }}
