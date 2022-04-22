@@ -9,18 +9,8 @@ interface Store {
     };
     addUser: (user: User) => void;
     removeUser: () => void;
-    imageprev: {
-        images: string[];
-        homeId: string;
-        owner?: string;
-        onChange?: () => void;
-    } | null;
-    setImages: (img: {
-        images: string[];
-        homeId: string;
-        owner?: string;
-        onChange?: () => void;
-    }) => void;
+    imageprev: ReactNode | null;
+    setImages: (img: ReactNode) => void;
     closeImages: () => void;
     popup: ReactNode | null;
     createPopup: (popup: ReactNode) => void;

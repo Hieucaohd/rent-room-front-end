@@ -13,6 +13,10 @@ import ModifyHomePrices from '../../components/home/modifyhome';
 import EditHomeLocation from '../../components/home/modifyhome/editLocation';
 import EditDescription from '../../components/home/modifyhome/editDescription';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import ImagePreivew from '../../components/image-preview';
+import EmptyData from '../../components/emptydata';
+import MapBox from '../../components/mapbox';
+import Link from 'next/link';
 
 export interface ListZoomData {
     docs: ZoomData[];
@@ -72,14 +76,18 @@ const Home = () => {
     const router = useRouter();
     const {
         info: user,
-        setShowImagePreview,
+        isServerSide,
+        showImagePreview,
+        closeImagePreview,
         showedImage,
         createPopup,
         removePopup,
     } = useStore((state) => ({
         info: state.user.info,
-        showedImage: !!state.imageprev?.images,
-        setShowImagePreview: state.setImages,
+        isServerSide: state.user.SSR,
+        showedImage: !!state.imageprev,
+        showImagePreview: state.setImages,
+        closeImagePreview: state.closeImages,
         createPopup: state.createPopup,
         removePopup: state.removePopup,
     }));
@@ -99,6 +107,8 @@ const Home = () => {
     const [district, setDistrict] = useState<string>('');
     const [ward, setWard] = useState<string>('');
     const [loading, setLoading] = useState(true);
+
+    const [showMapBox, setShowMapBox] = useState(true);
 
     //state form
     const [modifyPrice, setModifyPrice] = useState(false);
@@ -149,27 +159,32 @@ const Home = () => {
             });
             const dataDes = JSON.parse(homeData.description);
             setHomeDescription(dataDes);
+            console.log(homeData);
         }
     }, [homeData]);
 
     useEffect(() => {
         if (homeData && showedImage && homeid) {
-            setShowImagePreview({
-                images: homeData.images,
-                homeId: homeid.toString(),
-                owner: homeData.owner._id,
-                onChange: () => {
-                    getHomeData({
-                        variables: getHomeById.variables(homeid?.toString()!),
-                    }).catch((error: Error) => {
-                        console.log(error.message);
-                    });
-                },
-            });
+            showImagePreview(
+                <ImagePreivew
+                    key={homeid.toString()}
+                    images={homeData.images}
+                    homeId={homeid.toString()}
+                    owner={homeData.owner._id}
+                    onChange={() => {
+                        getHomeData({
+                            variables: getHomeById.variables(homeid?.toString()!),
+                        }).catch((error: Error) => {
+                            console.log(error.message);
+                        });
+                    }}
+                    close={closeImagePreview}
+                />
+            );
         }
     }, [homeData?.images, showedImage, homeid]);
 
-    console.log(homeDescription);
+    // console.log(homeDescription);
 
     const renderDescription = useMemo(() => {
         if (!homeDescription || homeDescription.length == 0) {
@@ -205,6 +220,18 @@ const Home = () => {
         ];
     }, [homeDescription, showMoreDes]);
 
+    const homeIcon = useMemo(() => {
+        if (!loading && homeid) {
+            const div = document.createElement('div');
+            div.className = 'homeicon';
+            div.innerHTML = `<svg display="block" height="41px" width="27px" viewBox="0 0 27 41"><defs><radialGradient id="shadowGradient"><stop offset="10%" stop-opacity="0.4"></stop><stop offset="100%" stop-opacity="0.05"></stop></radialGradient></defs><ellipse cx="13.5" cy="34.8" rx="10.5" ry="5.25" fill="url(#shadowGradient)"></ellipse><path fill="#3FB1CE" d="M27,13.5C27,19.07 20.25,27 14.75,34.5C14.02,35.5 12.98,35.5 12.25,34.5C6.75,27 0,19.22 0,13.5C0,6.04 6.04,0 13.5,0C20.96,0 27,6.04 27,13.5Z"></path><path opacity="0.25" d="M13.5,0C6.04,0 0,6.04 0,13.5C0,19.22 6.75,27 12.25,34.5C13,35.52 14.02,35.5 14.75,34.5C20.25,27 27,19.07 27,13.5C27,6.04 20.96,0 13.5,0ZM13.5,1C20.42,1 26,6.58 26,13.5C26,15.9 24.5,19.18 22.22,22.74C19.95,26.3 16.71,30.14 13.94,33.91C13.74,34.18 13.61,34.32 13.5,34.44C13.39,34.32 13.26,34.18 13.06,33.91C10.28,30.13 7.41,26.31 5.02,22.77C2.62,19.23 1,15.95 1,13.5C1,6.58 6.58,1 13.5,1Z"></path><circle fill="white" cx="13.5" cy="13.5" r="5.5"></circle></svg>`;
+            const child = document.createElement('div');
+            child.innerHTML = `${ward + ', ' + district + ', ' + province}<div></div>`;
+            div.appendChild(child);
+            return div;
+        }
+    }, [loading, homeid]);
+
     return (
         <>
             <div className="homepage-base">
@@ -221,10 +248,12 @@ const Home = () => {
                                                 boxShadow: 'none',
                                             }}
                                             onClick={() => {
+                                                setShowMapBox(false);
                                                 createPopup(
                                                     <EditHomeLocation
                                                         closeForm={() => {
                                                             removePopup();
+                                                            setShowMapBox(true);
                                                         }}
                                                         user={user}
                                                         homeId={homeData._id}
@@ -250,20 +279,24 @@ const Home = () => {
                                 <Button
                                     variant="link"
                                     onClick={() => {
-                                        setShowImagePreview({
-                                            images: homeData.images,
-                                            homeId: homeid.toString(),
-                                            owner: homeData.owner._id,
-                                            onChange: () => {
-                                                getHomeData({
-                                                    variables: getHomeById.variables(
-                                                        homeid?.toString()!
-                                                    ),
-                                                }).catch((error: Error) => {
-                                                    console.log(error.message);
-                                                });
-                                            },
-                                        });
+                                        showImagePreview(
+                                            <ImagePreivew
+                                                key={homeid.toString()}
+                                                images={homeData.images}
+                                                homeId={homeid.toString()}
+                                                owner={homeData.owner._id}
+                                                onChange={() => {
+                                                    getHomeData({
+                                                        variables: getHomeById.variables(
+                                                            homeid?.toString()!
+                                                        ),
+                                                    }).catch((error: Error) => {
+                                                        console.log(error.message);
+                                                    });
+                                                }}
+                                                close={closeImagePreview}
+                                            />
+                                        );
                                     }}
                                 >
                                     <i className="fi fi-sr-apps-add"></i>
@@ -291,7 +324,7 @@ const Home = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="homepage-about">
+                                    <div className="homepage-description">
                                         <hr />
                                         <h1>
                                             Mô tả từ chủ nhà
@@ -318,7 +351,7 @@ const Home = () => {
                                                 </Button>
                                             )}
                                         </h1>
-                                        <div className="homepage-about__description">
+                                        <div className="homepage-description__description">
                                             {homeData.description ? (
                                                 <>
                                                     {renderDescription && renderDescription[0]}
@@ -340,7 +373,7 @@ const Home = () => {
                                                                 transition={{
                                                                     duration: 0.25,
                                                                 }}
-                                                                className="homepage-about__description"
+                                                                className="homepage-description__description"
                                                             >
                                                                 {renderDescription[1]}
                                                             </motion.div>
@@ -348,15 +381,12 @@ const Home = () => {
                                                     </AnimatePresence>
                                                 </>
                                             ) : (
-                                                <div className="homepage-about__empty">
-                                                    <i className="fi fi-br-browser"></i>
-                                                    chưa có dữ liệu
-                                                </div>
+                                                <EmptyData text="hiện chưa có mô tả từ chủ trọ" />
                                             )}
                                         </div>
                                         {homeData.description && (
                                             <Button
-                                                className="homepage-about__showmore"
+                                                className="homepage-description__showmore"
                                                 variant="link"
                                                 onClick={() => {
                                                     setShowMoreDes((prev) => !prev);
@@ -376,12 +406,35 @@ const Home = () => {
                                             </div>
                                         )}
                                         <div className="homezooms-listlabel">Danh sách phòng</div>
-                                        <div className="homezooms-list">
-                                            {listZoom?.docs &&
-                                                listZoom.docs.map((item, index) => (
-                                                    <ZoomCard data={item} key={index} />
+
+                                        {listZoom?.docs && listZoom.docs.length > 0 ? (
+                                            <div className="homezooms-list">
+                                                {listZoom.docs.map((item, index) => (
+                                                    <ZoomCard
+                                                        data={item}
+                                                        key={index}
+                                                        height="300px"
+                                                    />
                                                 ))}
-                                        </div>
+                                            </div>
+                                        ) : (
+                                            <EmptyData text="hiện chưa có phòng nào ở đây" />
+                                        )}
+                                    </div>
+
+                                    <div className="homepage-map">
+                                        <hr></hr>
+                                        <h2>Vị trí trọ</h2>
+                                        {showMapBox && (
+                                            <MapBox
+                                                choosePlace={false}
+                                                markerIcon={homeIcon}
+                                                center={[
+                                                    homeData.position.lng,
+                                                    homeData.position.lat,
+                                                ]}
+                                            />
+                                        )}
                                     </div>
                                 </div>
                                 <div className="homepage-sprice">
@@ -475,11 +528,49 @@ const Home = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="homepage-about"></div>
                                 </div>
                             </div>
                         </>
                     )}
+                </div>
+            </div>
+            <div className="homepage-about">
+                <div>
+                    <div></div>
+                    <div className="homepage-about__authority">
+                        <h1>Theo dõi chúng tôi</h1>
+                        <div>
+                            <i className="fi fi-brands-facebook"></i>Facebook
+                        </div>
+                        <div>
+                            <i className="fi fi-brands-instagram"></i>Instagram
+                        </div>
+                        <div>
+                            <i className="fi fi-brands-twitter"></i>Twitter
+                        </div>
+                    </div>
+                    <div className="homepage-about__developer">
+                        <h1>Developer</h1>
+                        <div>Cao Trung Hiếu</div>
+                        <div>Nguyễn Quốc Đại</div>
+                        <div>Nguyễn Khắc Hiệp</div>
+                        <div>Bùi Tuấn Anh</div>
+                        <div>Nguyễn Thế Anh</div>
+                    </div>
+                </div>
+                <hr />
+                <div className="homepage-about__footer">
+                    <div>
+                        <Link href="/">
+                            <a className="app-logo">
+                                <span>Rent </span> <span>Room</span>
+                            </a>
+                        </Link>
+                    </div>
+                    <div>
+                        © 2022 Website hỗ trợ tìm kiếm phòng trọ, giúp bạn tìm kiếm sự tiện nghi
+                        ngay tại nhà
+                    </div>
                 </div>
             </div>
         </>

@@ -102,11 +102,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                         <Component {...pageProps} key={router.pathname} />
                     </AnimatePresence>
                 </div>
-                <AnimatePresence>
-                    {imageprev && (
-                        <ImagePreivew key={imageprev.homeId} {...imageprev} close={closeImages} />
-                    )}
-                </AnimatePresence>
+                <AnimatePresence>{imageprev}</AnimatePresence>
                 <AnimatePresence>{popup}</AnimatePresence>
             </ApolloProvider>
         </ChakraProvider>

@@ -19,14 +19,12 @@ export interface ZoomData {
 export default function ZoomCard(props: ZoomCardProps) {
     const data = props.data;
     return (
-        <div
-            className="zoomcard"
-            style={{
-                ...(props.width ? { width: props.width } : {}),
-                ...(props.height ? { height: props.height } : {}),
-            }}
-        >
-            <Slider images={data?.images} height="350px" />
+        <div className="zoomcard">
+            <Slider
+                images={data?.images}
+                {...(props.width ? { width: props.width } : {})}
+                {...(props.height ? { height: props.height } : {})}
+            />
             <div className="zoomcard__name">
                 <div>Phòng số {data?.roomNumber}</div>
                 <div>{data?.price}&nbsp;VNĐ/tháng</div>
