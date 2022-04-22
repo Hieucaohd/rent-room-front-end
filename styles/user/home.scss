@@ -2,6 +2,7 @@
     --home-page__title--fontsize: 20px;
     --home-page__base--padding: 20px 100px;
     --home-page__description--fontsize: 15px;
+    --home-page__about--color: rgb(247 247 247);
 
     @media screen and (max-width: 1000px) {
         --home-page__base--padding: 20px 70px;
@@ -29,6 +30,7 @@
         flex-direction: column;
         align-items: center;
         padding: var(--home-page__base--padding);
+        padding-bottom: 50px;
     }
     &__title {
         & > h1 {
@@ -175,7 +177,7 @@
         }
     }
 
-    &-about {
+    &-description {
         & > hr {
             margin: 20px 0;
         }
@@ -224,6 +226,109 @@
             }
         }
     }
+
+    &-map {
+        height: min-content;
+
+        & > div {
+            height: 400px;
+        }
+
+        & > h2 {
+            font-weight: 600;
+            font-size: calc(var(--home-page__title--fontsize) - 2px);
+            margin-bottom: 20px;
+        }
+
+        & > hr {
+            margin: 40px 0;
+        }
+    }
+
+    &-about {
+        background-color: var(--home-page__about--color);
+        padding: 50px 50px 0 50px;
+
+        display: flex;
+        flex-flow: column;
+        & > div:nth-child(1) {
+            width: 100%;
+            display: grid;
+            // grid-template-columns: calc(100%/3) calc(100%/3) calc(100%/3);
+            grid-template-columns: calc(40%) calc(30%) calc(30%);
+            padding-bottom: 40px;
+            --gap: 10px;
+            grid-gap: var(--gap);
+
+            @media screen and (max-width: 500px) {
+                grid-template-columns: calc(0%) calc(50% - var(--gap) / 2) calc(
+                        50% - var(--gap) / 2
+                    );
+            }
+        }
+
+        &__authority,
+        &__developer {
+            display: flex;
+            flex-flow: column;
+            gap: 20px;
+
+            & > h1 {
+                font-size: calc(var(--home-page__title--fontsize) - 2px);
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            & > div {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+            }
+        }
+
+        &__footer {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+
+            & .app-logo {
+                & > span {
+                    background-color: unset;
+                }
+            }
+
+            & > div {
+                &:nth-child(2) {
+                    max-width: 50%;
+                }
+            }
+
+            @media screen and (max-width: 800px) {
+                & > div {
+                    &:nth-child(2) {
+                        max-width: 60%;
+                    }
+                }
+            }
+
+            @media screen and (max-width: 600px) {
+                flex-flow: column;
+                justify-content: center;
+                & > div {
+                    &:nth-child(2) {
+                        max-width: unset;
+                    }
+                }
+            }
+
+            @media screen and (max-width: 600px) {
+                padding: 0;
+            }
+        }
+    }
 }
 
 .homezooms {
@@ -244,7 +349,7 @@
         --gap: 30px;
         display: grid;
         z-index: 10;
-        grid-template-columns: calc(50% - var(--gap)) calc(50% - var(--gap));
+        grid-template-columns: calc(50% - var(--gap) / 2) calc(50% - var(--gap) / 2);
         gap: var(--gap);
 
         @media screen and (max-width: 1200px) {
@@ -256,5 +361,36 @@
         margin: 10px 0;
         font-weight: 600;
         font-size: calc(var(--home-page__title--fontsize) - 2px);
+    }
+}
+
+.homeicon {
+    position: relative;
+    padding-bottom: 5px;
+
+    & > div {
+        width: max-content;
+        padding: 7px;
+        border-radius: 5px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translate(-50%, calc(-100% - 13px));
+        background-color: white;
+        font-weight: 600;
+        box-shadow: 2px 2px 5px rgb(0, 0, 0, 0.3);
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translate(35%, 90%);
+            border: 8px white solid;
+            border-bottom-width: 0;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            filter: drop-shadow(3px 2px 1px rgba(0, 0, 0, 0.2));
+        }
     }
 }

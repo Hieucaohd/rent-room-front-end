@@ -1,6 +1,6 @@
 import { Box, Button, CloseButton, Skeleton, Spinner } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { getPlace, getPosition } from '../../lib/getPosition';
 import mapboxgl from '../../lib/mapbox';
 import useStore from '../../store/useStore';
@@ -32,6 +32,8 @@ interface MapboxProps {
     onChange?: (data: MapField | null) => any;
     hasMarker?: boolean;
     source?: any[];
+    choosePlace?: boolean;
+    markerIcon?: HTMLElement;
 }
 
 interface Place {
@@ -48,6 +50,8 @@ export default function MapBox({
     delay,
     onChange,
     hasMarker = true,
+    choosePlace = true,
+    markerIcon,
 }: MapboxProps) {
     const mount = useRef(false);
     const mapbox = useRef<mapboxgl.Map | null>(null);
@@ -122,14 +126,18 @@ export default function MapBox({
         (map: any, mark: { current: mapboxgl.Marker | null }) => {
             map.addControl(new mapboxgl.NavigationControl());
             const mapboxClick = (e: any) => {
-                console.log(e);
+                if (!choosePlace) {
+                    return;
+                }
                 setChoosingPlace([e.lngLat.lng, e.lngLat.lat]);
-                if (!mark.current) {
-                    mark.current = new mapboxgl.Marker()
+                if (mark.current) {
+                    mark.current.remove();
+                }
+                if (markerIcon) {
+                    mark.current = new mapboxgl.Marker(markerIcon)
                         .setLngLat([e.lngLat.lng, e.lngLat.lat])
                         .addTo(map);
                 } else {
-                    mark.current.remove();
                     mark.current = new mapboxgl.Marker()
                         .setLngLat([e.lngLat.lng, e.lngLat.lat])
                         .addTo(map);
@@ -168,11 +176,8 @@ export default function MapBox({
     );
 
     useEffect(() => {
-        if (mapbox.current) {
-            mapbox.current.remove();
-        }
         if (!isDelay && !loadingProvince) {
-            if (center) {
+            if (center && !isNaN(center[0]) && !isNaN(center[1])) {
                 mapbox.current = new mapboxgl.Map({
                     container: 'mapbox', // container id
                     style: 'mapbox://styles/mapbox/streets-v11',
@@ -180,9 +185,15 @@ export default function MapBox({
                     zoom: 12, // starting zoom
                 });
                 if (hasMarker) {
-                    marker.current = new mapboxgl.Marker()
-                        .setLngLat([center[0], center[1]])
-                        .addTo(mapbox.current);
+                    if (markerIcon) {
+                        marker.current = new mapboxgl.Marker(markerIcon)
+                            .setLngLat([center[0], center[1]])
+                            .addTo(mapbox.current);
+                    } else {
+                        marker.current = new mapboxgl.Marker()
+                            .setLngLat([center[0], center[1]])
+                            .addTo(mapbox.current);
+                    }
                 }
             } else if (provinceData) {
                 mapbox.current = new mapboxgl.Map({

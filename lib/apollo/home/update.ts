@@ -45,14 +45,16 @@ export const updateHomeImages = {
 };
 
 export interface HomeLocation {
-    province: number | undefined;
-    district: number | undefined;
-    ward: number | undefined;
+    province: any | undefined;
+    district: any | undefined;
+    ward: any | undefined;
     liveWithOwner: any;
     position:
         | {
               lng: number;
               lat: number;
+              x: number;
+              y: number;
           }
         | undefined;
     images: any[] | undefined;

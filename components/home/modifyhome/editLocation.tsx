@@ -236,21 +236,31 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
             };
 
             if (activeLocation) {
-                if ((e.province && !isNaN(e.province)) || !e.province) {
+                e.province = parseInt(e.province);
+                e.district = parseInt(e.district);
+                e.ward = parseInt(e.ward);
+                if (isNaN(e.province)) {
                     errorHandleForm.province = true;
                     errorSubmit = true;
                 }
-                if ((e.district && !isNaN(e.district)) || !e.district) {
+                if (isNaN(e.district)) {
                     errorHandleForm.district = true;
                     errorSubmit = true;
                 }
-                if ((e.ward && !isNaN(e.ward)) || !e.ward) {
+                if (isNaN(e.ward)) {
                     errorHandleForm.ward = true;
                     errorSubmit = true;
                 }
                 if (!mapData) {
                     errorHandleForm.position = true;
                     errorSubmit = true;
+                } else {
+                    e.position = {
+                        lng: mapData.center[0],
+                        lat: mapData.center[1],
+                        x: 0,
+                        y: 0,
+                    };
                 }
             } else {
                 e.district = undefined;
@@ -318,7 +328,17 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                 }
             }
         },
-        [images, activeLocation, activeLiveWithOwner, activeUploadImage, mapData, listImage]
+        [
+            images,
+            activeLocation,
+            activeLiveWithOwner,
+            activeUploadImage,
+            mapData,
+            listImage,
+            provinceField,
+            districtField,
+            wardField,
+        ]
     );
 
     return (
