@@ -6,6 +6,9 @@ const nextConfig = {
      ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
+  eslint: {
+      ignoreDuringBuilds: true
+  },
   async rewrites() {
     return {
       fallback: [

@@ -72,22 +72,22 @@ export default function MyHomes(props: any) {
 
         return () => {
             mount.current = false;
+            console.log('un mount')
         };
-    });
+    }, []);
 
     useEffect(() => {
-        console.log(router.asPath);
+        // console.log(router.asPath);
         const path = router.asPath.split('/')[1];
+        
         if (!mount.current || path != 'user') {
             return;
         }
         if (page && typeof page == 'string') {
-            console.log('call line 72', router.asPath);
             getMyHomes({
                 variables: getUserHomes.variable(page, 12),
             }).then((res) => {});
         } else {
-            console.log('call line 77', router.asPath);
             getMyHomes({
                 variables: getUserHomes.variable('1', 12),
             }).then((res) => {});
@@ -95,7 +95,6 @@ export default function MyHomes(props: any) {
     }, [router.asPath]);
 
     const dataCallback = useCallback(async () => {
-        console.log('call line 83');
         if (page && typeof page == 'string') {
             return await getMyHomes({
                 variables: getUserHomes.variable(page, 12),

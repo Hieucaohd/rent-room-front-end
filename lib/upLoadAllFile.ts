@@ -6,8 +6,6 @@ import {
     deleteObject,
     getMetadata,
     getBlob,
-    getBytes,
-    getStream,
 } from 'firebase/storage';
 import { fStorage } from '../firebase';
 import randomkey, { getTypeFile } from './randomkey';

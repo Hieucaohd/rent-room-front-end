@@ -11,9 +11,9 @@ export const getHomeById = {
                     fullname
                     avatar
                 }
-                province
-                district
-                ward
+                provinceName
+                districtName
+                wardName
                 liveWithOwner
                 electricityPrice
                 waterPrice

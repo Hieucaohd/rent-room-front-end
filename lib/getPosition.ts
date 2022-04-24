@@ -10,7 +10,6 @@ const getPosition = async (province: number, district?: number, ward?: number) =
         )
             .then((res) => res.json())
             .then(({ features: pos }: { features: Position[] }) => {
-                console.log(name, pos);
                 return pos[1].center;
             });
     };
@@ -27,7 +26,6 @@ const getPosition = async (province: number, district?: number, ward?: number) =
                     .then((d) => {
                         name = d.name.replace('Quận ', '').replace('Huyện ', '') + ', ' + name;
                         if (!ward) {
-                            console.log(name);
                             name = name.replaceAll(' ', '%20');
                             return mapboxApi(name);
                         } else {
