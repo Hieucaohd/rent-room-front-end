@@ -15,6 +15,8 @@ interface Store {
     popup: ReactNode | null;
     createPopup: (popup: ReactNode) => void;
     removePopup: () => void;
+    isAnimating: boolean;
+    setIsAnimating: (isAnimating: boolean) => void;
 }
 
 const useStore = create<Store>((set, get) => ({
@@ -56,6 +58,8 @@ const useStore = create<Store>((set, get) => ({
             state.popup = null;
         });
     },
+    isAnimating: false,
+    setIsAnimating: (isAnimating) => set(() => ({ isAnimating })),
 }));
 
 export default useStore;
