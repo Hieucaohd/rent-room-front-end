@@ -32,7 +32,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                         }
                     }
                 `,
-                context: { headers: { Cookie: cookie } }
             })
             user = data?.profile?.user
         } catch (error) {
@@ -63,6 +62,15 @@ function Room({ roomData, roomId, isHomeOfUser }: RoomPageProps) {
     console.log('user', isHomeOfUser)
     return (
         <div className="zoompage-base">
+            {isHomeOfUser && <div
+                style={{
+                    height: '500px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+                //@ts-ignore
+            >{isHomeOfUser?._id}</div>}
             <div className="homepage-about">
                 <div>
                     <div></div>
