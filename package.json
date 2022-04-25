@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
+        "dev": "next dev",
+        "debug": "cross-env NODE_OPTIONS='--inspect' next dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
@@ -20,6 +21,7 @@
         "firebase": "^9.6.10",
         "framer-motion": "^6",
         "graphql": "^16.3.0",
+        "jwt-decode": "^3.1.2",
         "mapbox-gl": "^2.7.1",
         "next": "12.1.0",
         "nprogress": "^0.2.0",

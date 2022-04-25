@@ -72,14 +72,14 @@ export default function MyHomes(props: any) {
 
         return () => {
             mount.current = false;
-            console.log('un mount')
+            console.log('un mount');
         };
     }, []);
 
     useEffect(() => {
         // console.log(router.asPath);
         const path = router.asPath.split('/')[1];
-        
+
         if (!mount.current || path != 'user') {
             return;
         }

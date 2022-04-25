@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import type { AppContext, AppProps } from 'next/app';
 import { NextRouter, useRouter } from 'next/router';
 import client from '../lib/apollo/apollo-client';
-import 'nprogress/nprogress.css'
+import 'nprogress/nprogress.css';
 import '../styles/index.scss';
 import 'swiper/css/bundle';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -15,7 +15,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import Head from 'next/head';
 import { getPosition } from '../lib/getPosition';
-import Nprogress from 'nprogress'
+import Nprogress from 'nprogress';
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -32,20 +32,21 @@ const getPath = (path: string) => {
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     const { user, addUser, removeUser, imageprev, closeImages, popup } = useStore();
     const router = useRouter();
-    const lastPath = useRef<string>('')
+    const lastPath = useRef<string>('');
 
     useEffect(() => {
         if (user.SSR && myProps.user) {
             // console.clear();
-            if (myProps.position) {
+            /* if (myProps.position) {
                 const position = {
                     lng: myProps.position.longitude,
                     lat: myProps.position.latitude,
                 };
                 addUser({ ...myProps.user, position });
             } else {
-                addUser(myProps.user);
-            }
+                
+            } */
+            addUser(myProps.user);
             console.log(myProps.user);
         } else if (user.SSR) {
             removeUser();
@@ -53,8 +54,8 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     }, [user.SSR]);
 
     useEffect(() => {
-        const onChnageStart = () => Nprogress.start()
-        const onChnageStop = () => Nprogress.done()
+        const onChnageStart = () => Nprogress.start();
+        const onChnageStop = () => Nprogress.done();
         router.events.on('routeChangeStart', onChnageStart);
         router.events.on('routeChangeComplete', onChnageStop);
         router.events.on('routeChangeError', onChnageStop);
@@ -93,6 +94,19 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                 <Head>
                     <title>Rent Zoom</title>
                 </Head>
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap"
+                />
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap"
+                />
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap"
+                />
+                <link rel="stylesheet" href="/globalstyles/icons.css" />
                 <AnimatePresence>
                     {withoutPage(router) && <Header user={user.info} />}
                 </AnimatePresence>
@@ -115,15 +129,15 @@ MyApp.getInitialProps = async (context: AppContext) => {
         const cookie = req.headers.cookie;
         // console.log(cookie);
         const user: User = await checkLoggedIn(cookie || '');
-        let position: any = null;
+        /* let position: any = null;
         if (user && user.province) {
             position = await getPosition(user.province);
-        }
+        } */
         // console.log(user);
         return {
             myProps: {
                 user,
-                position,
+                // position,
             },
             ...pageProps,
         };

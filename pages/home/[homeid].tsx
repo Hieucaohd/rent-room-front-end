@@ -13,10 +13,11 @@ import ModifyHomePrices from '../../components/home/modifyhome';
 import EditHomeLocation from '../../components/home/modifyhome/editLocation';
 import EditDescription from '../../components/home/modifyhome/editDescription';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
-import ImagePreivew from '../../components/image-preview';
+import HomeImagePreivew from '../../components/image-preview';
 import EmptyData from '../../components/emptydata';
 import MapBox from '../../components/mapbox';
 import Link from 'next/link';
+import getTitleHome from '../../lib/getNameHome';
 
 export interface ListZoomData {
     docs: ZoomData[];
@@ -56,6 +57,8 @@ export interface HomeData {
         lat: number;
     };
     listRooms: ListZoomData;
+    title?: string;
+    detailAddress?: string;
 }
 
 const getData = (data: any) => {
@@ -156,7 +159,7 @@ const Home = () => {
     useEffect(() => {
         if (homeData && showedImage && homeid) {
             showImagePreview(
-                <ImagePreivew
+                <HomeImagePreivew
                     key={homeid.toString()}
                     images={homeData.images}
                     homeId={homeid.toString()}
@@ -215,7 +218,7 @@ const Home = () => {
             return (
                 homeData.wardName +
                 ', ' +
-                homeData.districtName +
+                homeData.districtName.replace('Quận ', '').replace('Huyện ', '') +
                 ', ' +
                 homeData.provinceName.replace('Thành phố ', '').replace('Tỉnh ', '')
             );
@@ -242,7 +245,7 @@ const Home = () => {
                         <>
                             <div className="homepage__title">
                                 <h1>
-                                    {placeName}
+                                    {getTitleHome(homeData).value}
                                     {user?._id == homeData.owner._id && (
                                         <Button
                                             variant="link"
@@ -282,7 +285,7 @@ const Home = () => {
                                     variant="link"
                                     onClick={() => {
                                         showImagePreview(
-                                            <ImagePreivew
+                                            <HomeImagePreivew
                                                 key={homeid.toString()}
                                                 images={homeData.images}
                                                 homeId={homeid.toString()}
