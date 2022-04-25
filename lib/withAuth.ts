@@ -23,6 +23,7 @@ export const checkLoggedIn = async (Cookie: string) => {
         const data = await client.query({
             query: PROFILE,
             context: { headers: { Cookie } },
+            fetchPolicy: 'no-cache'
         });
 
         return data.data.profile.user;
