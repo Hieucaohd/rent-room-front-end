@@ -39,7 +39,7 @@ const getPath = (path: string): number => {
             return 0;
         case '/home':
             return 1;
-        case '/store':
+        case '/search':
             return 2;
         case '/contact':
             return 3;
@@ -175,18 +175,16 @@ export default function Header({ user }: IHeaderProps) {
                     </div>
                 </div>
                 <div className="navbar-center">
-                    <Button {...headerStyle.linkBtnStyle} fontWeight="700" variant="link">
-                        Trang Chủ
-                    </Button>
-                    <Button {...headerStyle.linkBtnStyle} variant="link">
-                        Store
-                    </Button>
-                    <Button {...headerStyle.linkBtnStyle} variant="link">
-                        Contact
-                    </Button>
-                    <Button {...headerStyle.linkBtnStyle} variant="link">
-                        About
-                    </Button>
+                    <Link href="/">
+                        <Button {...headerStyle.linkBtnStyle} fontWeight="700" variant="link">
+                            Trang chủ
+                        </Button>
+                    </Link>
+                    <Link href="/search">
+                        <Button {...headerStyle.linkBtnStyle} fontWeight="700" variant="link">
+                            Tìm kiếm
+                        </Button>
+                    </Link>
                 </div>
                 {!user && (
                     <div className="navbar-right">
@@ -285,7 +283,7 @@ export default function Header({ user }: IHeaderProps) {
                             >
                                 <Button {...headerStyle.linkBtnStyle} variant="link">
                                     <i className="fi fi-br-shopping-cart"></i>
-                                    Store
+                                    Tìm kiếm
                                 </Button>
                             </motion.div>
                             <motion.div

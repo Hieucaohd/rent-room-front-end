@@ -1,9 +1,6 @@
-import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import Link from 'next/link';
-import Header from '../components/Header';
+import { Button, Input } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { withAuth } from '../lib/withAuth';
-import { Button, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
+import type { GetServerSidePropsContext } from 'next';
 
 export interface IHomePageProps {
     user: any;

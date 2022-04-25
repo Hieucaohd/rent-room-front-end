@@ -2,15 +2,17 @@ interface Position {
     center: [number, number];
 }
 
-const getPosition = async (province: number, district?: number, ward?: number) => {
-    console.log(province, district, ward);
+const getPosition = async (
+    province: number | string,
+    district?: number | string,
+    ward?: number
+) => {
     const mapboxApi = (name: string) => {
         return fetch(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${name}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_APIKEY}`
         )
             .then((res) => res.json())
             .then(({ features: pos }: { features: Position[] }) => {
-                console.log(name, pos);
                 return pos[1].center;
             });
     };
@@ -27,7 +29,6 @@ const getPosition = async (province: number, district?: number, ward?: number) =
                     .then((d) => {
                         name = d.name.replace('Quận ', '').replace('Huyện ', '') + ', ' + name;
                         if (!ward) {
-                            console.log(name);
                             name = name.replaceAll(' ', '%20');
                             return mapboxApi(name);
                         } else {
@@ -68,6 +69,80 @@ const getPlaceName = async (p: number, d: number, w: number) => {
     ]);
 };
 
-export { getPosition, getPlace, getPlaceName };
+const formatName = (name: string) => {
+    return name
+        .replace('Thành phố', '')
+        .replace('Tỉnh', '')
+        .replace('Huyện', 'H.')
+        .replace('Thị xã', 'TX.')
+        .replace('Quận', 'Q.')
+        .replace('Huyện', 'H.')
+        .replace('Thị xã', 'TX.')
+        .replace('Phường', 'P.');
+};
+
+const getSearchPlaceName = async (p: any, d: any, w: any) => {
+    if (!p) {
+        throw new Error('Need province field');
+    }
+
+    const listAddress = await Promise.all([
+        w &&
+            fetch(`https://provinces.open-api.vn/api/w/${w}?depth=2`)
+                .then((res) => res.json())
+                .then((data) => data.name),
+        d &&
+            fetch(`https://provinces.open-api.vn/api/d/${d}?depth=2`)
+                .then((res) => res.json())
+                .then((data) => data.name),
+        p &&
+            fetch(`https://provinces.open-api.vn/api/p/${p}?depth=2`)
+                .then((res) => res.json())
+                .then((data) => data.name),
+    ]);
+
+    return formatName(listAddress.filter((item) => item).join(', '));
+};
+
+const getProvinceList = async () => {
+    try {
+        const response = await fetch('https://provinces.open-api.vn/api/');
+        const responseJSON = await response.json();
+        return responseJSON;
+    } catch (error) {
+        console.log('error to get province list: ', error);
+    }
+};
+
+const getDistrictList = async (code: any) => {
+    try {
+        const response = await fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`);
+        const responseJSON = await response.json();
+        return responseJSON;
+    } catch (error) {
+        console.log('error to get district list: ', error);
+    }
+};
+
+const getWardList = async (code: any) => {
+    try {
+        const response = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`);
+        const responseJSON = await response.json();
+        return responseJSON;
+    } catch (error) {
+        console.log('error to get ward list: ', error);
+    }
+};
+
+export {
+    getPosition,
+    getPlace,
+    getPlaceName,
+    getSearchPlaceName,
+    getProvinceList,
+    getDistrictList,
+    getWardList,
+    formatName,
+};
 
 export default {};
