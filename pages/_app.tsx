@@ -4,18 +4,18 @@ import { AnimatePresence } from 'framer-motion';
 import type { AppContext, AppProps } from 'next/app';
 import { NextRouter, useRouter } from 'next/router';
 import client from '../lib/apollo/apollo-client';
+import 'nprogress/nprogress.css'
 import '../styles/index.scss';
 import 'swiper/css/bundle';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { checkLoggedIn, User } from '../lib/withAuth';
 import App from 'next/app';
 import useStore from '../store/useStore';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from '../components/Header';
 import Head from 'next/head';
 import { getPosition } from '../lib/getPosition';
-import Slider from '../components/Slider';
-import ImagePreivew from '../components/image-preview';
+import Nprogress from 'nprogress'
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -32,6 +32,7 @@ const getPath = (path: string) => {
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     const { user, addUser, removeUser, imageprev, closeImages, popup } = useStore();
     const router = useRouter();
+    const lastPath = useRef<string>('')
 
     useEffect(() => {
         if (user.SSR && myProps.user) {
@@ -52,20 +53,18 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     }, [user.SSR]);
 
     useEffect(() => {
-        const handleLoading = () => {
-            document.body.style.cursor = 'wait';
-        };
-        const handleComplete = () => {
-            document.body.style.cursor = 'default';
-        };
-        router.events.on('routeChangeStart', handleLoading);
-        router.events.on('routeChangeComplete', handleComplete);
+        const onChnageStart = () => Nprogress.start()
+        const onChnageStop = () => Nprogress.done()
+        router.events.on('routeChangeStart', onChnageStart);
+        router.events.on('routeChangeComplete', onChnageStop);
+        router.events.on('routeChangeError', onChnageStop);
 
         return () => {
-            router.events.off('routeChangeStart', handleLoading);
-            router.events.off('routeChangeComplete', handleComplete);
+            router.events.off('routeChangeStart', onChnageStart);
+            router.events.off('routeChangeComplete', onChnageStop);
+            router.events.off('routeChangeError', onChnageStop);
         };
-    }, [router.pathname]);
+    }, []);
 
     const withoutPage = useCallback((router: NextRouter) => {
         const path = getPath(router.pathname);
@@ -102,11 +101,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                         <Component {...pageProps} key={router.pathname} />
                     </AnimatePresence>
                 </div>
-                <AnimatePresence>
-                    {imageprev && (
-                        <ImagePreivew key={imageprev.homeId} {...imageprev} close={closeImages} />
-                    )}
-                </AnimatePresence>
+                <AnimatePresence>{imageprev}</AnimatePresence>
                 <AnimatePresence>{popup}</AnimatePresence>
             </ApolloProvider>
         </ChakraProvider>

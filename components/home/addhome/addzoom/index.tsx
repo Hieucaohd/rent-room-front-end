@@ -7,7 +7,7 @@ import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storag
 import randomkey, { getTypeFile } from '../../../../lib/randomkey';
 import { fStorage } from '../../../../firebase';
 import { useForm } from 'react-hook-form';
-import { AddZoomForm, createZoom } from '../../../../lib/apollo/home/zoom';
+import { AddZoomForm, createZoom } from '../../../../lib/apollo/home/room';
 import { useMutation } from '@apollo/client';
 import { User } from '../../../../lib/withAuth';
 import { deleteAllFile, getPathFileFromLink } from '../../../../lib/upLoadAllFile';

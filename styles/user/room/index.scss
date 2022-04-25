@@ -1,0 +1,15 @@
+@import 'zoomcard';
+
+:root {
+}
+
+.roompage {
+    &-base {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: var(--home-page__base--padding);
+        padding-bottom: 50px;
+    }
+}

@@ -10,12 +10,16 @@
 @import 'signup';
 @import 'user/homes';
 @import 'user/home';
-@import 'user/zoom';
+@import 'user/room';
 @import 'gallery';
 @import 'search';
 
 html {
     overflow-y: scroll;
+}
+
+#nprogress > .spinner {
+    display: none !important;
 }
 
 *,

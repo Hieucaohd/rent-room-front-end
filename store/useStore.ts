@@ -9,22 +9,14 @@ interface Store {
     };
     addUser: (user: User) => void;
     removeUser: () => void;
-    imageprev: {
-        images: string[];
-        homeId: string;
-        owner?: string;
-        onChange?: () => void;
-    } | null;
-    setImages: (img: {
-        images: string[];
-        homeId: string;
-        owner?: string;
-        onChange?: () => void;
-    }) => void;
+    imageprev: ReactNode | null;
+    setImages: (img: ReactNode) => void;
     closeImages: () => void;
     popup: ReactNode | null;
     createPopup: (popup: ReactNode) => void;
     removePopup: () => void;
+    isAnimating: boolean;
+    setIsAnimating: (isAnimating: boolean) => void;
 }
 
 const useStore = create<Store>((set, get) => ({
@@ -66,6 +58,8 @@ const useStore = create<Store>((set, get) => ({
             state.popup = null;
         });
     },
+    isAnimating: false,
+    setIsAnimating: (isAnimating) => set(() => ({ isAnimating })),
 }));
 
 export default useStore;
