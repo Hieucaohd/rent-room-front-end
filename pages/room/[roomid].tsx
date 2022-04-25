@@ -1,118 +1,156 @@
-import { gql } from '@apollo/client';
+import { gql, useLazyQuery } from '@apollo/client';
+import { Button } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import AppAbout from '../../components/app-about';
+import Gallery from '../../components/gallery';
+import HomeImagePreivew, { RoomImagePreivew } from '../../components/image-preview';
 import client from '../../lib/apollo/apollo-client';
-import getRoomById, { RoomData } from '../../lib/apollo/home/room/getroombyid';
+import getSSRRoomById, { RoomData } from '../../lib/apollo/home/room/getroombyid';
+import getTitleHome from '../../lib/getNameHome';
+import getSecurityCookie from '../../security';
+import useStore from '../../store/useStore';
 
 export interface ZoomData {}
 
 export interface RoomPageProps {
-    roomData: RoomData;
+    roomSSRData: RoomData;
     roomId: string;
-    isHomeOfUser: boolean
+    isOwner: boolean;
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const req = context.req;
-    const cookie = req.cookies;
-    console.log(cookie)
+const getRoomDataFromQuery = (data: any) => data.getRoomById;
+
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+    const Cookie = getSecurityCookie(req);
     let user: { _id: string } | null = null;
-    const { roomid: roomId } = context.query
+    const { roomid: roomId } = query;
     if (roomId) {
         try {
-            const { data } = await client.query({
-                query: gql`
-                    query User {
-                        profile {
-                            user {
-                                _id
+            if (Cookie) {
+                const { data } = await client.query({
+                    query: gql`
+                        query User {
+                            profile {
+                                user {
+                                    _id
+                                }
                             }
                         }
-                    }
-                `,
-            })
-            user = data?.profile?.user
+                    `,
+                    context: {
+                        headers: {
+                            Cookie,
+                        },
+                    },
+                    fetchPolicy: 'no-cache',
+                });
+                user = data?.profile?.user;
+            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-        
         const { data: data2 } = await client.query({
-            query: getRoomById.command,
-            variables: getRoomById.variables(roomId.toString())
-        })
-        const roomData = data2.getRoomById
+            query: getSSRRoomById.command,
+            variables: getSSRRoomById.variables(roomId.toString()),
+        });
+        const roomData = getRoomDataFromQuery(data2);
         return {
             props: {
-                roomData,
+                roomSSRData: roomData,
                 roomId: roomId.toString(),
-                isHomeOfUser: user
+                isOwner: user?._id == roomData?.home?.owner?._id,
             },
         };
     } else {
         return {
-            props: {}
-        }
+            redirect: {
+                permanent: false,
+                destination: '/404',
+            },
+        };
     }
-    
 };
 
-function Room({ roomData, roomId, isHomeOfUser }: RoomPageProps) {
-    console.log('user', isHomeOfUser)
+function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
+    const [getRoomData, { data }] = useLazyQuery(getSSRRoomById.command, {
+        variables: getSSRRoomById.variables(roomId),
+        onCompleted: (data) => {
+            const newData = getRoomDataFromQuery(data);
+            setRoomData(newData);
+        },
+    });
+    const [roomDataChange, setRoomDataChange] = useState(false);
+    const [roomData, setRoomData] = useState(roomSSRData);
+    const homeData = roomData.home;
+    const { showImagePreview, closeImagePreview, imagePrev } = useStore((state) => ({
+        imagePrev: state.imageprev,
+        showImagePreview: state.setImages,
+        closeImagePreview: state.closeImages,
+    }));
+
+    const refetchRoomData = useCallback(() => {
+        return getRoomData();
+    }, []);
+
+    const roomTitle = useMemo(() => {
+        const homeTitle = getTitleHome(homeData);
+        if (homeTitle.isTitle) {
+            return 'Phòng ' + roomData.roomNumber + ' ' + homeTitle.value;
+        } else {
+            return 'Phòng ' + roomData.roomNumber + ' gần ' + homeTitle.value;
+        }
+    }, [homeData]);
     return (
-        <div className="zoompage-base">
-            {isHomeOfUser && <div
-                style={{
-                    height: '500px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}
-                //@ts-ignore
-            >{isHomeOfUser?._id}</div>}
-            <div className="homepage-about">
-                <div>
-                    <div></div>
-                    <div className="homepage-about__authority">
-                        <h1>Theo dõi chúng tôi</h1>
-                        <div>
-                            <i className="fi fi-brands-facebook"></i>Facebook
-                        </div>
-                        <div>
-                            <i className="fi fi-brands-instagram"></i>Instagram
-                        </div>
-                        <div>
-                            <i className="fi fi-brands-twitter"></i>Twitter
-                        </div>
-                    </div>
-                    <div className="homepage-about__developer">
-                        <h1>Developer</h1>
-                        <div>Cao Trung Hiếu</div>
-                        <div>Nguyễn Quốc Đại</div>
-                        <div>Nguyễn Khắc Hiệp</div>
-                        <div>Bùi Tuấn Anh</div>
-                        <div>Nguyễn Thế Anh</div>
-                    </div>
+        <>
+            <div className="roompage-base">
+                <div className="roompage__header">
+                    <h1>
+                        {roomTitle}
+                        {isOwner && (
+                            <Button
+                                variant="link"
+                                _focus={{
+                                    boxShadow: 'none',
+                                }}
+                                onClick={() => {}}
+                            >
+                                <i className="fi fi-rr-edit"></i>
+                            </Button>
+                        )}
+                    </h1>
+                    <h3>
+                        <i className="fi fi-br-users"></i>
+                        {homeData.liveWithOwner ? 'Sống cùng chủ nhà' : 'Không sống với chủ nhà'}
+                    </h3>
                 </div>
-                <hr />
-                <div className="homepage-about__footer">
-                    <div>
-                        <Link href="/">
-                            <a className="app-logo">
-                                <span>Rent </span> <span>Room</span>
-                            </a>
-                        </Link>
-                    </div>
-                    <div>
-                        © 2022 Website hỗ trợ tìm kiếm phòng trọ, giúp bạn tìm kiếm sự tiện nghi
-                        ngay tại nhà
-                    </div>
+                <div className="roompage__gallery">
+                    <Gallery images={roomData.images} />
+                    <Button
+                        variant="link"
+                        onClick={() => {
+                            showImagePreview(
+                                <RoomImagePreivew
+                                    key={roomId}
+                                    images={roomData.images}
+                                    roomId={roomId}
+                                    isOwner={isOwner}
+                                    onChange={refetchRoomData}
+                                    close={closeImagePreview}
+                                />
+                            );
+                        }}
+                    >
+                        <i className="fi fi-sr-apps-add"></i>
+                    </Button>
                 </div>
+                <div className="roompage-body"></div>
             </div>
-        </div>
+            <AppAbout />
+        </>
     );
 }
 
-
-export default memo(Room)
+export default memo(Room);
