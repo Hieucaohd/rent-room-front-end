@@ -9,7 +9,7 @@ export interface IFilterBarProps {}
 export default function FilterBar(props: IFilterBarProps) {
     const [showPriceDropdown, setShowPriceDropdown] = useState(false);
     const router = useRouter();
-    const { minPrice, maxPrice, arrangePrice } = router.query;
+    const { minPrice, maxPrice, arrangePrice, createdAt } = router.query;
     const isPriceFilter = minPrice || maxPrice || arrangePrice;
     const handleSubmitPrice = (e: any) => {
         e.preventDefault();
@@ -99,6 +99,12 @@ export default function FilterBar(props: IFilterBarProps) {
             </div>
             <div className={styles.item}>
                 <div className={styles.item__label}>Không chung chủ</div>
+            </div>
+            <div className={styles.item__last}>
+                <Select>
+                    <option value="ASC">Mới nhất</option>
+                    <option value="DESC">Cũ nhất</option>
+                </Select>
             </div>
         </div>
     );

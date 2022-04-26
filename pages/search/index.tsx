@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
             },
         };
     } catch (e: any) {
-        console.log(e.message);
+        console.log('search page', e.message);
         return {
             props: {
                 roomList: [],
@@ -114,6 +114,7 @@ const searchQuery = (query: any) => {
         minSquare,
         maxSquare,
         arrangeSquare,
+        createdAt
     } = query;
     if (minPrice && !maxPrice) {
         maxPrice = 999999999;
@@ -153,6 +154,7 @@ const searchQuery = (query: any) => {
                 ...(arrangeSquare && {
                     arrange: arrangeSquare,
                 }),
+                ...createdAt && {createdAt: createdAt}
             },
         }),
     };

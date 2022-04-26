@@ -1,40 +1,18 @@
-import dayjs from 'dayjs';
 
-var dayOfYear = require('dayjs/plugin/dayOfYear');
-var weekOfYear = require('dayjs/plugin/weekOfYear')
-dayjs.extend(weekOfYear)
-dayjs.extend(dayOfYear);
+const times = [["giây", 1], ["phút", 60], ["giờ", 3600], ["ngày", 86400], ["tuần", 604800], ["tháng", 2592000], ["năm", 31536000]]
 
-declare module 'dayjs' {
-    interface Dayjs {
-        week(): any;
-        dayOfYear(): any
-    }
-}
+export function timeAgo(date:string) {
+    const NOW = new Date()
 
-export const handleTime = (startTime:any) => {
-    if(!startTime) return;
-    let now = dayjs();
-    let old = dayjs(startTime);
-    const year = now.year() - old.year();
-    const month = now.month() - old.month();
-    const week = now.week() - old.week();
-    const date = now.dayOfYear() - old.dayOfYear();
-    const hour = now.hour() - old.hour();
-    const minute = now.minute() - old.minute();
-    if(year > 0) {
-        return `${year} năm trước`;
-    } else if (month > 0 && date > 30) {
-        return `${month} tháng trước`;
-    } else if (week > 0 && date >= 7) {
-        return `${week} tuần trước`;
-    } else if (date > 0) {
-        return `${date} ngày trước`;
-    } else if (hour > 0) {
-        return `${hour} giờ trước`;
+    var diff = Math.round((NOW.getTime() - new Date(date).getTime()) / 1000)
+    for (var t = 0; t < times.length; t++) {
+        if (diff < times[t][1]) {
+            if (t == 0) {
+                return "Ngay bây giờ"
+            } else {
+                diff = Math.round(diff / Number(times[t - 1][1]))
+                return diff + " " + times[t - 1][0] + " trước";
+            }
+        }
     }
-    else if (minute > 0 ){
-        return `${minute} phút trước`;
-    }
-    return "0 phút trước"
 }
