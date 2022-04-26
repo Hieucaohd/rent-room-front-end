@@ -15,16 +15,37 @@
         padding: 8px 16px;
         border-radius: 32px;
         margin-right: 16px;
-
+        
         & i {
-            font-size: 12px;
+            font-size: 8px;
             margin-left: 8px;
+            font-weight: 800;
         }
 
         &:hover {
             cursor: pointer;
             border: 1px solid;
         }
+    }
+}
+
+.item__last {
+    margin-left: auto;
+    & select {
+        border: 1px solid #e0dede;
+        padding: 8px 16px;
+        border-radius: 32px;
+        margin-right: 16px;
+        height: 100%;
+        &:hover {
+            cursor: pointer;
+            border: 1px solid;
+        }
+    }
+
+    & i {
+        font-size: 12px;
+        margin-left: 8px;
     }
 }
 

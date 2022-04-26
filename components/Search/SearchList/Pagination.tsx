@@ -15,9 +15,9 @@ export default function Pagination({ onChangePage, paginator }: IPaginationProps
                 nextLabel=">>"
                 pageRangeDisplayed={5}
                 previousLabel="<<"
+                pageCount={paginator.totalPages || 1}
+                initialPage={paginator.page === 0 ? 0 : paginator.page - 1}
                 onPageChange={({selected}) => onChangePage(selected + 1)}
-                pageCount={paginator.totalPages}
-                initialPage={paginator.page - 1}
                 disableInitialCallback={true}
             />
         </div>

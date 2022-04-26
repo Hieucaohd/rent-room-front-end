@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { handleTime } from '../../../lib/date';
+import { timeAgo } from '../../../lib/date';
 import { formatPrice } from '../../../lib/formatPrice';
 import { Room } from '../../../pages/search';
 import useSearchStore from '../../../store/searchStore';
@@ -25,7 +25,7 @@ export default function SearchRoom({ room, index }: ISearchRoomProps) {
                     </div>
                     <div className={styles.detail}>
                         <span>
-                            {handleTime(room.createdAt)} bởi {room.home.owner.fullname}
+                            {timeAgo(room.createdAt)} bởi {room.home.owner.fullname}
                         </span>
                         {/* <div>
                     <i className="fi fi-rr-marker"></i>
