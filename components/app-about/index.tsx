@@ -1,9 +1,14 @@
 import Link from 'next/link';
+import { HTMLAttributes } from 'react';
 
-export default function AppAbout() {
+interface AppAboutProps extends HTMLAttributes<HTMLDivElement>{
+
+}
+
+export default function AppAbout({style} : AppAboutProps) {
     return (
         <>
-            <div className="homepage-about">
+            <div className="homepage-about" style={style}>
                 <div>
                     <div></div>
                     <div className="homepage-about__authority">

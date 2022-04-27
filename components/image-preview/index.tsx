@@ -43,7 +43,7 @@ export interface RoomImagePreviewProps {
 }
 
 export default function HomeImagePreivew({
-    images,
+    images: listImage,
     close,
     onChange,
     homeId,
@@ -71,6 +71,8 @@ export default function HomeImagePreivew({
             onChange && onChange();
         },
     });
+
+    const [images, setImages] = useState(listImage);
 
     const [className] = useClassName(styles);
     const [viewindex, setViewIndex] = useState(0);
@@ -304,10 +306,11 @@ export default function HomeImagePreivew({
                                     updateHome({
                                         variables: updateHomeImages.variables(newList, homeId),
                                     })
-                                        .then(() => {
+                                        .then((res) => {
                                             deleteImage(viewindex);
                                             onClose();
                                             setImageDeleting(false);
+                                            setImages(res.data.updateHome.images);
                                             if (viewindex > 0) {
                                                 setViewIndex((prev) => prev - 1);
                                             }

@@ -110,6 +110,7 @@
     &-owner {
         display: flex;
         --home__owner-gap: 50px;
+        justify-content: space-between;
         gap: var(--home__owner-gap);
 
         @media screen and (max-width: 1000px) {

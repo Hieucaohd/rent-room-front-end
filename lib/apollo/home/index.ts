@@ -52,6 +52,9 @@ export const getUserHomes = {
                             province
                             district
                             ward
+                            provinceName
+                            districtName
+                            wardName
                             liveWithOwner
                             electricityPrice
                             waterPrice
@@ -60,6 +63,7 @@ export const getUserHomes = {
                             internetPrice
                             cleaningPrice
                             totalRooms
+                            title
                             position {
                                 lng
                                 lat
