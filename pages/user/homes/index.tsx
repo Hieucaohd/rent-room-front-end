@@ -4,12 +4,12 @@ import { AnimatePresence, AnimateSharedLayout, Variants } from 'framer-motion';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import AddHome from '../../../../components/home/addhome';
-import HomeCard, { HomeCardProps } from '../../../../components/homecard';
-import LoadingSpinner from '../../../../components/loadingSpinner';
-import { getUserHomes } from '../../../../lib/apollo/home';
+import AddHome from '../../../components/home/addhome';
+import HomeCard, { HomeCardProps } from '../../../components/homecard';
+import LoadingSpinner from '../../../components/loadingSpinner';
+import { getUserHomes } from '../../../lib/apollo/home';
 import { motion } from 'framer-motion';
-import useStore from '../../../../store/useStore';
+import useStore from '../../../store/useStore';
 
 function getData(data: any) {
     return data ? data?.profile?.user?.listHomes?.docs.slice() : [];
@@ -106,24 +106,29 @@ export default function MyHomes(props: any) {
     }, [page]);
 
     const renderListHome = useMemo(() => {
-        console.log(listHome);
-        return (
-            listHome &&
-            listHome.map((item, index) => {
-                return (
-                    <motion.div key={item._id}>
-                        <HomeCard
-                            {...item}
-                            afterDelete={dataCallback}
-                            onClick={() => {
-                                router.push(`/home/${item._id}`);
-                            }}
-                        />
-                    </motion.div>
-                );
-            })
-        );
-    }, [listHome]);
+        return data
+            ? listHome.map((item, index) => {
+                  return (
+                      <motion.div key={item._id}>
+                          <HomeCard
+                              {...item}
+                              afterDelete={dataCallback}
+                              onClick={() => {
+                                  router.push(`/home/${item._id}`);
+                              }}
+                          />
+                      </motion.div>
+                  );
+              })
+            : listSkeleton.map((_, key) => (
+                  <Box key={key}>
+                      <Skeleton borderRadius={'10px'} height="270px"></Skeleton>
+                      <SkeletonText mt="4" noOfLines={3} spacing="4" />
+                  </Box>
+              ));
+    }, [data]);
+
+    console.log(renderListHome);
 
     const renderListPage = useMemo(() => {
         if (pageRouter) {
@@ -179,9 +184,15 @@ export default function MyHomes(props: any) {
                     )}
                 </AnimatePresence>
 
-                {!loading ? (
+                {true ? (
                     <>
-                        <div className="user-homes__listhome">{renderListHome}</div>
+                        <div
+                            className={`user-homes__listhome${
+                                data ? '' : ' user-homes__listhome--loading'
+                            }`}
+                        >
+                            {renderListHome}
+                        </div>
 
                         <div className="user-homes__routerpage">
                             <ul>

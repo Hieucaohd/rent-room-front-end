@@ -6,6 +6,7 @@ export const getHomeById = {
         query GetHomeById($homeId: ID!, $page: Int!, $limit: Int!) {
             getHomeById(homeId: $homeId) {
                 _id
+                title
                 owner {
                     _id
                     fullname

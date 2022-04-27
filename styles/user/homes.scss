@@ -30,6 +30,26 @@
         display: grid;
         grid-template-columns: repeat(4, minmax(0px, 1fr));
         gap: 20px;
+        
+        &--loading{
+            @media screen and (min-width: 1201px) {
+                & > div {
+                    &:nth-of-type(9) {
+                        display: none;
+                    }
+                    &:nth-of-type(10) {
+                        display: none;
+                    }
+                }
+            }
+            @media screen and (max-width: 1200px) and (min-width: 851px) {
+                & > div {
+                    &:nth-of-type(10) {
+                        display: none;
+                    }
+                }
+            }
+        }
 
         @media screen and (max-width: 1200px) {
             grid-template-columns: repeat(3, minmax(0px, 1fr));

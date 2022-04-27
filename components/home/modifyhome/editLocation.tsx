@@ -58,6 +58,7 @@ const hideFormAnimate: Variants = {
 };
 
 interface ErrorAction {
+    title: boolean;
     province: boolean;
     district: boolean;
     ward: boolean;
@@ -76,7 +77,7 @@ interface FormProps {
 
 const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormProps) => {
     const mount = useRef(false);
-    const [updateHome, { data }] = useMutation(updateHomeLocation.command, {
+    const [updateHome] = useMutation(updateHomeLocation.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
                 query: getHomeById.command,
@@ -102,6 +103,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
     });
     const { register, handleSubmit, watch } = useForm<HomeLocation>();
     const [errorAction, setErrorAction] = useState<ErrorAction>({
+        title: false,
         province: false,
         district: false,
         ward: false,
@@ -155,6 +157,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
         return province && !isNaN(province) ? { province } : {};
     }, [provinceField, districtField, wardField, prevMapData]);
 
+    const [activeTitle, setActiveTitle] = useState(true);
     const [activeLocation, setActiveLocation] = useState(true);
     const [activeLiveWithOwner, setActiveLiveWithOwner] = useState(true);
     const [activeUploadImage, setActiveUploadImage] = useState(true);
@@ -227,6 +230,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
             let errorSubmit = false;
             console.log(e);
             let errorHandleForm: ErrorAction = {
+                title: false,
                 province: false,
                 district: false,
                 ward: false,
@@ -234,6 +238,11 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                 position: false,
                 images: false,
             };
+
+            if (activeTitle && e.title == '') {
+                errorHandleForm.title = true
+                errorSubmit = true
+            }console.log(e.title)
 
             if (activeLocation) {
                 e.province = parseInt(e.province);
@@ -368,6 +377,55 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                     }}
                     onSubmit={handleSubmit(submitForm)}
                 >
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap="5px"
+                        {...className('homeform-form__label')}
+                    >
+                        <Checkbox
+                            isChecked={activeTitle}
+                            onChange={(e) => {
+                                setActiveTitle((prev) => !prev);
+                            }}
+                            _focus={{
+                                boxShadow: 'none',
+                            }}
+                            height="100%"
+                            colorScheme="cyan"
+                        >
+                            Tên trọ
+                        </Checkbox>
+                    </Box>
+                    <Tooltip
+                        label="Bạn chưa nhập tên trọ mới"
+                        borderRadius="3px"
+                        placement="bottom"
+                        isDisabled={!errorAction.title || !activeTitle}
+                        bg="red"
+                        hasArrow
+                    >
+                        <Input
+                            height="50px"
+                            borderWidth="3px"
+                            cursor="pointer"
+                            _focus={{
+                                outline: 'none',
+                                borderColor: '#80befc',
+                            }}
+                            isDisabled={!activeTitle}
+                            borderColor={
+                                errorAction.title && activeTitle ? 'red' : 'inherit'
+                            }
+                            {...register('title')}
+                            onChange={(e) => {
+                                setErrorAction({ ...errorAction, title: false });
+                                register('title').onChange(e);
+                            }}
+                            placeholder="name"
+                            type="text"
+                        />
+                    </Tooltip>
                     <Box
                         display="flex"
                         alignItems="center"
@@ -583,11 +641,14 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                                 !activeCleaningPrice
                             } */
                             isDisabled={
-                                !activeLocation && !activeLiveWithOwner && !activeUploadImage
+                                !activeTitle && !activeLocation && !activeLiveWithOwner && !activeUploadImage
                             }
                             isLoading={upLoading}
                             type="submit"
                             colorScheme="red"
+                            _focus={{
+                                boxShadow: 'none'
+                            }}
                         >
                             Cập nhật
                         </Button>

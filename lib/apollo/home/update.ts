@@ -45,6 +45,7 @@ export const updateHomeImages = {
 };
 
 export interface HomeLocation {
+    title: string | undefined;
     province: any | undefined;
     district: any | undefined;
     ward: any | undefined;
@@ -64,6 +65,7 @@ export const updateHomeLocation = {
     command: gql`
         mutation UpdateHome($updatedHome: HomeInput!, $updateHomeId: ID!) {
             updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
+                title
                 province
                 district
                 ward

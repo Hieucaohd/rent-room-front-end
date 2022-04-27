@@ -221,7 +221,7 @@ export default function Header({ user }: IHeaderProps) {
                                 {mobilemode && <div className="username">{user.fullname}</div>}
                                 <MenuItem
                                     onClick={() => {
-                                        router.push(`/user/${user._id}/homes?page=1`);
+                                        router.push(`/user/homes?page=1`);
                                     }}
                                     icon={
                                         <i
@@ -272,7 +272,14 @@ export default function Header({ user }: IHeaderProps) {
                                 whileTap={{ scale: 0.95 }}
                                 variants={itemTransition}
                             >
-                                <Button {...headerStyle.linkBtnStyle} variant="link">
+                                <Button
+                                    {...headerStyle.linkBtnStyle}
+                                    onClick={() => {
+                                        router.push('/');
+                                        openMenu();
+                                    }}
+                                    variant="link"
+                                >
                                     <i className="fi fi-br-home"></i>Trang Chủ
                                 </Button>
                             </motion.div>
@@ -281,29 +288,16 @@ export default function Header({ user }: IHeaderProps) {
                                 whileTap={{ scale: 0.95 }}
                                 variants={itemTransition}
                             >
-                                <Button {...headerStyle.linkBtnStyle} variant="link">
+                                <Button
+                                    {...headerStyle.linkBtnStyle}
+                                    onClick={() => {
+                                        router.push('/search');
+                                        openMenu();
+                                    }}
+                                    variant="link"
+                                >
                                     <i className="fi fi-br-shopping-cart"></i>
                                     Tìm kiếm
-                                </Button>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                variants={itemTransition}
-                            >
-                                <Button {...headerStyle.linkBtnStyle} variant="link">
-                                    <i className="fi fi-br-form"></i>
-                                    Contact
-                                </Button>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                variants={itemTransition}
-                            >
-                                <Button {...headerStyle.linkBtnStyle} variant="link">
-                                    <i className="fi fi-br-info"></i>
-                                    About
                                 </Button>
                             </motion.div>
                         </motion.div>

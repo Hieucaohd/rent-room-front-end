@@ -6,18 +6,15 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogOverlay,
-    Box,
     Button,
     Menu,
     MenuButton,
     MenuItem,
     MenuList,
-    Skeleton,
-    SkeletonText,
     Text,
     useDisclosure,
 } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { deleteHome } from '../../lib/apollo/home';
 import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
 import { motion } from 'framer-motion';
@@ -28,11 +25,15 @@ export interface HomeCardProps {
     province?: any;
     district?: any;
     ward?: any;
+    provinceName: string;
+    districtName: string;
+    wardName: string;
     liveWithOwner?: Boolean;
     electricityPrice?: number;
     waterPrice?: number;
     images: string[];
     totalRooms?: number;
+    title: string;
     __typename?: any;
     afterDelete?: () => any;
     onClick?: () => any;
@@ -44,10 +45,6 @@ export default function HomeCard(props: HomeCardProps) {
         variables: deleteHome.variable(props._id),
     });
     const [listPath, setListPath] = useState<(string | null)[]>([]);
-    const [nameProvince, setNameProvince] = useState('');
-    const [nameDistrict, setNameDistrict] = useState('');
-    const [nameWard, setNameWard] = useState('');
-    const [loading, setLoading] = useState(true);
     const { isOpen: isOpenDialog, onOpen: onOpenDialog, onClose: onCloseDialog } = useDisclosure();
     const cancelDeleteRef = useRef(null);
     const [deleting, setDeleting] = useState<boolean>(false);
@@ -61,18 +58,6 @@ export default function HomeCard(props: HomeCardProps) {
     });
 
     useEffect(() => {
-        if (props.province) {
-            fetch(`https://provinces.open-api.vn/api/p/${props.province}?depth=2`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data?.name && mount.current) {
-                        setNameProvince(data.name.replace('Thành phố ', '').replace('Tỉnh ', ''));
-                    }
-                });
-        }
-    }, []);
-
-    useEffect(() => {
         const paths = props.images.map((item) => {
             return getPathFileFromLink(item);
         });
@@ -81,46 +66,27 @@ export default function HomeCard(props: HomeCardProps) {
         }
     }, [props.images]);
 
-    useEffect(() => {
-        if (props.district) {
-            fetch(`https://provinces.open-api.vn/api/d/${props.district}?depth=2`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data?.name && mount.current) {
-                        setNameDistrict(data.name.replace('Quận ', '').replace('Huyện ', ''));
-                    }
-                });
+    const homeTitle = useMemo(() => {
+        if (props.title) {
+            return props.title;
         }
-    }, []);
-
-    useEffect(() => {
-        if (props.ward) {
-            fetch(`https://provinces.open-api.vn/api/w/${props.ward}?depth=2`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data?.name && mount.current) {
-                        setNameWard(data.name);
-                    }
-                });
-        }
-    }, []);
-
-    useEffect(() => {
-        if (nameProvince != '' && nameDistrict != '' && nameWard != '' && mount.current) {
-            setLoading(false);
-        }
-    }, [nameProvince, nameDistrict, nameWard]);
+        return (
+            props.wardName +
+            ', ' +
+            props.districtName.replace('Quận ', '').replace('Huyện ', '') +
+            ', ' +
+            props.provinceName.replace('Thành phố ', '').replace('Tỉnh ', '')
+        );
+    }, [props]);
 
     return (
         <>
-            <motion.div className={`homecard${loading ? ' loading' : ''}`}>
+            <motion.div className={`homecard`}>
                 <div className="homecard__imgslider">
                     <Slider images={props.images} width="100%" height="280px" />
                 </div>
                 <div className="homecard-main">
-                    <Text className="homecard-main__label">
-                        {nameWard + ', ' + nameDistrict + ', ' + nameProvince}
-                    </Text>
+                    <Text className="homecard-main__label">{homeTitle}</Text>
                     <Text>Tiền điện: {props.electricityPrice} VNĐ</Text>
                     <Text>Tiền nước: {props.waterPrice} VNĐ</Text>
                     <a
@@ -141,12 +107,6 @@ export default function HomeCard(props: HomeCardProps) {
                     </div>
                 </div>
             </motion.div>
-            {loading && (
-                <Box>
-                    <Skeleton borderRadius={'10px'} height="270px"></Skeleton>
-                    <SkeletonText mt="4" noOfLines={3} spacing="4" />
-                </Box>
-            )}
             <AlertDialog
                 isOpen={isOpenDialog}
                 leastDestructiveRef={cancelDeleteRef}

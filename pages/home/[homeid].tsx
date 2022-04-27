@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery } from '@apollo/client';
 import { Avatar, Button, Skeleton, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -18,6 +18,9 @@ import EmptyData from '../../components/emptydata';
 import MapBox from '../../components/mapbox';
 import Link from 'next/link';
 import getTitleHome from '../../lib/getNameHome';
+import { GetServerSideProps } from 'next';
+import getSecurityCookie from '../../security';
+import client from '../../lib/apollo/apollo-client';
 
 export interface ListZoomData {
     docs: ZoomData[];
@@ -75,7 +78,74 @@ const getListZoom = (data: any) => {
     return dt;
 };
 
-const Home = () => {
+interface HomePageProps {
+    homeId: string;
+    homeSSRData: string;
+    isOwner: string;
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+    const Cookie = getSecurityCookie(req);
+    let user: { _id: string } | null = null;
+    const { homeid: homeId } = query;
+    if (homeId) {
+        try {
+            if (Cookie) {
+                const { data } = await client.query({
+                    query: gql`
+                        query User {
+                            profile {
+                                user {
+                                    _id
+                                }
+                            }
+                        }
+                    `,
+                    context: {
+                        headers: {
+                            Cookie,
+                        },
+                    },
+                    fetchPolicy: 'no-cache',
+                });
+                user = data?.profile?.user;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        try {
+            const { data: data2 } = await client.query({
+                query: getHomeById.command,
+                variables: getHomeById.variables(homeId.toString()),
+            });
+            const homeData = getData(data2);
+            return {
+                props: {
+                    homeSSRData: homeData,
+                    homeId: homeId.toString(),
+                    isOwner: user?._id == homeData?.home?.owner?._id,
+                },
+            };
+        } catch (error) {
+            console.log(error);
+            return {
+                redirect: {
+                    permanent: false,
+                    destination: '/404',
+                },
+            };
+        }
+    } else {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/404',
+            },
+        };
+    }
+};
+
+const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
     const router = useRouter();
     const {
         info: user,
@@ -94,10 +164,14 @@ const Home = () => {
         createPopup: state.createPopup,
         removePopup: state.removePopup,
     }));
-    const { homeid } = router.query;
     const [getHomeData, { data }] = useLazyQuery(getHomeById.command);
     const [loading, setLoading] = useState(true);
-    const homeData: HomeData = getData(data);
+    const homeData: HomeData = useMemo(() => {
+        if (!data) {
+            return homeSSRData
+        } 
+        return getData(data)
+    }, [data]);
     const [homeDescription, setHomeDescription] = useState<
         {
             key: string;
@@ -112,26 +186,15 @@ const Home = () => {
     //state form
     const [modifyPrice, setModifyPrice] = useState(false);
 
-    useEffect(() => {
-        if (homeid) {
-            setLoading(true);
-            getHomeData({
-                variables: getHomeById.variables(homeid?.toString()!),
-            }).catch((error: Error) => {
-                console.log(error.message);
-            });
-        }
-    }, [homeid]);
-
     const refreshData = useCallback(() => {
-        if (homeid) {
+        if (homeId) {
             getHomeData({
-                variables: getHomeById.variables(homeid?.toString()!),
+                variables: getHomeById.variables(homeId),
             }).catch((error: Error) => {
                 console.log(error.message);
             });
         }
-    }, [homeid]);
+    }, [homeId]);
 
     useEffect(() => {
         if (modifyPrice) {
@@ -155,27 +218,6 @@ const Home = () => {
             setLoading(false);
         }
     }, [homeData]);
-
-    useEffect(() => {
-        if (homeData && showedImage && homeid) {
-            showImagePreview(
-                <HomeImagePreivew
-                    key={homeid.toString()}
-                    images={homeData.images}
-                    homeId={homeid.toString()}
-                    owner={homeData.owner._id}
-                    onChange={() => {
-                        getHomeData({
-                            variables: getHomeById.variables(homeid?.toString()!),
-                        }).catch((error: Error) => {
-                            console.log(error.message);
-                        });
-                    }}
-                    close={closeImagePreview}
-                />
-            );
-        }
-    }, [homeData?.images, showedImage, homeid]);
 
     // console.log(homeDescription);
 
@@ -215,6 +257,7 @@ const Home = () => {
 
     const placeName = useMemo(() => {
         if (homeData) {
+            console.log(homeData)
             return (
                 homeData.wardName +
                 ', ' +
@@ -226,7 +269,7 @@ const Home = () => {
     }, [homeData]);
 
     const homeIcon = useMemo(() => {
-        if (!loading && homeid && !isServerSide) {
+        if (!loading && homeId && !isServerSide) {
             const div = document.createElement('div');
             div.className = 'homeicon';
             div.innerHTML = `<svg display="block" height="41px" width="27px" viewBox="0 0 27 41"><defs><radialGradient id="shadowGradient"><stop offset="10%" stop-opacity="0.4"></stop><stop offset="100%" stop-opacity="0.05"></stop></radialGradient></defs><ellipse cx="13.5" cy="34.8" rx="10.5" ry="5.25" fill="url(#shadowGradient)"></ellipse><path fill="#3FB1CE" d="M27,13.5C27,19.07 20.25,27 14.75,34.5C14.02,35.5 12.98,35.5 12.25,34.5C6.75,27 0,19.22 0,13.5C0,6.04 6.04,0 13.5,0C20.96,0 27,6.04 27,13.5Z"></path><path opacity="0.25" d="M13.5,0C6.04,0 0,6.04 0,13.5C0,19.22 6.75,27 12.25,34.5C13,35.52 14.02,35.5 14.75,34.5C20.25,27 27,19.07 27,13.5C27,6.04 20.96,0 13.5,0ZM13.5,1C20.42,1 26,6.58 26,13.5C26,15.9 24.5,19.18 22.22,22.74C19.95,26.3 16.71,30.14 13.94,33.91C13.74,34.18 13.61,34.32 13.5,34.44C13.39,34.32 13.26,34.18 13.06,33.91C10.28,30.13 7.41,26.31 5.02,22.77C2.62,19.23 1,15.95 1,13.5C1,6.58 6.58,1 13.5,1Z"></path><circle fill="white" cx="13.5" cy="13.5" r="5.5"></circle></svg>`;
@@ -235,13 +278,13 @@ const Home = () => {
             div.appendChild(child);
             return div;
         }
-    }, [loading, homeid, isServerSide]);
+    }, [loading, homeId, isServerSide]);
 
     return (
         <>
             <div className="homepage-base">
                 <div className="homepage">
-                    {!loading && homeid ? (
+                    {!loading && homeId ? (
                         <>
                             <div className="homepage__title">
                                 <h1>
@@ -258,7 +301,9 @@ const Home = () => {
                                                     <EditHomeLocation
                                                         closeForm={() => {
                                                             removePopup();
-                                                            setShowMapBox(true);
+                                                            setTimeout(() => {
+                                                                setShowMapBox(true);
+                                                            }, 250);
                                                         }}
                                                         user={user}
                                                         homeId={homeData._id}
@@ -286,15 +331,13 @@ const Home = () => {
                                     onClick={() => {
                                         showImagePreview(
                                             <HomeImagePreivew
-                                                key={homeid.toString()}
+                                                key={homeId}
                                                 images={homeData.images}
-                                                homeId={homeid.toString()}
+                                                homeId={homeId}
                                                 owner={homeData.owner._id}
                                                 onChange={() => {
                                                     getHomeData({
-                                                        variables: getHomeById.variables(
-                                                            homeid?.toString()!
-                                                        ),
+                                                        variables: getHomeById.variables(homeId),
                                                     }).catch((error: Error) => {
                                                         console.log(error.message);
                                                     });
@@ -407,7 +450,7 @@ const Home = () => {
                                         {user && (
                                             <div className="homezooms-add">
                                                 {/*@ts-ignore */}
-                                                <AddZoom homeId={homeid} user={user} />
+                                                <AddZoom homeId={homeId} user={user} />
                                             </div>
                                         )}
                                         <div className="homezooms-listlabel">Danh sách phòng</div>
