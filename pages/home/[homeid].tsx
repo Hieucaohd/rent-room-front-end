@@ -80,7 +80,7 @@ const getListZoom = (data: any) => {
 
 interface HomePageProps {
     homeId: string;
-    homeSSRData: string;
+    homeSSRData: HomeData
     isOwner: string;
 }
 
@@ -123,7 +123,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
                 props: {
                     homeSSRData: homeData,
                     homeId: homeId.toString(),
-                    isOwner: user?._id == homeData?.home?.owner?._id,
+                    isOwner: user?._id == homeData?.owner?._id,
                 },
             };
         } catch (error) {
@@ -152,7 +152,6 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
         showImagePreview,
         closeImagePreview,
         isServerSide,
-        showedImage,
         createPopup,
         removePopup,
     } = useStore((state) => ({
@@ -179,7 +178,12 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
         }[]
     >([]);
     const [showMoreDes, setShowMoreDes] = useState(false); // state quản lý hiển thị thêm mô tả trọ
-    const listZoom: ListZoomData = getListZoom(data);
+    const listZoom: ListZoomData = useMemo(() => {
+        if (!data) {
+            return homeSSRData.listRooms
+        } 
+        return getListZoom(data)
+    }, [data]);
 
     const [showMapBox, setShowMapBox] = useState(true);
 
@@ -289,7 +293,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                             <div className="homepage__title">
                                 <h1>
                                     {getTitleHome(homeData).value}
-                                    {user?._id == homeData.owner._id && (
+                                    {isOwner && (
                                         <Button
                                             variant="link"
                                             _focus={{
@@ -305,7 +309,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                                                 setShowMapBox(true);
                                                             }, 250);
                                                         }}
-                                                        user={user}
+                                                        user={user!}
                                                         homeId={homeData._id}
                                                         callback={refreshData}
                                                         images={homeData.images}
@@ -376,7 +380,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                         <hr />
                                         <h1>
                                             Mô tả từ chủ nhà
-                                            {user?._id == homeData.owner._id && (
+                                            {isOwner && (
                                                 <Button
                                                     variant="link"
                                                     _focus={{
@@ -521,7 +525,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                                 : 'chưa có thông tin'}
                                         </div>
                                     </div>
-                                    {user?._id == homeData.owner._id ? (
+                                    {isOwner ? (
                                         <Button
                                             {...signUpBtnStyle}
                                             onClick={() => setModifyPrice(true)}
