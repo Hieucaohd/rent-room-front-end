@@ -18,4 +18,28 @@ export const updateRoomImages = {
     },
 };
 
-export default {};
+export interface UpdateRoomTitle {
+    roomNumber: number;
+    price: number;
+    square: number;
+    isRented: boolean;
+    floor: number;
+}
+
+export const updateRoomTitle = {
+    command: gql`
+        mutation Mutation($updatedRoom: RoomInput!, $updateRoomId: ID!) {
+            updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
+                roomNumber
+                price
+                square
+                isRented
+                floor
+            }
+        }
+    `,
+    variables: (updatedRoom: any, updateRoomId: string) => ({
+        updatedRoom,
+        updateRoomId,
+    }),
+};

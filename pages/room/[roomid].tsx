@@ -1,16 +1,18 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import { Button, Tooltip } from '@chakra-ui/react';
+import { Avatar, Button, Tooltip } from '@chakra-ui/react';
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
+import { AnimatePresence, motion } from 'framer-motion';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '../../chakra';
 import AppAbout from '../../components/app-about';
+import EmptyData from '../../components/emptydata';
 import Gallery from '../../components/gallery';
+import { EditRoomTitle } from '../../components/home/modifyRoom';
 import { RoomImagePreivew } from '../../components/image-preview';
 import client from '../../lib/apollo/apollo-client';
-import getSSRRoomById, { RoomData } from '../../lib/apollo/home/room/getroombyid';
+import { getSSRRoomById, RoomData } from '../../lib/apollo/home/room/getroombyid';
 import getTitleHome from '../../lib/getNameHome';
 import useResize from '../../lib/use-resize';
 import getSecurityCookie from '../../security';
@@ -90,11 +92,21 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
 
     const [roomData, setRoomData] = useState(roomSSRData);
     const homeData = roomData.home;
-    const { showImagePreview, closeImagePreview, imagePrev } = useStore((state) => ({
+    const { showImagePreview, closeImagePreview, createPopup, closePopup } = useStore((state) => ({
         imagePrev: state.imageprev,
         showImagePreview: state.setImages,
         closeImagePreview: state.closeImages,
+        createPopup: state.createPopup,
+        closePopup: state.removePopup,
     }));
+
+    const [roomDescription, setRoomDescription] = useState<
+        {
+            key: string;
+            des: string;
+        }[]
+    >();
+    const [showMoreDes, setShowMoreDes] = useState(false);
 
     const [mobilemode, renderState, reRender] = useResize(600);
     const aboutpageMarginBottom = useMemo(() => {
@@ -111,25 +123,71 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
         return 0;
     }, [mobilemode, renderState]);
 
+    //description
     useEffect(() => {
-        const callback = () => reRender()
-        window.addEventListener('resize', callback)
+        if (roomData) {
+            console.log(roomData);
+            const dataDes = JSON.parse(roomData.description);
+            setRoomDescription(dataDes);
+        }
+    }, [roomData]);
+
+    const renderDescription = useMemo(() => {
+        if (!roomDescription || roomDescription.length == 0) {
+            return null;
+        }
+        let limit = 0;
+        if (roomDescription[0].des == '') {
+            limit = 1;
+        }
+        return [
+            roomDescription.map((item, index) => {
+                if (index > limit) {
+                    return null;
+                }
+                return (
+                    <motion.div key={index}>
+                        <h1>{item.key}</h1>
+                        <p>{item.des}</p>
+                    </motion.div>
+                );
+            }),
+            roomDescription.map((item, index) => {
+                if (index <= limit) {
+                    return null;
+                }
+                return (
+                    <motion.div key={index}>
+                        <h1>{item.key}</h1>
+                        <p>{item.des}</p>
+                    </motion.div>
+                );
+            }),
+        ];
+    }, [roomDescription, showMoreDes]);
+
+    useEffect(() => {
+        const callback = () => reRender();
+        window.addEventListener('resize', callback);
 
         return () => {
-            window.removeEventListener('resize', callback)
-        }
-    }, [])
+            window.removeEventListener('resize', callback);
+        };
+    }, []);
 
     const refetchRoomData = useCallback(() => {
         return getRoomData();
     }, []);
 
     const homeLocation = useMemo(() => {
-        const homeTitle = getTitleHome(homeData);
-        return homeData.detailAddress
-            ? homeData.detailAddress + ' ' + homeTitle.value
-            : homeTitle.value;
-    }, [homeData, renderState]);
+        return (
+            homeData.wardName +
+            ', ' +
+            homeData.districtName.replace('Quận ', '').replace('Huyện ', '') +
+            ', ' +
+            homeData.provinceName.replace('Thành phố ', '').replace('Tỉnh ', '')
+        );
+    }, [homeData]);
 
     const roomTitle: ReactJSXElement = useMemo(() => {
         const homeTitle = getTitleHome(homeData);
@@ -166,7 +224,13 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                     _focus={{
                                         boxShadow: 'none',
                                     }}
-                                    onClick={() => {}}
+                                    onClick={() => {
+                                        createPopup(<EditRoomTitle 
+                                            roomId={roomData._id}
+                                            closeForm={closePopup}
+                                            callback={refetchRoomData}
+                                        />)
+                                    }}
                                 >
                                     <i className="fi fi-rr-edit"></i>
                                 </Button>
@@ -175,8 +239,15 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                         <div className="roompage-header__detail">
                             <div>
                                 <h3>
-                                    <i className="fi fi-br-users"></i>
-                                    {roomData.isRented ? 'Đã được cho thuê' : 'Chưa được cho thuê'}
+                                    {roomData.isRented ? (
+                                        <>
+                                            <i className="fi fi-br-check"></i>Đã được cho thuê
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fi fi-br-users"></i> Chưa được cho thuê
+                                        </>
+                                    )}
                                 </h3>
                                 <h3>
                                     <i className="fi fi-rr-map-marker-home" />
@@ -220,18 +291,98 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                         </Button>
                     </div>
                     <div className="roompage__body">
-                        <div className="roompage-owner">
-                            <div>
-                                <h2>
-                                    Phòng được cho thuê bởi chủ nhà{' '}
-                                    <Link href={`#`}>
-                                        <a>{homeData.owner.fullname}</a>
-                                    </Link>
-                                </h2>
+                        <div>
+                            <div className="roompage-owner">
+                                <div>
+                                    <h2>
+                                        Phòng được cho thuê bởi chủ nhà{' '}
+                                        <Link href={`#`}>
+                                            <a>{homeData.owner.fullname}</a>
+                                        </Link>
+                                    </h2>
+                                </div>
+                                <div>
+                                    <Avatar
+                                        size="lg"
+                                        name={homeData.owner.fullname}
+                                        src={homeData.owner.avatar}
+                                    />
+                                </div>
                             </div>
-                            
+                            <div className="homepage-description">
+                                <hr />
+                                <h1>
+                                    Mô tả từ chủ nhà
+                                    {isOwner && (
+                                        <Button
+                                            variant="link"
+                                            _focus={{
+                                                boxShadow: 'none',
+                                            }}
+                                            onClick={() => {
+                                                /* createPopup(
+                                                <EditDescription
+                                                    closeForm={() => {
+                                                        removePopup();
+                                                    }}
+                                                    homeId={homeData._id}
+                                                    callback={refreshData}
+                                                    defautDes={homeDescription}
+                                                />
+                                            ); */
+                                            }}
+                                        >
+                                            <i className="fi fi-rr-edit"></i>
+                                        </Button>
+                                    )}
+                                </h1>
+                                <div className="homepage-description__description">
+                                    {homeData.description ? (
+                                        <>
+                                            {renderDescription && renderDescription[0]}
+                                            <AnimatePresence>
+                                                {renderDescription && showMoreDes && (
+                                                    <motion.div
+                                                        style={{
+                                                            overflow: 'hidden',
+                                                        }}
+                                                        initial={{ height: 0 }}
+                                                        animate={{
+                                                            height: 'auto',
+                                                            opacity: 1,
+                                                        }}
+                                                        exit={{
+                                                            height: 0,
+                                                            opacity: 0,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.25,
+                                                        }}
+                                                        className="homepage-description__description"
+                                                    >
+                                                        {renderDescription[1]}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </>
+                                    ) : (
+                                        <EmptyData text="hiện chưa có mô tả từ chủ trọ" />
+                                    )}
+                                </div>
+                                {homeData.description && (
+                                    <Button
+                                        className="homepage-description__showmore"
+                                        variant="link"
+                                        onClick={() => {
+                                            setShowMoreDes((prev) => !prev);
+                                        }}
+                                    >
+                                        {showMoreDes ? 'Thu gọn' : 'Hiển thị thêm'}
+                                    </Button>
+                                )}
+                                <hr />
+                            </div>
                         </div>
-                        <div className="roompage-body"></div>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,6 @@ import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
 import { HomeData } from '../../../pages/home/[homeid]';
 import { Checkbox } from '@chakra-ui/checkbox';
 import useScrollController from '../../../lib/useScrollController';
-import * as EditHomeLocation from './editLocation';
 
 const container: Variants = {
     show: {

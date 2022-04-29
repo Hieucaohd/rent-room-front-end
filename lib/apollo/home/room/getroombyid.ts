@@ -13,7 +13,7 @@ export interface RoomData {
     roomNumber: string;
 }
 
-const getSSRRoomById = {
+export const getSSRRoomById = {
     command: gql`
         query GetZoomById($roomId: ID!) {
             getRoomById(roomId: $roomId) {
@@ -25,6 +25,7 @@ const getSSRRoomById = {
                         fullname
                         avatar
                     }
+                    title
                     provinceName
                     districtName
                     wardName
@@ -49,5 +50,3 @@ const getSSRRoomById = {
         };
     },
 };
-
-export default getSSRRoomById;

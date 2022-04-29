@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { from, gql } from '@apollo/client';
 
 export interface AddZoomForm {
     price: number;
@@ -30,3 +30,5 @@ export const createZoom = {
 };
 
 export default {};
+export * from './update'
+export * from './getroombyid'
