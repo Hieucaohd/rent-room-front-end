@@ -16,18 +16,20 @@ export interface User {
 
 export const checkLoggedIn = async (Cookie: string) => {
     try {
-        if (!Cookie.includes('token') || !Cookie.includes('refreshToken')) {
+        console.log(Cookie);
+        if (!Cookie.includes('access_token') || !Cookie.includes('refresh_token')) {
             return null;
         }
 
         const data = await client.query({
             query: PROFILE,
             context: { headers: { Cookie } },
-            fetchPolicy: 'no-cache'
+            fetchPolicy: 'no-cache',
         });
 
         return data.data.profile.user;
     } catch (e: any) {
+        console.log(e);
         return null;
     }
 };

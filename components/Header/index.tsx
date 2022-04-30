@@ -217,38 +217,21 @@ export default function Header({ user }: IHeaderProps) {
                                     size="sm"
                                 />
                             </MenuButton>
-                            <MenuList>
+                            <MenuList className="navbar-right__menutoggle">
                                 {mobilemode && <div className="username">{user.fullname}</div>}
                                 <MenuItem
                                     onClick={() => {
                                         router.push(`/user/homes?page=1`);
                                     }}
-                                    icon={
-                                        <i
-                                            style={{ paddingLeft: '10px' }}
-                                            className="fi fi-br-user"
-                                        ></i>
-                                    }
+                                    icon={<i className="fa-solid fa-user"></i>}
                                 >
                                     Hồ sơ
                                 </MenuItem>
-                                <MenuItem
-                                    icon={
-                                        <i
-                                            style={{ paddingLeft: '10px' }}
-                                            className="fi fi-br-interrogation"
-                                        ></i>
-                                    }
-                                >
+                                <MenuItem icon={<i className="fa-solid fa-circle-question"></i>}>
                                     Giúp đỡ
                                 </MenuItem>
                                 <MenuItem
-                                    icon={
-                                        <i
-                                            style={{ paddingLeft: '10px' }}
-                                            className="fi fi-br-sign-out-alt"
-                                        />
-                                    }
+                                    icon={<i className="fa-solid fa-arrow-right-from-bracket"></i>}
                                     onClick={onOpen}
                                 >
                                     Đăng xuất
@@ -280,7 +263,7 @@ export default function Header({ user }: IHeaderProps) {
                                     }}
                                     variant="link"
                                 >
-                                    <i className="fi fi-br-home"></i>Trang Chủ
+                                    <i className="fa-solid fa-house-chimney"></i>Trang Chủ
                                 </Button>
                             </motion.div>
                             <motion.div
@@ -296,7 +279,7 @@ export default function Header({ user }: IHeaderProps) {
                                     }}
                                     variant="link"
                                 >
-                                    <i className="fi fi-br-shopping-cart"></i>
+                                    <i className="fa-solid fa-magnifying-glass"></i>
                                     Tìm kiếm
                                 </Button>
                             </motion.div>

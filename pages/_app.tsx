@@ -16,6 +16,7 @@ import Header from '../components/Header';
 import Head from 'next/head';
 import { getPosition } from '../lib/getPosition';
 import Nprogress from 'nprogress';
+import { NextScript } from 'next/document';
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -94,19 +95,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                 <Head>
                     <title>Rent Zoom</title>
                 </Head>
-                <link
-                    rel="stylesheet"
-                    href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap"
-                />
-                <link
-                    rel="stylesheet"
-                    href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap"
-                />
-                <link
-                    rel="stylesheet"
-                    href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap"
-                />
-                <link rel="stylesheet" href="/globalstyles/icons.css" />
+
                 <AnimatePresence>
                     {withoutPage(router) && <Header user={user.info} />}
                 </AnimatePresence>

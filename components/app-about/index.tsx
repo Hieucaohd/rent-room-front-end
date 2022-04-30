@@ -1,11 +1,9 @@
 import Link from 'next/link';
 import { HTMLAttributes } from 'react';
 
-interface AppAboutProps extends HTMLAttributes<HTMLDivElement>{
+interface AppAboutProps extends HTMLAttributes<HTMLDivElement> {}
 
-}
-
-export default function AppAbout({style} : AppAboutProps) {
+export default function AppAbout({ style }: AppAboutProps) {
     return (
         <>
             <div className="homepage-about" style={style}>
@@ -14,13 +12,13 @@ export default function AppAbout({style} : AppAboutProps) {
                     <div className="homepage-about__authority">
                         <h1>Theo dõi chúng tôi</h1>
                         <div>
-                            <i className="fi fi-brands-facebook"></i>Facebook
+                            <i className="fa-brands fa-facebook"></i>Facebook
                         </div>
                         <div>
-                            <i className="fi fi-brands-instagram"></i>Instagram
+                            <i className="fa-brands fa-instagram"></i>Instagram
                         </div>
                         <div>
-                            <i className="fi fi-brands-twitter"></i>Twitter
+                            <i className="fa-brands fa-twitter"></i>Twitter
                         </div>
                     </div>
                     <div className="homepage-about__developer">

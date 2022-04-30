@@ -5,15 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { LOGIN } from '../lib/apollo/auth';
 import { User, withAuth } from '../lib/withAuth';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    Button,
-    ButtonProps,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    InputProps,
-    InputRightElement,
-} from '@chakra-ui/react';
+import { Button, Input, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { ConnectWithBtnStyle, InputStyle } from '../chakra';
 import useStore from '../store/useStore';
@@ -21,14 +13,6 @@ import useStore from '../store/useStore';
 export interface ISignInProps {
     user: User;
 }
-
-export const getServerSideProps = (context: GetServerSidePropsContext) => {
-    return {
-        props: {},
-    };
-};
-
-const SignInBtnAnimation = {};
 
 interface LoginForm {
     email: string;
@@ -67,6 +51,84 @@ const removeError = (): ErrorLog => {
         message: null,
     };
 };
+
+//framer motion
+const bgContainer = {
+    hidden: {
+        opacity: 0,
+        x: -100,
+    },
+    visible: {
+        opacity: 1,
+        x: 0,
+        transition: {
+            duration: 0.4,
+            delayChildren: 0.4,
+            staggerChildren: 0.1,
+        },
+    },
+    out: {
+        opacity: 0,
+        x: -100,
+        transition: {
+            duration: 0.4,
+            staggerChildren: 0.05,
+        },
+    },
+};
+
+const bgContainerLogo = {
+    hidden: { opacity: 0, x: '-50%' },
+    visible: {
+        opacity: 1,
+        x: '-50%',
+    },
+    out: {
+        opacity: 0,
+        x: '-100%',
+    },
+};
+
+const bgContainerChild = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+    },
+    out: {
+        opacity: 0,
+        x: -100,
+    },
+};
+
+const container = {
+    hidden: {},
+    visible: {
+        transition: {
+            delayChildren: 0.4,
+            staggerChildren: 0.1,
+        },
+    },
+    out: {
+        transition: {
+            staggerChildren: 0.1,
+        },
+    },
+};
+
+const containerChild = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+    },
+    out: {
+        opacity: 0,
+        x: 100,
+    },
+};
+
+//
 
 export default function SignIn() {
     const [login, { data }] = useLazyQuery(LOGIN);
@@ -118,147 +180,52 @@ export default function SignIn() {
     return (
         <motion.div className="signin">
             <motion.div
-                exit={{
-                    opacity: 0,
-                    translateX: '-100%',
-                }}
-                transition={{
-                    duration: 0.5,
-                }}
+                variants={bgContainer}
+                initial="hidden"
+                animate="visible"
+                exit="out"
                 className="signin-bg"
             >
-                <motion.img
-                    initial={{
-                        opacity: 0,
-                    }}
-                    animate={{
-                        opacity: 1,
-                    }}
-                    transition={{
-                        duration: 0.5,
-                    }}
-                    src="/loginbg.svg"
-                    alt="login background"
-                />
-                <motion.div
-                    initial={{
-                        scale: 10,
-                        rotateZ: '-360deg',
-                        translateX: '-50%',
-                        translateY: '-50%',
-                    }}
-                    animate={{
-                        scale: 1,
-                        rotateZ: '0deg',
-                        translateX: '-50%',
-                        translateY: '-50%',
-                    }}
-                    transition={{
-                        duration: 1,
-                    }}
-                    className="app-logo"
-                >
+                <motion.img src="/loginbg.svg" alt="login background" />
+                <motion.div variants={bgContainerLogo} className="app-logo">
                     <span>Rent </span> <span>Room</span>
                 </motion.div>
                 <div className="signin-bg__connect">
                     <motion.i
-                        initial={{
-                            y: 100,
-                        }}
-                        animate={{
-                            y: 0,
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1,
-                        }}
-                        className="fi fi-brands-facebook"
+                        variants={bgContainerChild}
+                        className="fa-brands fa-facebook"
                     ></motion.i>
                     <motion.i
-                        initial={{
-                            y: 100,
-                        }}
-                        animate={{
-                            y: 0,
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1.1,
-                        }}
-                        className="fi fi-brands-instagram"
+                        variants={bgContainerChild}
+                        className="fa-brands fa-instagram"
                     ></motion.i>
                     <motion.i
-                        initial={{
-                            y: 100,
-                        }}
-                        animate={{
-                            y: 0,
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1.2,
-                        }}
-                        className="fi fi-brands-twitter"
+                        variants={bgContainerChild}
+                        className="fa-brands fa-twitter"
                     ></motion.i>
                 </div>
             </motion.div>
             <motion.div
-                exit={{
-                    opacity: 0,
-                    translateX: '100%',
-                }}
-                transition={{
-                    duration: 0.5,
-                }}
+                variants={container}
+                initial="hidden"
+                animate="visible"
+                exit="out"
                 className="signin-base"
             >
                 <motion.div>
-                    <motion.h1
-                        initial={{
-                            x: '100vw',
-                        }}
-                        animate={{
-                            x: '0',
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1.4,
-                        }}
-                    >
-                        Đăng Nhập
-                    </motion.h1>
-                    <motion.div
-                        initial={{
-                            x: '100vw',
-                        }}
-                        animate={{
-                            x: '0',
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1.5,
-                        }}
-                    >
+                    <motion.h1 variants={containerChild}>Đăng Nhập</motion.h1>
+                    <motion.div variants={containerChild}>
                         Vui lòng điền thông tin của bạn vào bên dưới
                     </motion.div>
                     <motion.form
-                        initial={{
-                            x: '100vw',
-                        }}
-                        animate={{
-                            x: '0',
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1.6,
-                        }}
+                        variants={containerChild}
                         className="signin-form"
                         onSubmit={handleSubmit(loginSubmit)}
                     >
                         <InputGroup>
                             <InputLeftElement
                                 pointerEvents="none"
-                                children={<i className="fi fi-br-envelope"></i>}
+                                children={<i className="fa-solid fa-envelope"></i>}
                             />
                             <Input
                                 {...InputStyle}
@@ -279,7 +246,7 @@ export default function SignIn() {
                         <InputGroup>
                             <InputLeftElement
                                 pointerEvents="none"
-                                children={<i className="fi fi-br-key"></i>}
+                                children={<i className="fa-solid fa-key"></i>}
                             />
                             <Input
                                 {...InputStyle}
@@ -300,14 +267,15 @@ export default function SignIn() {
                                 children={
                                     <Button
                                         backgroundColor="transparent"
+                                        width="100%"
                                         _focus={{ outline: 'none' }}
                                         _active={{ backgroundColor: 'transparent' }}
                                         _hover={{ backgroundColor: 'transparent' }}
                                     >
                                         {showPassword ? (
-                                            <i className="fi fi-bs-eye"></i>
+                                            <i className="fa-solid fa-eye"></i>
                                         ) : (
-                                            <i className="fi fi-bs-eye-crossed"></i>
+                                            <i className="fa-solid fa-eye-slash"></i>
                                         )}
                                     </Button>
                                 }
@@ -338,19 +306,7 @@ export default function SignIn() {
                             </Button>
                         </motion.div>
                     </motion.form>
-                    <motion.div
-                        initial={{
-                            x: '100vw',
-                        }}
-                        animate={{
-                            x: '0',
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 1.8,
-                        }}
-                        className="signin__create-account"
-                    >
+                    <motion.div variants={containerChild} className="signin__create-account">
                         <div>Bạn không có tài khoản?</div>
                         <Button
                             type="button"
@@ -366,34 +322,10 @@ export default function SignIn() {
                             Đăng ký
                         </Button>
                     </motion.div>
-                    <motion.div
-                        initial={{
-                            y: '50vh',
-                        }}
-                        animate={{
-                            y: '0',
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 2,
-                        }}
-                        className="lb-form__ocw"
-                    >
+                    <motion.div variants={containerChild} className="lb-form__ocw">
                         <span>or continue with</span>
                     </motion.div>
-                    <motion.div
-                        initial={{
-                            y: '50vh',
-                        }}
-                        animate={{
-                            y: '0',
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 2,
-                        }}
-                        className="signin__connect-with"
-                    >
+                    <motion.div variants={containerChild} className="signin__connect-with">
                         <Button {...ConnectWithBtnStyle}>
                             <img src="/google.svg" alt="" />
                         </Button>

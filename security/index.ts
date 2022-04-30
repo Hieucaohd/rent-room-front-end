@@ -12,12 +12,12 @@ export default function getSecurityCookie(
         cookies: NextApiRequestCookies;
     }
 ) {
-    const { token, refreshToken } = req.cookies;
+    const { access_token, refresh_token } = req.cookies;
     const Cookies = req.headers.cookie;
-    if (token && refreshToken) {
+    if (access_token && refresh_token) {
         try {
-            const tokenData: { exp: number } = jwtDecode(token);
-            const refreshTokenData: { exp: number } = jwtDecode(refreshToken);
+            const tokenData: { exp: number } = jwtDecode(access_token);
+            const refreshTokenData: { exp: number } = jwtDecode(refresh_token);
             const exp = Date.now();
             if (exp > refreshTokenData.exp * 1000) {
                 if (exp > tokenData.exp * 1000) {

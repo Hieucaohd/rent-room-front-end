@@ -19,30 +19,41 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        & button {
+            & > i[class*='fa-xmark'] {
+                font-size: 1.5em;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 1.2em;
+                }
+            }
+
+            & > i {
+                font-size: 1.1em;
+                @media screen and (max-width: 500px) {
+                    font-size: 0.8em;
+                }
+            }
+        }
     }
 
     &__prev {
-        transform: rotateZ(180deg);
-
-        & > i {
+        & > i[class*='fa'] {
             height: 100%;
-
-            &::before {
-                height: 100%;
-                display: flex;
-                align-items: center;
+            font-size: 1.5em;
+            @media screen and (max-width: 500px) {
+                font-size: 1.2em;
             }
         }
     }
 
     &__next {
-        & > i {
+        & > i[class*='fa'] {
             height: 100%;
-
-            &::before {
-                height: 100%;
-                display: flex;
-                align-items: center;
+            font-size: 1.5em;
+            @media screen and (max-width: 500px) {
+                font-size: 1.2em;
             }
         }
     }

@@ -1,4 +1,4 @@
-import { LazyQueryResult, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import {
     AlertDialog,
     AlertDialogBody,
@@ -15,7 +15,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { getHomeById } from '../../lib/apollo/home/gethomebyid';
-import getSSRRoomById, { RoomData } from '../../lib/apollo/home/room/getroombyid';
+import { RoomData, getSSRRoomById } from '../../lib/apollo/home/room/getroombyid';
 import { updateRoomImages } from '../../lib/apollo/home/room/update';
 import { updateHomeImages } from '../../lib/apollo/home/update';
 import { deleteFile, getMetaDataFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
@@ -168,7 +168,7 @@ export default function HomeImagePreivew({
                 onClick={() => close && close()}
                 {...className('imgprev__close')}
             >
-                <i className="fi fi-br-cross" />
+                <i className="fa-solid fa-xmark"></i>
             </Button>
 
             {user?._id == owner && owner && (
@@ -196,7 +196,7 @@ export default function HomeImagePreivew({
                             isDisabled={images?.length <= 2}
                             {...className('imgprev__close')}
                         >
-                            <i className="fi fi-br-trash"></i>
+                            <i className="fa-solid fa-trash-can fa-sm"></i>
                         </Button>
                     </Box>
                 </Tooltip>
@@ -224,7 +224,7 @@ export default function HomeImagePreivew({
                     });
                 }}
             >
-                <i className="fi fi-br-download"></i>
+                <i className="fa-solid fa-download"></i>
             </Button>
 
             <Button
@@ -241,7 +241,7 @@ export default function HomeImagePreivew({
                 }}
                 {...className('imgprev__prev')}
             >
-                <i className="fi fi-sr-play"></i>
+                <i className="fa-solid fa-angle-left"></i>
             </Button>
             <Button
                 position="absolute"
@@ -257,7 +257,7 @@ export default function HomeImagePreivew({
                 }}
                 {...className('imgprev__next')}
             >
-                <i className="fi fi-sr-play"></i>
+                <i className="fa-solid fa-angle-right"></i>
             </Button>
             <div {...className('imgprev')}>
                 <div {...className('imgprev__image')}>
@@ -471,7 +471,7 @@ export function RoomImagePreivew({
                 onClick={() => close && close()}
                 {...className('imgprev__close')}
             >
-                <i className="fi fi-br-cross" />
+                <i className="fa-solid fa-xmark"></i>
             </Button>
 
             {isOwner && (
@@ -499,7 +499,7 @@ export function RoomImagePreivew({
                             isDisabled={images?.length <= 2}
                             {...className('imgprev__close')}
                         >
-                            <i className="fi fi-br-trash"></i>
+                            <i className="fa-solid fa-trash-can fa-sm"></i>
                         </Button>
                     </Box>
                 </Tooltip>
@@ -527,7 +527,7 @@ export function RoomImagePreivew({
                     });
                 }}
             >
-                <i className="fi fi-br-download"></i>
+                <i className="fa-solid fa-download"></i>
             </Button>
 
             <Button
@@ -544,7 +544,7 @@ export function RoomImagePreivew({
                 }}
                 {...className('imgprev__prev')}
             >
-                <i className="fi fi-sr-play"></i>
+                <i className="fa-solid fa-angle-left"></i>
             </Button>
             <Button
                 position="absolute"
@@ -560,7 +560,7 @@ export function RoomImagePreivew({
                 }}
                 {...className('imgprev__next')}
             >
-                <i className="fi fi-sr-play"></i>
+                <i className="fa-solid fa-angle-right"></i>
             </Button>
             <div {...className('imgprev')}>
                 <div {...className('imgprev__image')}>

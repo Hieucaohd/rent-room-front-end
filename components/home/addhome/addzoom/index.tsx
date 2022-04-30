@@ -118,7 +118,7 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                                 setListImage(cloneList);
                             }}
                         >
-                            <i className="fi fi-br-trash"></i>
+                            <i className="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
@@ -360,7 +360,7 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                                         }
                                     }}
                                 >
-                                    <i className="fi fi-br-plus"></i>
+                                    <i className="fa-solid fa-plus"></i>
                                     Tải lên
                                 </motion.div>
                             </Tooltip>
@@ -427,7 +427,7 @@ export default function AddZoom({ homeId, user }: { homeId: string; user: User }
     return (
         <>
             <Button onClick={setOpen.on}>
-                <i className="fi fi-br-plus"></i>Add Zoom
+                <i className="fa-solid fa-plus"></i>Add Zoom
             </Button>
             <AnimatePresence>
                 {isOpen && <Form closeForm={setOpen.off} homeId={homeId} user={user} />}

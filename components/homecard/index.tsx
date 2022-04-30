@@ -98,7 +98,7 @@ export default function HomeCard(props: HomeCardProps) {
                     <div className="homecard-main__action">
                         <Menu placement="bottom-end">
                             <MenuButton>
-                                <i className="fi fi-bs-menu-dots-vertical"></i>
+                                <i className="fa-solid fa-ellipsis-vertical"></i>
                             </MenuButton>
                             <MenuList>
                                 <MenuItem onClick={onOpenDialog}>Xóa trọ</MenuItem>
