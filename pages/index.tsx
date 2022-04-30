@@ -29,14 +29,14 @@ const Home = ({ user }: IHomePageProps) => {
                                     outline: 'none',
                                 }}
                             >
-                                <i className="fi fi-ss-map-marker"></i>
+                                <i className="fa-solid fa-map-location-dot"></i>
                             </Button>
                             <Button
                                 _focus={{
                                     outline: 'none',
                                 }}
                             >
-                                <i className="fi fi-rr-search"></i>
+                                <i className="fa-solid fa-magnifying-glass"></i>
                             </Button>
                         </div>
                     </div>

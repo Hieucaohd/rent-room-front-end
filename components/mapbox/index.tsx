@@ -260,7 +260,7 @@ export default function MapBox({
                                             });
                                         }}
                                         _focus={{ boxShadow: 'none' }}
-                                        leftIcon={<i className="fi fi-bs-marker"></i>}
+                                        leftIcon={<i className="fa-solid fa-location-dot"></i>}
                                         variant="ghost"
                                         key={index}
                                     >

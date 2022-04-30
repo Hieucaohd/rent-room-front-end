@@ -190,7 +190,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                                 setListImage(cloneList);
                             }}
                         >
-                            <i className="fi fi-br-trash"></i>
+                            <i className="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
@@ -240,9 +240,10 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
             };
 
             if (activeTitle && e.title == '') {
-                errorHandleForm.title = true
-                errorSubmit = true
-            }console.log(e.title)
+                errorHandleForm.title = true;
+                errorSubmit = true;
+            }
+            console.log(e.title);
 
             if (activeLocation) {
                 e.province = parseInt(e.province);
@@ -414,9 +415,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                                 borderColor: '#80befc',
                             }}
                             isDisabled={!activeTitle}
-                            borderColor={
-                                errorAction.title && activeTitle ? 'red' : 'inherit'
-                            }
+                            borderColor={errorAction.title && activeTitle ? 'red' : 'inherit'}
                             {...register('title')}
                             onChange={(e) => {
                                 setErrorAction({ ...errorAction, title: false });
@@ -582,7 +581,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                                         }
                                     }}
                                 >
-                                    <i className="fi fi-br-plus"></i>
+                                    <i className="fa-solid fa-plus"></i>
                                     Tải lên
                                 </Button>
                             </Tooltip>
@@ -641,13 +640,16 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                                 !activeCleaningPrice
                             } */
                             isDisabled={
-                                !activeTitle && !activeLocation && !activeLiveWithOwner && !activeUploadImage
+                                !activeTitle &&
+                                !activeLocation &&
+                                !activeLiveWithOwner &&
+                                !activeUploadImage
                             }
                             isLoading={upLoading}
                             type="submit"
                             colorScheme="red"
                             _focus={{
-                                boxShadow: 'none'
+                                boxShadow: 'none',
                             }}
                         >
                             Cập nhật

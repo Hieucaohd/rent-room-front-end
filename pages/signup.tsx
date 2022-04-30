@@ -311,7 +311,11 @@ export default function SignUp(props: ISignUpProps) {
                         <div>Đăng Ký</div>
                         <div>Vui lòng điền thông tin của bạn vào bên dưới</div>
                     </motion.div>
-                    <motion.form className="signup-form" onSubmit={handleSubmit(submitForm)}>
+                    <motion.form
+                        className="signup-form"
+                        autoComplete="off"
+                        onSubmit={handleSubmit(submitForm)}
+                    >
                         <motion.div variants={containerChild}>
                             <Tooltip
                                 label="tài khoản này đã tồn tại"
@@ -324,7 +328,7 @@ export default function SignUp(props: ISignUpProps) {
                                 <InputGroup className="signup-form__child">
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<i className="fi fi-br-envelope"></i>}
+                                        children={<i className="fa-solid fa-envelope"></i>}
                                     />
                                     <Input
                                         {...InputStyle}
@@ -338,6 +342,7 @@ export default function SignUp(props: ISignUpProps) {
                                             }
                                             emailField.onChange(e);
                                         }}
+                                        autoComplete="off"
                                         type="email"
                                         placeholder="email"
                                     />
@@ -348,7 +353,7 @@ export default function SignUp(props: ISignUpProps) {
                             <InputGroup className="signup-form__child">
                                 <InputLeftElement
                                     pointerEvents="none"
-                                    children={<i className="fi fi-br-key"></i>}
+                                    children={<i className="fa-solid fa-key"></i>}
                                 />
                                 <Input
                                     {...InputStyle}
@@ -370,9 +375,9 @@ export default function SignUp(props: ISignUpProps) {
                                             _hover={{ backgroundColor: 'transparent' }}
                                         >
                                             {showPassword ? (
-                                                <i className="fi fi-bs-eye"></i>
+                                                <i className="fa-solid fa-eye"></i>
                                             ) : (
-                                                <i className="fi fi-bs-eye-crossed"></i>
+                                                <i className="fa-solid fa-eye-slash"></i>
                                             )}
                                         </Button>
                                     }
@@ -391,7 +396,7 @@ export default function SignUp(props: ISignUpProps) {
                                 <InputGroup className="signup-form__child">
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<i className="fi fi-br-key"></i>}
+                                        children={<i className="fa-solid fa-key"></i>}
                                     />
                                     <Input
                                         {...InputStyle}
@@ -421,9 +426,9 @@ export default function SignUp(props: ISignUpProps) {
                                                 _hover={{ backgroundColor: 'transparent' }}
                                             >
                                                 {showPassword ? (
-                                                    <i className="fi fi-bs-eye"></i>
+                                                    <i className="fa-solid fa-eye"></i>
                                                 ) : (
-                                                    <i className="fi fi-bs-eye-crossed"></i>
+                                                    <i className="fa-solid fa-eye-slash"></i>
                                                 )}
                                             </Button>
                                         }
@@ -443,7 +448,7 @@ export default function SignUp(props: ISignUpProps) {
                                 <InputGroup className="signup-form__child">
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<i className="fi fi-bs-user"></i>}
+                                        children={<i className="fa-solid fa-user"></i>}
                                     />
                                     <Input
                                         {...InputStyle}
@@ -472,7 +477,7 @@ export default function SignUp(props: ISignUpProps) {
                                 <InputGroup className="signup-form__child">
                                     <InputLeftElement
                                         pointerEvents="none"
-                                        children={<i className="fi fi-br-call-history"></i>}
+                                        children={<i className="fa-solid fa-phone"></i>}
                                     />
                                     <Input
                                         {...InputStyle}

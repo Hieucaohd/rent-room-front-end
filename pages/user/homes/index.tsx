@@ -72,7 +72,6 @@ export default function MyHomes(props: any) {
 
         return () => {
             mount.current = false;
-            console.log('un mount');
         };
     }, []);
 
@@ -128,11 +127,8 @@ export default function MyHomes(props: any) {
               ));
     }, [data]);
 
-    console.log(renderListHome);
-
     const renderListPage = useMemo(() => {
         if (pageRouter) {
-            console.log(pageRouter);
             const limit = pageRouter.totalPages;
             const p = pageRouter.page;
             let listPage = [pageRouter.page];

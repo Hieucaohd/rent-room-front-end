@@ -9,7 +9,7 @@ export default function EmptyData({ text = 'chưa có dữ liệu' }: EmptyDataP
     const [className] = useClassName(styles);
     return (
         <div {...className('empty-data')}>
-            <i className="fi fi-br-browser"></i>
+            <i className="fa-solid fa-rectangle-xmark"></i>
             {text}
         </div>
     );

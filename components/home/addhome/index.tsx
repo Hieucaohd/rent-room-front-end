@@ -135,7 +135,7 @@ export default function AddHome(props: AddHomeProps) {
                                 setListImage(cloneList);
                             }}
                         >
-                            <i className="fi fi-br-trash"></i>
+                            <i className="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
@@ -466,7 +466,7 @@ export default function AddHome(props: AddHomeProps) {
                                             }
                                         }}
                                     >
-                                        <i className="fi fi-br-plus"></i>
+                                        <i className="fa-solid fa-plus"></i>
                                         Tải lên
                                     </motion.div>
                                 </Tooltip>

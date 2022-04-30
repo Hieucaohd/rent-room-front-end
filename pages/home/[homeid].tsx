@@ -21,6 +21,7 @@ import getTitleHome from '../../lib/getNameHome';
 import { GetServerSideProps } from 'next';
 import getSecurityCookie from '../../security';
 import client from '../../lib/apollo/apollo-client';
+import AppAbout from '../../components/app-about';
 
 export interface ListZoomData {
     docs: ZoomData[];
@@ -80,7 +81,7 @@ const getListZoom = (data: any) => {
 
 interface HomePageProps {
     homeId: string;
-    homeSSRData: HomeData
+    homeSSRData: HomeData;
     isOwner: string;
 }
 
@@ -167,9 +168,9 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
     const [loading, setLoading] = useState(true);
     const homeData: HomeData = useMemo(() => {
         if (!data) {
-            return homeSSRData
-        } 
-        return getData(data)
+            return homeSSRData;
+        }
+        return getData(data);
     }, [data]);
     const [homeDescription, setHomeDescription] = useState<
         {
@@ -180,9 +181,9 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
     const [showMoreDes, setShowMoreDes] = useState(false); // state quản lý hiển thị thêm mô tả trọ
     const listZoom: ListZoomData = useMemo(() => {
         if (!data) {
-            return homeSSRData.listRooms
-        } 
-        return getListZoom(data)
+            return homeSSRData.listRooms;
+        }
+        return getListZoom(data);
     }, [data]);
 
     const [showMapBox, setShowMapBox] = useState(true);
@@ -261,7 +262,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
 
     const placeName = useMemo(() => {
         if (homeData) {
-            console.log(homeData)
+            console.log(homeData);
             return (
                 homeData.wardName +
                 ', ' +
@@ -317,12 +318,12 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                                 );
                                             }}
                                         >
-                                            <i className="fi fi-rr-edit"></i>
+                                            <i className="fa-solid fa-pen-to-square"></i>
                                         </Button>
                                     )}
                                 </h1>
                                 <h3>
-                                    <i className="fi fi-br-users"></i>
+                                    <i className="fa-solid fa-user-group"></i>
                                     {homeData?.liveWithOwner
                                         ? 'Sống cùng chủ nhà'
                                         : 'Không sống với chủ nhà'}
@@ -331,7 +332,11 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                             <div className="homepage-images">
                                 <Gallery images={homeData.images} />
                                 <Button
-                                    variant="link"
+                                    display="flex"
+                                    gap="5px"
+                                    bgColor="white"
+                                    color="black"
+                                    opacity={0.9}
                                     onClick={() => {
                                         showImagePreview(
                                             <HomeImagePreivew
@@ -351,7 +356,8 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                         );
                                     }}
                                 >
-                                    <i className="fi fi-sr-apps-add"></i>
+                                    <i className="fa-solid fa-border-all"></i>
+                                    Xem tất cả
                                 </Button>
                             </div>
                             <div className="homepage-body">
@@ -399,7 +405,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                                         );
                                                     }}
                                                 >
-                                                    <i className="fi fi-rr-edit"></i>
+                                                    <i className="fa-solid fa-pen-to-square"></i>
                                                 </Button>
                                             )}
                                         </h1>
@@ -586,45 +592,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                     )}
                 </div>
             </div>
-            <div className="homepage-about">
-                <div>
-                    <div></div>
-                    <div className="homepage-about__authority">
-                        <h1>Theo dõi chúng tôi</h1>
-                        <div>
-                            <i className="fi fi-brands-facebook"></i>Facebook
-                        </div>
-                        <div>
-                            <i className="fi fi-brands-instagram"></i>Instagram
-                        </div>
-                        <div>
-                            <i className="fi fi-brands-twitter"></i>Twitter
-                        </div>
-                    </div>
-                    <div className="homepage-about__developer">
-                        <h1>Developer</h1>
-                        <div>Cao Trung Hiếu</div>
-                        <div>Nguyễn Quốc Đại</div>
-                        <div>Nguyễn Khắc Hiệp</div>
-                        <div>Bùi Tuấn Anh</div>
-                        <div>Nguyễn Thế Anh</div>
-                    </div>
-                </div>
-                <hr />
-                <div className="homepage-about__footer">
-                    <div>
-                        <Link href="/">
-                            <a className="app-logo">
-                                <span>Rent </span> <span>Room</span>
-                            </a>
-                        </Link>
-                    </div>
-                    <div>
-                        © 2022 Website hỗ trợ tìm kiếm phòng trọ, giúp bạn tìm kiếm sự tiện nghi
-                        ngay tại nhà
-                    </div>
-                </div>
-            </div>
+            <AppAbout />
         </>
     );
 };

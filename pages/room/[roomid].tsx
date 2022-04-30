@@ -59,18 +59,28 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
         } catch (error) {
             console.log(error);
         }
-        const { data: data2 } = await client.query({
-            query: getSSRRoomById.command,
-            variables: getSSRRoomById.variables(roomId.toString()),
-        });
-        const roomData = getRoomDataFromQuery(data2);
-        return {
-            props: {
-                roomSSRData: roomData,
-                roomId: roomId.toString(),
-                isOwner: user?._id == roomData?.home?.owner?._id,
-            },
-        };
+        try {
+            const { data: data2 } = await client.query({
+                query: getSSRRoomById.command,
+                variables: getSSRRoomById.variables(roomId.toString()),
+            });
+            const roomData = getRoomDataFromQuery(data2);
+            return {
+                props: {
+                    roomSSRData: roomData,
+                    roomId: roomId.toString(),
+                    isOwner: user?._id == roomData?.home?.owner?._id,
+                },
+            };
+        } catch (error) {
+            console.log(error);
+            return {
+                redirect: {
+                    permanent: false,
+                    destination: '/404',
+                },
+            };
+        }
     } else {
         return {
             redirect: {
@@ -225,14 +235,16 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         boxShadow: 'none',
                                     }}
                                     onClick={() => {
-                                        createPopup(<EditRoomTitle 
-                                            roomId={roomData._id}
-                                            closeForm={closePopup}
-                                            callback={refetchRoomData}
-                                        />)
+                                        createPopup(
+                                            <EditRoomTitle
+                                                roomId={roomData._id}
+                                                closeForm={closePopup}
+                                                callback={refetchRoomData}
+                                            />
+                                        );
                                     }}
                                 >
-                                    <i className="fi fi-rr-edit"></i>
+                                    <i className="fa-solid fa-pen-to-square"></i>
                                 </Button>
                             )}
                         </h1>
@@ -241,16 +253,17 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 <h3>
                                     {roomData.isRented ? (
                                         <>
-                                            <i className="fi fi-br-check"></i>Đã được cho thuê
+                                            <i className="fa-solid fa-check"></i>Đã được cho thuê
                                         </>
                                     ) : (
                                         <>
-                                            <i className="fi fi-br-users"></i> Chưa được cho thuê
+                                            <i className="fa-solid fa-user-group"></i>Chưa được cho
+                                            thuê
                                         </>
                                     )}
                                 </h3>
                                 <h3>
-                                    <i className="fi fi-rr-map-marker-home" />
+                                    <i className="fa-solid fa-location-dot"></i>
                                     {homeLocation}
                                 </h3>
                             </div>
@@ -273,7 +286,11 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                     <div className="roompage__gallery">
                         <Gallery images={roomData.images} />
                         <Button
-                            variant="link"
+                            display="flex"
+                            gap="5px"
+                            bgColor="white"
+                            color="black"
+                            opacity={0.9}
                             onClick={() => {
                                 showImagePreview(
                                     <RoomImagePreivew
@@ -287,7 +304,8 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 );
                             }}
                         >
-                            <i className="fi fi-sr-apps-add"></i>
+                            <i className="fa-solid fa-border-all"></i>
+                            Xem tất cả
                         </Button>
                     </div>
                     <div className="roompage__body">
@@ -332,7 +350,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                             ); */
                                             }}
                                         >
-                                            <i className="fi fi-rr-edit"></i>
+                                            <i className="fa-solid fa-pen-to-square"></i>
                                         </Button>
                                     )}
                                 </h1>

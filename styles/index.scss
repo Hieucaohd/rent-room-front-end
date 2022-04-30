@@ -73,3 +73,11 @@ input[type='number'] {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+div.chakra-input__left-element {
+    left: 3px;
+}
+
+div.chakra-input__right-element {
+    right: 3px;
+}
