@@ -288,7 +288,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
         <>
             <div className="homepage-base">
                 <div className="homepage">
-                    {!loading && homeId ? (
+                    {true && homeId ? (
                         <>
                             <div className="homepage__title">
                                 <h1>
