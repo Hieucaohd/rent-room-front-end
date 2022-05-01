@@ -21,7 +21,7 @@ export default function Document() {
                 <Main />
                 <NextScript />
                 <script
-                    src="https://kit.fontawesome.com/130bb4f0d8.js"
+                    src="/kit.js"
                     crossOrigin="anonymous"
                 ></script>
             </body>
