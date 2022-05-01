@@ -1,15 +1,10 @@
 import styles from '../styles/style.module.scss';
 import { Button, Input, Text, Textarea } from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
-import {  useCallback,  useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import useClassName from '../../../lib/useClassName';
-import {
-    updateHomeDescription,
-} from '../../../lib/apollo/home/update';
-import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
-import { HomeData } from '../../../pages/home/[homeid]';
-import useScrollController from '../../../lib/useScrollController';
+import { getSSRRoomById, RoomData, updateRoomDescription } from '../../../lib/apollo/home/room';
 
 const container: Variants = {
     show: {
@@ -33,7 +28,7 @@ const formAnimate: Variants = {
 
 interface FormProps {
     closeForm: () => void;
-    homeId: string;
+    roomId: string;
     callback?: () => void;
     defautDes?: {
         key: string;
@@ -41,24 +36,22 @@ interface FormProps {
     }[];
 }
 
-const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) => {
+export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: FormProps) => {
     const mount = useRef(false);
-    const [updateHome] = useMutation(updateHomeDescription.command, {
-        update(cache, { data: { updateHome } }) {
-            const data = cache.readQuery<{ getHomeById: HomeData }>({
-                query: getHomeById.command,
-                variables: getHomeById.variables(homeId),
+    const [updateRoom] = useMutation(updateRoomDescription.command, {
+        update(cache, { data: { updateRoom } }) {
+            const data = cache.readQuery<{ getSSRRoomById: RoomData }>({
+                query: getSSRRoomById.command,
+                variables: getSSRRoomById.variables(roomId),
             });
-            if (data) {
-                const newData = { ...data.getHomeById, ...updateHome };
-                cache.writeQuery({
-                    query: getHomeById.command,
-                    variables: getHomeById.variables(homeId),
-                    data: {
-                        getHomeById: newData,
-                    },
-                });
-            }
+            const newData = data ? { ...data.getSSRRoomById, ...updateRoom } : { ...updateRoom };
+            cache.writeQuery({
+                query: getSSRRoomById.command,
+                variables: getSSRRoomById.variables(roomId),
+                data: {
+                    getSSRRoomById: newData,
+                },
+            });
         },
         onCompleted: () => {
             callback && callback();
@@ -112,8 +105,8 @@ const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) 
     const submitForm = useCallback(() => {
         const des = JSON.stringify(listProperty);
         setUpLoading(true);
-        updateHome({
-            variables: updateHomeDescription.variables(des, homeId),
+        updateRoom({
+            variables: updateRoomDescription.variables(des, roomId),
         }).catch(() => {
             setUpLoading(false);
         });
@@ -203,4 +196,3 @@ const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) 
     );
 };
 
-export default EditDescription;

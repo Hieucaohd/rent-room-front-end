@@ -3,10 +3,10 @@ import client from './apollo/apollo-client';
 import { PROFILE } from './apollo/auth';
 
 export interface User {
-    _id?: string;
-    avatar?: string;
-    email?: string;
-    fullname?: string;
+    _id: string;
+    avatar: string;
+    email: string;
+    fullname: string;
     province: number;
     position: {
         lng: number;

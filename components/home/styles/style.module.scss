@@ -82,6 +82,20 @@
             margin-bottom: 5px;
         }
 
+        &__group{
+            display: flex;
+            gap: 20px;
+            @media screen and (max-width: 500px) {
+                gap: 10px;
+            }
+            & > div{
+                width: 100%;
+                display: flex;
+                flex-flow: column;
+                gap: 5px;
+            }
+        }
+
         &__label {
             & > span {
                 color: red;

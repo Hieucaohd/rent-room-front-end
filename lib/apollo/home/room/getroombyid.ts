@@ -33,6 +33,10 @@ export const getSSRRoomById = {
                     waterPrice
                     internetPrice
                     cleaningPrice
+                    position {
+                        lng
+                        lat
+                    }
                 }
                 price
                 square

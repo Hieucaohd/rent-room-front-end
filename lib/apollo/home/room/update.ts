@@ -24,6 +24,7 @@ export interface UpdateRoomTitle {
     square: number | undefined;
     isRented: boolean | undefined;
     floor: number | undefined;
+    images: any[] | undefined
 }
 
 export const updateRoomTitle = {
@@ -42,4 +43,22 @@ export const updateRoomTitle = {
         updatedRoom,
         updateRoomId,
     }),
+};
+
+export const updateRoomDescription = {
+    command: gql`
+        mutation Mutation($updatedRoom: RoomUpdateInput!, $updateRoomId: ID!) {
+            updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
+                description
+            }
+        }
+    `,
+    variables: (des: string, updateRoomId: any) => {
+        return {
+            updatedRoom: {
+                description: des,
+            },
+            updateRoomId,
+        };
+    },
 };
