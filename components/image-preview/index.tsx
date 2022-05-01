@@ -367,7 +367,7 @@ export function RoomImagePreivew({
                     query: getSSRRoomById.command,
                     variables: getSSRRoomById.variables(roomId),
                     data: {
-                        getHomeById: updateRoom,
+                        getRoomById: updateRoom,
                     },
                 });
             }

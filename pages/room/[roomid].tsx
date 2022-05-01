@@ -9,8 +9,9 @@ import { signUpBtnStyle } from '../../chakra';
 import AppAbout from '../../components/app-about';
 import EmptyData from '../../components/emptydata';
 import Gallery from '../../components/gallery';
-import { EditRoomTitle } from '../../components/home/modifyRoom';
+import { EditRoomDescription, EditRoomTitle } from '../../components/home/modifyRoom';
 import { RoomImagePreivew } from '../../components/image-preview';
+import MapBox from '../../components/mapbox';
 import client from '../../lib/apollo/apollo-client';
 import { getSSRRoomById, RoomData } from '../../lib/apollo/home/room/getroombyid';
 import getTitleHome from '../../lib/getNameHome';
@@ -75,18 +76,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
         } catch (error) {
             console.log(error);
             return {
-                redirect: {
-                    permanent: false,
-                    destination: '/404',
-                },
+                notFound: true,
             };
         }
     } else {
         return {
-            redirect: {
-                permanent: false,
-                destination: '/404',
-            },
+            notFound: true,
         };
     }
 };
@@ -96,19 +91,22 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
         variables: getSSRRoomById.variables(roomId),
         onCompleted: (data) => {
             const newData = getRoomDataFromQuery(data);
-            setRoomData(newData);
+            setRoomData({ ...roomSSRData, ...newData });
         },
     });
 
     const [roomData, setRoomData] = useState(roomSSRData);
     const homeData = roomData.home;
-    const { showImagePreview, closeImagePreview, createPopup, closePopup } = useStore((state) => ({
-        imagePrev: state.imageprev,
-        showImagePreview: state.setImages,
-        closeImagePreview: state.closeImages,
-        createPopup: state.createPopup,
-        closePopup: state.removePopup,
-    }));
+    const { user, isServerSide, showImagePreview, closeImagePreview, createPopup, closePopup } =
+        useStore((state) => ({
+            user: state.user.info,
+            isServerSide: state.user.SSR,
+            imagePrev: state.imageprev,
+            showImagePreview: state.setImages,
+            closeImagePreview: state.closeImages,
+            createPopup: state.createPopup,
+            closePopup: state.removePopup,
+        }));
 
     const [roomDescription, setRoomDescription] = useState<
         {
@@ -176,6 +174,8 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
         ];
     }, [roomDescription, showMoreDes]);
 
+    console.log(renderDescription);
+
     useEffect(() => {
         const callback = () => reRender();
         window.addEventListener('resize', callback);
@@ -220,7 +220,8 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                 </>
             );
         }
-    }, [data]);
+    }, [data, roomData]);
+
     return (
         <>
             <div className="roompage-base">
@@ -235,13 +236,17 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         boxShadow: 'none',
                                     }}
                                     onClick={() => {
-                                        createPopup(
-                                            <EditRoomTitle
-                                                roomId={roomData._id}
-                                                closeForm={closePopup}
-                                                callback={refetchRoomData}
-                                            />
-                                        );
+                                        if (user) {
+                                            createPopup(
+                                                <EditRoomTitle
+                                                    roomId={roomData._id}
+                                                    closeForm={closePopup}
+                                                    callback={refetchRoomData}
+                                                    userId={user._id}
+                                                    images={roomData.images}
+                                                />
+                                            );
+                                        }
                                     }}
                                 >
                                     <i className="fa-solid fa-pen-to-square"></i>
@@ -338,24 +343,64 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                                 boxShadow: 'none',
                                             }}
                                             onClick={() => {
-                                                /* createPopup(
-                                                <EditDescription
-                                                    closeForm={() => {
-                                                        removePopup();
-                                                    }}
-                                                    homeId={homeData._id}
-                                                    callback={refreshData}
-                                                    defautDes={homeDescription}
-                                                />
-                                            ); */
+                                                createPopup(
+                                                    <EditRoomDescription
+                                                        closeForm={() => {
+                                                            closePopup();
+                                                        }}
+                                                        roomId={roomId}
+                                                        callback={refetchRoomData}
+                                                        defautDes={roomDescription}
+                                                    />
+                                                );
                                             }}
                                         >
                                             <i className="fa-solid fa-pen-to-square"></i>
                                         </Button>
                                     )}
                                 </h1>
+                                <div className="roompage-property">
+                                    {homeData?.electricityPrice && (
+                                        <div>
+                                            <i className="fa-solid fa-bolt"></i>
+                                            Tiền điện: {homeData.electricityPrice} VNĐ/tháng
+                                        </div>
+                                    )}
+                                    {homeData?.waterPrice && (
+                                        <div>
+                                            <i className="fa-solid fa-faucet-drip"></i>
+                                            Tiền nước: {homeData.waterPrice} VNĐ/tháng
+                                        </div>
+                                    )}
+                                    {homeData?.cleaningPrice && (
+                                        <div>
+                                            <i className="fa-solid fa-spray-can-sparkles"></i>
+                                            Tiền dọn dẹp: {homeData.cleaningPrice} VNĐ/tháng
+                                        </div>
+                                    )}
+                                    {homeData?.internetPrice && (
+                                        <div>
+                                            <i className="fa-solid fa-wifi"></i>
+                                            Tiền mạng: {homeData.internetPrice} VNĐ/tháng
+                                        </div>
+                                    )}
+                                    {roomData.floor && (
+                                        <div>
+                                            <i className="fa-solid fa-arrow-right-to-city"></i>
+                                            Tầng số {roomData.floor}
+                                        </div>
+                                    )}
+                                    {roomData.square && (
+                                        <div className="roompage-property__square">
+                                            <i className="fa-solid fa-vector-square"></i>
+                                            <div>
+                                                Diện tích: {roomData.square} m<div>2</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="homepage-description__description">
-                                    {homeData.description ? (
+                                    {roomData.description ? (
                                         <>
                                             {renderDescription && renderDescription[0]}
                                             <AnimatePresence>
@@ -387,7 +432,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         <EmptyData text="hiện chưa có mô tả từ chủ trọ" />
                                     )}
                                 </div>
-                                {homeData.description && (
+                                {roomData.description && (
                                     <Button
                                         className="homepage-description__showmore"
                                         variant="link"
@@ -400,6 +445,17 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 )}
                                 <hr />
                             </div>
+                        </div>
+                        <div className="roompage__map">
+                            <h2>Vị trí phòng</h2>
+                            {
+                                <MapBox
+                                    choosePlace={false}
+                                    {...(homeData?.position
+                                        ? { center: [homeData.position.lng, homeData.position.lat] }
+                                        : {})}
+                                />
+                            }
                         </div>
                     </div>
                 </div>

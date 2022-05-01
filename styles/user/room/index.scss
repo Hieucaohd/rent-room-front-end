@@ -1,5 +1,27 @@
 @import 'zoomcard';
 
+:root {
+    --app__icon-color: #1d80ca;
+    --roompage__icon-property-size: 22px;
+    --roompage__property-font-size: 16px;
+    --roompage__description-font-size: 16px;
+
+    @media screen and (max-width: 800px) {
+        --roompage__icon-property-size: 20px;
+        --roompage__property-font-size: 16px;
+    }
+
+    @media screen and (max-width: 750px) {
+        --roompage__icon-property-size: 18px;
+        --roompage__property-font-size: 14px;
+    }
+
+    @media screen and (max-width: 500px) {
+        --roompage__icon-property-size: 16px;
+        --roompage__property-font-size: 12px;
+    }
+}
+
 .roompage {
     &-base {
         width: 100%;
@@ -43,7 +65,7 @@
                         font-size: var(--app-fontsize);
 
                         & > i {
-                            color: #1d80ca;
+                            color: var(--app__icon-color);
                         }
                     }
                 }
@@ -116,9 +138,15 @@
     &__body {
         padding-top: 40px;
         display: grid;
-        --body-gap: 10px;
+        --body-gap: 30px;
+        --map-width: 300px;
         gap: var(--body-gap);
-        grid-template-columns: calc(70% - var(--body-gap) / 2) calc(30% - var(--body-gap) / 2);
+        grid-template-columns: calc(100% - var(--body-gap) - var(--map-width)) var(--map-width);
+
+        @media screen and (max-width: 900px) {
+            grid-template-columns: 100%;
+            --body-gap: 0px;
+        }
     }
 
     &-owner {
@@ -126,7 +154,12 @@
         display: flex;
         justify-content: space-between;
         gap: 20px;
+
         & > div {
+            display: flex;
+            flex-flow: column;
+            gap: 5px;
+
             &:nth-of-type(1) {
                 & > h2 {
                     font-weight: 600;
@@ -141,5 +174,60 @@
                 }
             }
         }
+    }
+
+    &-property {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        --gap: 20px;
+        gap: var(--gap);
+
+        & i {
+            width: 30px;
+            color: var(--app__icon-color);
+            font-size: var(--roompage__icon-property-size);
+        }
+
+        & > div {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+
+            min-width: calc(50% - var(--gap) / 2);
+
+            font-size: var(--roompage__property-font-size);
+            font-weight: 600;
+        }
+
+        &__square {
+            & > div {
+                display: flex;
+                font-size: var(--roompage__property-font-size);
+                font-weight: 600;
+                & > div {
+                    height: 100%;
+                    font-size: 0.7em;
+                }
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            flex-flow: column;
+
+            & > div {
+                width: 100%;
+            }
+        }
+    }
+
+    &__map {
+        font-weight: 600;
+        display: flex;
+        flex-flow: column;
+        gap: 10px;
+        height: 400px;
+        position: sticky;
+        top: calc(var(--app-navbar-height) + 50px);
     }
 }
