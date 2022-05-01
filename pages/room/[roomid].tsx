@@ -220,7 +220,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                 </>
             );
         }
-    }, [homeData]);
+    }, [data]);
     return (
         <>
             <div className="roompage-base">

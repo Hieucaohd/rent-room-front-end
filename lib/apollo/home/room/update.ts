@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 export const updateRoomImages = {
     command: gql`
-        mutation Mutation($updatedRoom: RoomInput!, $updateRoomId: ID!) {
+        mutation Mutation($updatedRoom: RoomUpdateInput!, $updateRoomId: ID!) {
             updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
                 images
             }
@@ -19,16 +19,16 @@ export const updateRoomImages = {
 };
 
 export interface UpdateRoomTitle {
-    roomNumber: number;
-    price: number;
-    square: number;
-    isRented: boolean;
-    floor: number;
+    roomNumber: number | undefined;
+    price: number | undefined;
+    square: number | undefined;
+    isRented: boolean | undefined;
+    floor: number | undefined;
 }
 
 export const updateRoomTitle = {
     command: gql`
-        mutation Mutation($updatedRoom: RoomInput!, $updateRoomId: ID!) {
+        mutation Mutation($updatedRoom: RoomUpdateInput!, $updateRoomId: ID!) {
             updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
                 roomNumber
                 price

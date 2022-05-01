@@ -1,15 +1,16 @@
 import { useLazyQuery } from '@apollo/client';
-import { Box, Button, SimpleGrid, Skeleton, SkeletonText, useDisclosure } from '@chakra-ui/react';
-import { AnimatePresence, AnimateSharedLayout, Variants } from 'framer-motion';
+import { Box, Button, Skeleton, SkeletonText, useDisclosure } from '@chakra-ui/react';
+import { AnimatePresence, Variants } from 'framer-motion';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AddHome from '../../../components/home/addhome';
 import HomeCard, { HomeCardProps } from '../../../components/homecard';
-import LoadingSpinner from '../../../components/loadingSpinner';
 import { getUserHomes } from '../../../lib/apollo/home';
 import { motion } from 'framer-motion';
 import useStore from '../../../store/useStore';
+import useResize from '../../../lib/use-resize';
+import AppAbout from '../../../components/app-about';
 
 function getData(data: any) {
     return data ? data?.profile?.user?.listHomes?.docs.slice() : [];
@@ -37,17 +38,6 @@ function getPages(data: any) {
 }
 
 const listSkeleton: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-const showHomePreview: Variants = {
-    show: {
-        opacity: 1,
-        visibility: 'unset',
-    },
-    hidden: {
-        opacity: 0,
-        visibility: 'hidden',
-    },
-};
 
 export default function MyHomes(props: any) {
     const [getMyHomes, { data, loading }] = useLazyQuery(getUserHomes.command);
@@ -105,7 +95,7 @@ export default function MyHomes(props: any) {
     }, [page]);
 
     const renderListHome = useMemo(() => {
-        return data
+        return (data && listHome.map)
             ? listHome.map((item, index) => {
                   return (
                       <motion.div key={item._id}>
@@ -170,114 +160,104 @@ export default function MyHomes(props: any) {
                 <title>{user?.fullname}</title>
             </Head>
             <div className="user-homes">
-                <div>
-                    <Button onClick={() => setShowAddForm(true)}>add home</Button>
-                </div>
-
                 <AnimatePresence>
                     {showAddForm && (
                         <AddHome afterUpload={dataCallback} onClose={() => setShowAddForm(false)} />
                     )}
                 </AnimatePresence>
-
-                {true ? (
-                    <>
-                        <div
-                            className={`user-homes__listhome${
-                                data ? '' : ' user-homes__listhome--loading'
-                            }`}
-                        >
-                            {renderListHome}
-                        </div>
-
-                        <div className="user-homes__routerpage">
-                            <ul>
-                                {pageRouter && pageRouter.hasPrevPage && (
-                                    <Button
-                                        onClick={() => {
-                                            router.push(
-                                                `${router.pathname.replace(
-                                                    '[userid]',
-                                                    `${userid}`
-                                                )}?page=0`
-                                            );
-                                        }}
-                                        variant="link"
-                                        _focus={{
-                                            boxShadow: 'none',
-                                        }}
-                                        color="var(--app-color)"
-                                    >
-                                        {'<<'}
-                                    </Button>
-                                )}
-                                {pageRouter && pageRouter.hasPrevPage && (
-                                    <Button
-                                        onClick={() => {
-                                            router.push(
-                                                `${router.pathname.replace(
-                                                    '[userid]',
-                                                    `${userid}`
-                                                )}?page=${pageRouter.prevPage}`
-                                            );
-                                        }}
-                                        variant="link"
-                                        _focus={{
-                                            boxShadow: 'none',
-                                        }}
-                                        color="var(--app-color)"
-                                    >
-                                        {'<'}
-                                    </Button>
-                                )}
-                                {pageRouter && pageRouter.totalDocs > 0 && renderListPage}
-                                {pageRouter && pageRouter.hasNextPage && (
-                                    <Button
-                                        onClick={() => {
-                                            router.push(
-                                                `${router.pathname.replace(
-                                                    '[userid]',
-                                                    `${userid}`
-                                                )}?page=${pageRouter.nextPage}`
-                                            );
-                                        }}
-                                        variant="link"
-                                        _focus={{
-                                            boxShadow: 'none',
-                                        }}
-                                        color="var(--app-color)"
-                                    >
-                                        {'>'}
-                                    </Button>
-                                )}
-                                {pageRouter && pageRouter.hasNextPage && (
-                                    <Button
-                                        onClick={() => {
-                                            router.push(
-                                                `${router.pathname.replace(
-                                                    '[userid]',
-                                                    `${userid}`
-                                                )}?page=${pageRouter.totalPages}`
-                                            );
-                                        }}
-                                        variant="link"
-                                        _focus={{
-                                            boxShadow: 'none',
-                                        }}
-                                        color="var(--app-color)"
-                                    >
-                                        {'>>'}
-                                    </Button>
-                                )}
-                            </ul>
-                        </div>
-                    </>
-                ) : (
-                    <div className="user-homes__loading">
-                        <LoadingSpinner color="black" />
+                <div>
+                    <div className="user-homes__add">
+                        <h1>Danh sách trọ của bạn</h1>
+                        <Button onClick={() => setShowAddForm(true)}>
+                            add home
+                        </Button>
                     </div>
-                )}
+                    <div
+                        className={`user-homes__listhome${
+                            data ? '' : ' user-homes__listhome--loading'
+                        }`}
+                    >
+                        {renderListHome}
+                    </div>
+                </div>
+
+                <div className="user-homes__routerpage">
+                    <ul>
+                        {pageRouter && pageRouter.hasPrevPage && (
+                            <Button
+                                onClick={() => {
+                                    router.push(
+                                        `${router.pathname.replace('[userid]', `${userid}`)}?page=0`
+                                    );
+                                }}
+                                variant="link"
+                                _focus={{
+                                    boxShadow: 'none',
+                                }}
+                                color="var(--app-color)"
+                            >
+                                {'<<'}
+                            </Button>
+                        )}
+                        {pageRouter && pageRouter.hasPrevPage && (
+                            <Button
+                                onClick={() => {
+                                    router.push(
+                                        `${router.pathname.replace('[userid]', `${userid}`)}?page=${
+                                            pageRouter.prevPage
+                                        }`
+                                    );
+                                }}
+                                variant="link"
+                                _focus={{
+                                    boxShadow: 'none',
+                                }}
+                                color="var(--app-color)"
+                            >
+                                {'<'}
+                            </Button>
+                        )}
+                        {pageRouter && pageRouter.totalDocs > 0 && renderListPage}
+                        {pageRouter && pageRouter.hasNextPage && (
+                            <Button
+                                onClick={() => {
+                                    router.push(
+                                        `${router.pathname.replace('[userid]', `${userid}`)}?page=${
+                                            pageRouter.nextPage
+                                        }`
+                                    );
+                                }}
+                                variant="link"
+                                _focus={{
+                                    boxShadow: 'none',
+                                }}
+                                color="var(--app-color)"
+                            >
+                                {'>'}
+                            </Button>
+                        )}
+                        {pageRouter && pageRouter.hasNextPage && (
+                            <Button
+                                onClick={() => {
+                                    router.push(
+                                        `${router.pathname.replace('[userid]', `${userid}`)}?page=${
+                                            pageRouter.totalPages
+                                        }`
+                                    );
+                                }}
+                                variant="link"
+                                _focus={{
+                                    boxShadow: 'none',
+                                }}
+                                color="var(--app-color)"
+                            >
+                                {'>>'}
+                            </Button>
+                        )}
+                    </ul>
+                </div>
             </div>
+            <AppAbout />
         </>
     );
 }

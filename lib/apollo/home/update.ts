@@ -9,7 +9,7 @@ export interface HomePrices {
 
 export const updateHomePrices = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeInput!, $updateHomeId: ID!) {
+        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
             updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
                 electricityPrice
                 waterPrice
@@ -28,7 +28,7 @@ export const updateHomePrices = {
 
 export const updateHomeImages = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeInput!, $updateHomeId: ID!) {
+        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
             updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
                 images
             }
@@ -63,7 +63,7 @@ export interface HomeLocation {
 
 export const updateHomeLocation = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeInput!, $updateHomeId: ID!) {
+        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
             updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
                 title
                 province
@@ -88,7 +88,7 @@ export const updateHomeLocation = {
 
 export const updateHomeDescription = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeInput!, $updateHomeId: ID!) {
+        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
             updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
                 description
             }
