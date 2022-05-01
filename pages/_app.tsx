@@ -48,7 +48,6 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                 
             } */
             addUser(myProps.user);
-            console.log(myProps.user);
         } else if (user.SSR) {
             removeUser();
         }
