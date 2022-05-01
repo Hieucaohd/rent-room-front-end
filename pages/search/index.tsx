@@ -53,7 +53,7 @@ export default function Search({ roomList, address, paginator }: ISearchProps) {
                 <title>{address.name ? `Phòng trọ ở ${address.name}` : 'Tìm kiếm'}</title>
             </Head>
             <SearchMap
-                roomList={roomList}
+                roomList={getMapRoomList(roomList)}
                 address={address}
                 onShowSelect={() => setShowSelect(true)}
             />
@@ -159,3 +159,7 @@ const searchQuery = (query: any) => {
         }),
     };
 };
+
+const getMapRoomList = (roomList: Room[]) => {
+    return roomList.filter((room) => room.home.position !== null);
+}

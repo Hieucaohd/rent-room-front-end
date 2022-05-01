@@ -53,7 +53,7 @@ function ChangeView({ center, zoom, setZoom }: any) {
 
 export default function SearchMap({ onShowSelect, address, roomList }: ISearchMapProps) {
     const router = useRouter();
-    const roomHovered = useSearchStore((state) => state.roomHovered);
+    const roomHoveredId = useSearchStore((state) => state.roomHovered);
     const [zoom, setZoom] = useState(address.district ? 14 : 12);
     const [center, setCenter] = useState<LatLngExpression>();
     const mapRef = useRef<any>(null);
@@ -62,9 +62,11 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
         if (roomList.length === 0) {
             return;
         }
-        const index = roomHovered === -1 ? 0 : roomHovered;
-        setCenter([roomList[index].home.position.lat, roomList[index].home.position.lng]);
-    }, [roomHovered]);
+        
+        const hoveredRoom = roomList.find(({_id}) => _id === roomHoveredId) || roomList[0];
+        
+        setCenter([hoveredRoom.home.position.lat, hoveredRoom.home.position.lng]);
+    }, [roomHoveredId]);
 
     useEffect(() => {
         const { province, district, ward } = router.query;
@@ -105,14 +107,14 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
                 <TileLayer
                     url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_APIKEY}`}
                 />
-                {handleDuplicatePosition(roomList).map(({ home, price }, index) => (
+                {handleDuplicatePosition(roomList).map(({_id, home, price }, index) => (
                     <Marker
                         key={index}
                         position={[home.position.lat, home.position.lng]}
                         icon={L.divIcon({
                             iconSize: [4, 4],
                             iconAnchor: [4 / 2, 4 + 9],
-                            className: `mymarker ${roomHovered === index && 'marker-hover'}`,
+                            className: `mymarker ${roomHoveredId === _id && 'marker-hover'}`,
                             html: formatPrice(price),
                         })}
                         eventHandlers={{

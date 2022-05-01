@@ -16,7 +16,6 @@ export interface User {
 
 export const checkLoggedIn = async (Cookie: string) => {
     try {
-        console.log(Cookie);
         if (!Cookie.includes('access_token') || !Cookie.includes('refresh_token')) {
             return null;
         }

@@ -19,7 +19,7 @@ export default function SearchRoom({ room, index }: ISearchRoomProps) {
     return (
         <li>
             <Link href={`/room/${room._id}`}>
-                <a className={styles.item} onMouseOver={() => setRoomHovered(index)}>
+                <a className={styles.item} onMouseOver={() => setRoomHovered(room._id)}>
                     <div className={styles.slider}>
                         <Slider images={room.images} height={200} width={300} showPreview={true} />
                     </div>

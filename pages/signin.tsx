@@ -9,6 +9,7 @@ import { Button, Input, InputGroup, InputLeftElement, InputRightElement } from '
 import { useForm } from 'react-hook-form';
 import { ConnectWithBtnStyle, InputStyle } from '../chakra';
 import useStore from '../store/useStore';
+import Link from 'next/link';
 
 export interface ISignInProps {
     user: User;
@@ -294,7 +295,7 @@ export default function SignIn() {
                             className="signin-form__forgot"
                             variant="link"
                         >
-                            Bạn quên mật khẩu?
+                            <Link href="forget">Bạn quên mật khẩu?</Link>
                         </Button>
                         <motion.div
                             {...(!loading
