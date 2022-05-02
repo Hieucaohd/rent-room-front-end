@@ -38,3 +38,16 @@
     right: 0;
     bottom: 0;
 }
+
+@media only screen and (max-width: 600px) {
+    .select__province {
+        & form {
+            flex-direction: column;
+            border-radius: 8px;
+        }
+        & button i {
+            border-radius: 2px;
+            margin: 2px 4px;
+        }
+    }
+}
