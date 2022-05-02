@@ -1,33 +1,23 @@
 import styles from '../styles/style.module.scss';
-import { Button, Input, Text, Textarea } from '@chakra-ui/react';
-import { motion, Variants } from 'framer-motion';
+import {
+    Button,
+    Input,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text,
+    Textarea,
+} from '@chakra-ui/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import useClassName from '../../../lib/useClassName';
 import { updateHomeDescription } from '../../../lib/apollo/home/update';
 import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
 import { HomeData } from '../../../pages/home/[homeid]';
-import useScrollController from '../../../lib/useScrollController';
-
-const container: Variants = {
-    show: {
-        opacity: 1,
-    },
-    hidden: {
-        opacity: 0,
-    },
-};
-
-const formAnimate: Variants = {
-    show: {
-        opacity: 1,
-        y: 0,
-    },
-    hidden: {
-        opacity: 0,
-        y: -100,
-    },
-};
 
 interface FormProps {
     closeForm: () => void;
@@ -118,51 +108,15 @@ const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) 
     }, [listProperty]);
 
     return (
-        <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            exit="hidden"
-            {...className('homeform')}
-        >
-            <div {...className('homeform__bg')}></div>
-            <motion.div
-                {...className('homeform-form description')}
-                variants={formAnimate}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-            >
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        submitForm();
-                    }}
-                >
-                    <Text {...className('homeform-form__lb')}>Mô tả chung</Text>
-                    <div {...className('homeform-description')}>{renderPropertys}</div>
-                    <Input
-                        borderWidth="3px"
-                        _focus={{
-                            outline: 'none',
-                            borderColor: '#80befc',
-                        }}
-                        placeholder="key"
-                        value={key}
-                        onChange={(e) => setKey(e.target.value)}
-                    />
-                    <Textarea
-                        size="md"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        borderWidth="3px"
-                        _focus={{
-                            outline: 'none',
-                            borderColor: '#80befc',
-                        }}
-                    ></Textarea>
-                    <Button
-                        onClick={() => {
+        <Modal onClose={closeForm} isOpen={true} scrollBehavior="outside">
+            <ModalOverlay overflowY="scroll" />
+            <ModalContent maxWidth="600px">
+                <ModalHeader>Tiện ích</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
                             const newData = newDes(key, description);
                             const index = listProperty.findIndex((item) => item.key == key);
                             if (index != -1) {
@@ -180,8 +134,36 @@ const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) 
                             setDescription('');
                         }}
                     >
-                        Add
-                    </Button>
+                        <Text {...className('homeform-form__lb')}>Mô tả chung</Text>
+                        <div {...className('homeform-description')}>{renderPropertys}</div>
+                        <Input
+                            borderWidth="3px"
+                            _focus={{
+                                outline: 'none',
+                                borderColor: '#80befc',
+                            }}
+                            marginTop="10px"
+                            placeholder="key"
+                            value={key}
+                            onChange={(e) => setKey(e.target.value)}
+                        />
+                        <Textarea
+                            size="md"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            borderWidth="3px"
+                            margin="10px 0"
+                            _focus={{
+                                outline: 'none',
+                                borderColor: '#80befc',
+                            }}
+                        ></Textarea>
+                        <Button width="100%" type="submit">
+                            Add
+                        </Button>
+                    </form>
+                </ModalBody>
+                <ModalFooter>
                     <div className="addhome-form__submit">
                         <Button
                             onClick={() => {
@@ -191,13 +173,19 @@ const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) 
                         >
                             Hủy
                         </Button>
-                        <Button isLoading={upLoading} type="submit" colorScheme="red">
+                        <Button
+                            onClick={() => {
+                                submitForm();
+                            }}
+                            isLoading={upLoading}
+                            colorScheme="red"
+                        >
                             Cập nhật
                         </Button>
                     </div>
-                </form>
-            </motion.div>
-        </motion.div>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
 };
 

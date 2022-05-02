@@ -17,6 +17,7 @@
     }
 
     @media screen and (max-width: 500px) {
+        --home-page__description--fontsize: 13px;
         --home-page__title--fontsize: 14px;
         --home-page__base--padding: 20px 20px;
     }
@@ -184,7 +185,7 @@
         }
         & > h1 {
             font-weight: 600;
-            font-size: calc(var(--home-page__title--fontsize) - 2px);
+            font-size: calc(var(--home-page__title--fontsize));
             margin: 10px 0;
         }
 
@@ -206,14 +207,17 @@
 
         &__description {
             & > div {
-                & > h1 {
-                    margin: 20px 0 10px 0;
-                    font-weight: 600;
-                    font-size: var(--home-page__description--fontsize);
-                }
+                & > div {
+                    margin-top: 20px;
+                    & > h1 {
+                        margin: 0px 0 10px 0;
+                        font-weight: 600;
+                        font-size: var(--home-page__description--fontsize);
+                    }
 
-                & > p {
-                    font-size: var(--home-page__description--fontsize);
+                    & > p {
+                        font-size: var(--home-page__description--fontsize);
+                    }
                 }
             }
         }
@@ -352,6 +356,7 @@
         z-index: 10;
         grid-template-columns: calc(50% - var(--gap) / 2) calc(50% - var(--gap) / 2);
         gap: var(--gap);
+        margin-bottom: 20px;
 
         @media screen and (max-width: 1200px) {
             grid-template-columns: 100%;
