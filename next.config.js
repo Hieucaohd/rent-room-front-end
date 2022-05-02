@@ -12,12 +12,12 @@ const nextConfig = {
                     destination: process.env.NEXT_PUBLIC_ENDPOINT + '/graphql',
                 },
                 {
-                    source: '/api/forget/send',
-                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/forget/send',
+                    source: '/api/forgot/send',
+                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/forgot/send',
                 },
                 {
-                    source: '/api/forget/',
-                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/forget/',
+                    source: '/api/forgot/',
+                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/forgot/',
                 }
             ],
         };

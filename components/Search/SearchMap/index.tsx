@@ -62,19 +62,18 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
         if (roomList.length === 0) {
             return;
         }
-        
-        const hoveredRoom = roomList.find(({_id}) => _id === roomHoveredId) || roomList[0];
-        
-        setCenter([hoveredRoom.home.position.lat, hoveredRoom.home.position.lng]);
+
+        const { home } = roomList.find(({ _id }) => _id === roomHoveredId) || roomList[0];
+        setCenter([home.position.lat, home.position.lng]);
     }, [roomHoveredId]);
 
     useEffect(() => {
         const { province, district, ward } = router.query;
-        
+
         if (!province) {
             setCenter([21.036238, 105.790581]);
             return;
-        };
+        }
 
         const getDefaultCenter = async () => {
             const center = await getPosition(Number(province), Number(district), Number(ward));
@@ -94,7 +93,7 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
         <div className={styles.searchmap}>
             <div className={styles.searchmap__address} onClick={() => onShowSelect()}>
                 {address.name}
-                <i className="fi fi-br-edit"></i>
+                <i className="fa-solid fa-up-right-from-square"></i>
             </div>
             <MapContainer
                 style={{ height: '100%', width: '100%', zIndex: 1 }}
@@ -107,7 +106,7 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
                 <TileLayer
                     url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_APIKEY}`}
                 />
-                {handleDuplicatePosition(roomList).map(({_id, home, price }, index) => (
+                {handleDuplicatePosition(roomList).map(({ _id, home, price }, index) => (
                     <Marker
                         key={index}
                         position={[home.position.lat, home.position.lng]}
