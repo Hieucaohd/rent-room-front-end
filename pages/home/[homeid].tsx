@@ -48,6 +48,9 @@ export interface HomeData {
     provinceName: string;
     districtName: string;
     wardName: string;
+    province: number;
+    district: number;
+    ward: number;
     liveWithOwner: boolean;
     electricityPrice: number;
     waterPrice: number;
@@ -483,16 +486,38 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                     <div className="homepage-map">
                                         <hr></hr>
                                         <h2>Vị trí trọ</h2>
-                                        {showMapBox && (
-                                            <MapBox
-                                                choosePlace={false}
-                                                markerIcon={homeIcon}
-                                                center={[
-                                                    homeData.position.lng,
-                                                    homeData.position.lat,
-                                                ]}
-                                            />
-                                        )}
+                                        {showMapBox &&
+                                            (homeData?.position &&
+                                            homeData.position.lat &&
+                                            homeData.position.lng ? (
+                                                <MapBox
+                                                    key={JSON.stringify(homeData.position)}
+                                                    choosePlace={false}
+                                                    // markerIcon={homeIcon}
+                                                    center={[
+                                                        homeData.position.lng,
+                                                        homeData.position.lat,
+                                                    ]}
+                                                />
+                                            ) : (
+                                                <MapBox
+                                                    key={
+                                                        JSON.stringify(homeData.province) +
+                                                        JSON.stringify(homeData.district) +
+                                                        JSON.stringify(homeData.ward)
+                                                    }
+                                                    choosePlace={false}
+                                                    {...(homeData?.province
+                                                        ? { province: homeData.province }
+                                                        : {})}
+                                                    {...(homeData?.district
+                                                        ? { district: homeData.district }
+                                                        : {})}
+                                                    {...(homeData?.ward
+                                                        ? { ward: homeData.ward }
+                                                        : {})}
+                                                />
+                                            ))}
                                     </div>
                                 </div>
                                 <div className="homepage-sprice">

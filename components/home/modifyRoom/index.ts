@@ -1,3 +1,3 @@
-export * from './editRoomTitle'
-export * from './editRoomDes'
-export default {}
+export * from './editRoomTitle';
+export * from './editRoomDes';
+export default {};
