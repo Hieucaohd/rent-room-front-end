@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import { HomeData } from '../../../../pages/home/[homeid]';
+import { Amenity } from './update';
 
 export interface RoomData {
     _id: string;
@@ -11,6 +12,7 @@ export interface RoomData {
     images: string[];
     description: string;
     roomNumber: string;
+    amenities: Amenity[];
 }
 
 export const getSSRRoomById = {
@@ -48,6 +50,9 @@ export const getSSRRoomById = {
                 images
                 description
                 roomNumber
+                amenities {
+                    title
+                }
             }
         }
     `,

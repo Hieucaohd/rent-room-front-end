@@ -9,8 +9,8 @@ import HomeCard, { HomeCardProps } from '../../../components/homecard';
 import { getUserHomes } from '../../../lib/apollo/home';
 import { motion } from 'framer-motion';
 import useStore from '../../../store/useStore';
-import useResize from '../../../lib/use-resize';
 import AppAbout from '../../../components/app-about';
+import EmptyData from '../../../components/emptydata';
 
 function getData(data: any) {
     return data ? data?.profile?.user?.listHomes?.docs.slice() : [];
@@ -26,11 +26,6 @@ interface PageData {
     hasPrevPage: boolean;
     hasNextPage: boolean;
     totalDocs: number;
-}
-
-interface HomePreview {
-    _id: string;
-    index: number;
 }
 
 function getPages(data: any) {
@@ -95,7 +90,7 @@ export default function MyHomes(props: any) {
     }, [page]);
 
     const renderListHome = useMemo(() => {
-        return data && listHome.map
+        return data && listHome?.map
             ? listHome.map((item, index) => {
                   return (
                       <motion.div key={item._id}>
@@ -172,10 +167,18 @@ export default function MyHomes(props: any) {
                     </div>
                     <div
                         className={`user-homes__listhome${
-                            data ? '' : ' user-homes__listhome--loading'
+                            data
+                                ? !renderListHome || renderListHome.length == 0
+                                    ? ' user-homes__listhome--empty'
+                                    : ''
+                                : ' user-homes__listhome--loading'
                         }`}
                     >
-                        {renderListHome}
+                        {renderListHome.length > 0 ? (
+                            renderListHome
+                        ) : (
+                            <EmptyData text="bạn chưa thêm phòng nào ở đây" />
+                        )}
                     </div>
                 </div>
 

@@ -2,18 +2,18 @@
 
 :root {
     --app__icon-color: #1d80ca;
-    --roompage__icon-property-size: 22px;
-    --roompage__property-font-size: 16px;
-    --roompage__description-font-size: 16px;
+    --roompage__icon-property-size: 20px;
+    --roompage__property-font-size: 15px;
+    --roompage__description-font-size: 15px;
 
     @media screen and (max-width: 800px) {
-        --roompage__icon-property-size: 20px;
-        --roompage__property-font-size: 16px;
+        --roompage__icon-property-size: 18px;
+        --roompage__property-font-size: 14px;
     }
 
     @media screen and (max-width: 750px) {
-        --roompage__icon-property-size: 18px;
-        --roompage__property-font-size: 14px;
+        --roompage__icon-property-size: 17px;
+        --roompage__property-font-size: 13px;
     }
 
     @media screen and (max-width: 500px) {
@@ -186,7 +186,7 @@
         & i {
             width: 30px;
             color: var(--app__icon-color);
-            font-size: var(--roompage__icon-property-size);
+            font-size: calc(var(--roompage__icon-property-size) - 2px);
         }
 
         & > div {
@@ -196,14 +196,14 @@
 
             min-width: calc(50% - var(--gap) / 2);
 
-            font-size: var(--roompage__property-font-size);
+            font-size: calc(var(--roompage__property-font-size) - 1px);
             font-weight: 600;
         }
 
         &__square {
             & > div {
                 display: flex;
-                font-size: var(--roompage__property-font-size);
+                font-size: calc(var(--roompage__property-font-size) - 1px);
                 font-weight: 600;
                 & > div {
                     height: 100%;
@@ -229,5 +229,50 @@
         height: 400px;
         position: sticky;
         top: calc(var(--app-navbar-height) + 50px);
+    }
+
+    &-amenities {
+        display: flex;
+        flex-flow: column;
+        gap: 20px;
+
+        & > hr {
+            display: none;
+            @media screen and (max-width: 900px) {
+                margin: 30px 0;
+                display: unset;
+            }
+        }
+        &__title {
+            display: flex;
+            justify-content: space-between;
+            & > h2 {
+                font-weight: 600;
+                font-size: var(--home-page__title--fontsize);
+            }
+        }
+
+        & > div:not(&__title) {
+            display: flex;
+            flex-wrap: wrap;
+            --gap: 10px;
+            gap: var(--gap);
+            row-gap: 25px;
+
+            & > div {
+                width: calc(50% - var(--gap) / 2);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                & > p {
+                    font-size: var(--roompage__property-font-size);
+                }
+            }
+
+            & i {
+                width: 30px;
+                font-size: var(--roompage__icon-property-size);
+            }
+        }
     }
 }

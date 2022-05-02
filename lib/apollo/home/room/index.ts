@@ -29,6 +29,17 @@ export const createZoom = {
     }),
 };
 
+export const deleteRoomById = {
+    command: gql`
+        mutation UpdateRoom($deleteRoomId: ID!) {
+            deleteRoom(id: $deleteRoomId)
+        }
+    `,
+    variables: (roomId: string) => ({
+        deleteRoomId: roomId,
+    }),
+};
+
 export default {};
-export * from './update'
-export * from './getroombyid'
+export * from './update';
+export * from './getroombyid';

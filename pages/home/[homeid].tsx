@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import { Avatar, Button, Skeleton, Text } from '@chakra-ui/react';
+import { Avatar, Button, Skeleton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '../../chakra';
@@ -7,16 +7,14 @@ import AddZoom from '../../components/home/addhome/addzoom';
 import Gallery, { GallerySkeleton } from '../../components/gallery';
 import RoomCard, { ZoomData } from '../../components/homecard/roomcard';
 import { getHomeById } from '../../lib/apollo/home/gethomebyid';
-import { getPlaceName } from '../../lib/getPosition';
 import useStore from '../../store/useStore';
 import ModifyHomePrices from '../../components/home/modifyhome';
 import EditHomeLocation from '../../components/home/modifyhome/editLocation';
 import EditDescription from '../../components/home/modifyhome/editDescription';
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import HomeImagePreivew from '../../components/image-preview';
 import EmptyData from '../../components/emptydata';
 import MapBox from '../../components/mapbox';
-import Link from 'next/link';
 import getTitleHome from '../../lib/getNameHome';
 import { GetServerSideProps } from 'next';
 import getSecurityCookie from '../../security';
@@ -86,12 +84,29 @@ interface HomePageProps {
     homeId: string;
     homeSSRData: HomeData;
     isOwner: string;
+    page: number;
+}
+
+interface PageData {
+    limit: number;
+    page: number;
+    nextPage: number;
+    prevPage: number;
+    totalPages: number;
+    pagingCounter: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+    totalDocs: number;
+}
+
+function getPages(data: any) {
+    return data?.paginator;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     const Cookie = getSecurityCookie(req);
     let user: { _id: string } | null = null;
-    const { homeid: homeId } = query;
+    let { homeid: homeId, p } = query;
     if (homeId) {
         try {
             if (Cookie) {
@@ -118,9 +133,16 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             console.log(error);
         }
         try {
+            let page = 1;
+            if (p) {
+                page = parseInt(p.toString());
+                if (isNaN(page)) {
+                    page = 1;
+                }
+            }
             const { data: data2 } = await client.query({
                 query: getHomeById.command,
-                variables: getHomeById.variables(homeId.toString()),
+                variables: getHomeById.variables(homeId.toString(), page, 10),
             });
             const homeData = getData(data2);
             return {
@@ -128,6 +150,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
                     homeSSRData: homeData,
                     homeId: homeId.toString(),
                     isOwner: user?._id == homeData?.owner?._id,
+                    page,
                 },
             };
         } catch (error) {
@@ -149,7 +172,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     }
 };
 
-const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
+const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
     const router = useRouter();
     const {
         info: user,
@@ -175,6 +198,7 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
         }
         return getData(data);
     }, [data]);
+    const pageRouter: PageData = getPages(homeData.listRooms);
     const [homeDescription, setHomeDescription] = useState<
         {
             key: string;
@@ -287,6 +311,43 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
             return div;
         }
     }, [loading, homeId, isServerSide]);
+
+    const renderListPage = useMemo(() => {
+        if (pageRouter) {
+            const limit = pageRouter.totalPages;
+            const p = pageRouter.page;
+            let listPage = [pageRouter.page];
+            for (let i = 1; i <= 4; i++) {
+                if (p - i > 0) {
+                    listPage = [p - i, ...listPage];
+                }
+                if (p + i <= limit) {
+                    listPage.push(p + i);
+                }
+            }
+            const path = router.pathname.replace('[homeid]', `${homeId}`);
+            return listPage.map((item, index) => (
+                <li key={index}>
+                    <Button
+                        onClick={() => {
+                            router.push(`${path}?p=${item}`);
+                        }}
+                        isDisabled={page == item}
+                        variant="link"
+                        _focus={{
+                            boxShadow: 'none',
+                        }}
+                        color="var(--app-color)"
+                    >
+                        {item}
+                    </Button>
+                </li>
+            ));
+        }
+        return [];
+    }, [pageRouter, homeId, page]);
+
+    console.log(renderListPage, pageRouter);
 
     return (
         <>
@@ -434,7 +495,6 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                                                 transition={{
                                                                     duration: 0.25,
                                                                 }}
-                                                                className="homepage-description__description"
                                                             >
                                                                 {renderDescription[1]}
                                                             </motion.div>
@@ -469,15 +529,102 @@ const Home = ({ homeSSRData, homeId, isOwner }: HomePageProps) => {
                                         <div className="homezooms-listlabel">Danh sách phòng</div>
 
                                         {listZoom?.docs && listZoom.docs.length > 0 ? (
-                                            <div className="homezooms-list">
-                                                {listZoom.docs.map((item, index) => (
-                                                    <RoomCard
-                                                        data={item}
-                                                        key={index}
-                                                        height="300px"
-                                                    />
-                                                ))}
-                                            </div>
+                                            <>
+                                                <div className="homezooms-list">
+                                                    {listZoom.docs.map((item, index) => (
+                                                        <RoomCard
+                                                            data={item}
+                                                            key={index}
+                                                            height="300px"
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <div className="user-homes__routerpage">
+                                                    <ul>
+                                                        {pageRouter && pageRouter.hasPrevPage && (
+                                                            <Button
+                                                                onClick={() => {
+                                                                    router.push(
+                                                                        `${router.pathname.replace(
+                                                                            '[homeid]',
+                                                                            `${homeId}`
+                                                                        )}?p=0`
+                                                                    );
+                                                                }}
+                                                                variant="link"
+                                                                _focus={{
+                                                                    boxShadow: 'none',
+                                                                }}
+                                                                color="var(--app-color)"
+                                                            >
+                                                                {'<<'}
+                                                            </Button>
+                                                        )}
+                                                        {pageRouter && pageRouter.hasPrevPage && (
+                                                            <Button
+                                                                onClick={() => {
+                                                                    router.push(
+                                                                        `${router.pathname.replace(
+                                                                            '[homeid]',
+                                                                            `${homeId}`
+                                                                        )}?p=${pageRouter.prevPage}`
+                                                                    );
+                                                                }}
+                                                                variant="link"
+                                                                _focus={{
+                                                                    boxShadow: 'none',
+                                                                }}
+                                                                color="var(--app-color)"
+                                                            >
+                                                                {'<'}
+                                                            </Button>
+                                                        )}
+                                                        {pageRouter &&
+                                                            pageRouter.totalDocs > 0 &&
+                                                            renderListPage}
+                                                        {pageRouter && pageRouter.hasNextPage && (
+                                                            <Button
+                                                                onClick={() => {
+                                                                    router.push(
+                                                                        `${router.pathname.replace(
+                                                                            '[homeid]',
+                                                                            `${homeId}`
+                                                                        )}?p=${pageRouter.nextPage}`
+                                                                    );
+                                                                }}
+                                                                variant="link"
+                                                                _focus={{
+                                                                    boxShadow: 'none',
+                                                                }}
+                                                                color="var(--app-color)"
+                                                            >
+                                                                {'>'}
+                                                            </Button>
+                                                        )}
+                                                        {pageRouter && pageRouter.hasNextPage && (
+                                                            <Button
+                                                                onClick={() => {
+                                                                    router.push(
+                                                                        `${router.pathname.replace(
+                                                                            '[homeid]',
+                                                                            `${homeId}`
+                                                                        )}?p=${
+                                                                            pageRouter.totalPages
+                                                                        }`
+                                                                    );
+                                                                }}
+                                                                variant="link"
+                                                                _focus={{
+                                                                    boxShadow: 'none',
+                                                                }}
+                                                                color="var(--app-color)"
+                                                            >
+                                                                {'>>'}
+                                                            </Button>
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            </>
                                         ) : (
                                             <EmptyData text="hiện chưa có phòng nào ở đây" />
                                         )}

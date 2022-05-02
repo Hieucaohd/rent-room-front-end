@@ -1,20 +1,40 @@
-import { gql, useLazyQuery } from '@apollo/client';
-import { Avatar, Button, Tooltip } from '@chakra-ui/react';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import {
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogOverlay,
+    Avatar,
+    Button,
+    Heading,
+    Tooltip,
+    useDisclosure,
+} from '@chakra-ui/react';
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { signUpBtnStyle } from '../../chakra';
 import AppAbout from '../../components/app-about';
 import EmptyData from '../../components/emptydata';
 import Gallery from '../../components/gallery';
-import { EditRoomDescription, EditRoomTitle } from '../../components/home/modifyRoom';
+import {
+    EditRoomAmenity,
+    EditRoomDescription,
+    EditRoomTitle,
+} from '../../components/home/modifyRoom';
 import { RoomImagePreivew } from '../../components/image-preview';
 import MapBox from '../../components/mapbox';
+import listAmenityIcon from '../../lib/amenities';
 import client from '../../lib/apollo/apollo-client';
+import { Amenity, deleteRoomById } from '../../lib/apollo/home/room';
 import { getSSRRoomById, RoomData } from '../../lib/apollo/home/room/getroombyid';
 import getTitleHome from '../../lib/getNameHome';
+import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
 import useResize from '../../lib/use-resize';
 import getSecurityCookie from '../../security';
 import useStore from '../../store/useStore';
@@ -87,6 +107,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
 };
 
 function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
+    const router = useRouter();
     const [getRoomData, { data }] = useLazyQuery(getSSRRoomById.command, {
         variables: getSSRRoomById.variables(roomId),
         onCompleted: (data) => {
@@ -97,6 +118,21 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
 
     const [roomData, setRoomData] = useState(roomSSRData);
     const homeData = roomData.home;
+
+    const { isOpen: isOpenDialog, onOpen: onOpenDialog, onClose: onCloseDialog } = useDisclosure();
+    const cancelDeleteRef = useRef(null);
+    const [listPath, setListPath] = useState<(string | null)[]>([]);
+
+    useEffect(() => {
+        const paths = roomData.images.map((item) => {
+            return getPathFileFromLink(item);
+        });
+        if (paths) {
+            setListPath(paths);
+        }
+    }, [roomData]);
+
+    const [roomDeleting, setRoomDeleting] = useState(false);
     const { user, isServerSide, showImagePreview, closeImagePreview, createPopup, closePopup } =
         useStore((state) => ({
             user: state.user.info,
@@ -107,6 +143,10 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
             createPopup: state.createPopup,
             closePopup: state.removePopup,
         }));
+
+    const [deleteRoom] = useMutation(deleteRoomById.command, {
+        variables: deleteRoomById.variables(roomId),
+    });
 
     const [roomDescription, setRoomDescription] = useState<
         {
@@ -174,8 +214,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
         ];
     }, [roomDescription, showMoreDes]);
 
-    console.log(renderDescription);
-
     useEffect(() => {
         const callback = () => reRender();
         window.addEventListener('resize', callback);
@@ -221,6 +259,32 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
             );
         }
     }, [data, roomData]);
+
+    const listAmenity: Amenity[] = useMemo(() => {
+        if (roomData) {
+            return roomData.amenities.map((item, value) => {
+                return {
+                    title: item.title,
+                };
+            });
+        }
+        return [];
+    }, [roomData]);
+
+    const renderAmenities = useMemo(() => {
+        return (
+            roomData &&
+            roomData.amenities.map((item, index) => {
+                const val = listAmenityIcon[parseInt(item.title)];
+                return (
+                    <div key={index}>
+                        <h1>{val.icon}</h1>
+                        <p>{val.des}</p>
+                    </div>
+                );
+            })
+        );
+    }, [roomData]);
 
     return (
         <>
@@ -277,12 +341,25 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 <Tooltip
                                     label="Phòng đã được cho thuê"
                                     borderRadius="3px"
-                                    isDisabled={!roomData.isRented}
+                                    isDisabled={!roomData.isRented || isOwner}
                                     placement={!mobilemode ? 'bottom' : 'top'}
                                     hasArrow
                                 >
                                     <div>
-                                        <Button {...payBtnStyle}>Liên hệ chủ nhà</Button>
+                                        {!isOwner ? (
+                                            <Button {...payBtnStyle}>Liên hệ chủ nhà</Button>
+                                        ) : (
+                                            <Button
+                                                isLoading={roomDeleting}
+                                                width={'100%'}
+                                                colorScheme="red"
+                                                onClick={() => {
+                                                    onOpenDialog();
+                                                }}
+                                            >
+                                                Xóa phòng
+                                            </Button>
+                                        )}
                                     </div>
                                 </Tooltip>
                             </div>
@@ -323,6 +400,46 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                             <a>{homeData.owner.fullname}</a>
                                         </Link>
                                     </h2>
+                                    <div className="roompage-property">
+                                        {homeData?.electricityPrice && (
+                                            <div>
+                                                <i className="fa-solid fa-bolt"></i>
+                                                Tiền điện: {homeData.electricityPrice} VNĐ/tháng
+                                            </div>
+                                        )}
+                                        {homeData?.waterPrice && (
+                                            <div>
+                                                <i className="fa-solid fa-faucet-drip"></i>
+                                                Tiền nước: {homeData.waterPrice} VNĐ/tháng
+                                            </div>
+                                        )}
+                                        {homeData?.cleaningPrice && (
+                                            <div>
+                                                <i className="fa-solid fa-spray-can-sparkles"></i>
+                                                Tiền dọn dẹp: {homeData.cleaningPrice} VNĐ/tháng
+                                            </div>
+                                        )}
+                                        {homeData?.internetPrice && (
+                                            <div>
+                                                <i className="fa-solid fa-wifi"></i>
+                                                Tiền mạng: {homeData.internetPrice} VNĐ/tháng
+                                            </div>
+                                        )}
+                                        {roomData.floor && (
+                                            <div>
+                                                <i className="fa-solid fa-arrow-right-to-city"></i>
+                                                Tầng số {roomData.floor}
+                                            </div>
+                                        )}
+                                        {roomData.square && (
+                                            <div className="roompage-property__square">
+                                                <i className="fa-solid fa-vector-square"></i>
+                                                <div>
+                                                    Diện tích: {roomData.square} m<div>2</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <Avatar
@@ -359,46 +476,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         </Button>
                                     )}
                                 </h1>
-                                <div className="roompage-property">
-                                    {homeData?.electricityPrice && (
-                                        <div>
-                                            <i className="fa-solid fa-bolt"></i>
-                                            Tiền điện: {homeData.electricityPrice} VNĐ/tháng
-                                        </div>
-                                    )}
-                                    {homeData?.waterPrice && (
-                                        <div>
-                                            <i className="fa-solid fa-faucet-drip"></i>
-                                            Tiền nước: {homeData.waterPrice} VNĐ/tháng
-                                        </div>
-                                    )}
-                                    {homeData?.cleaningPrice && (
-                                        <div>
-                                            <i className="fa-solid fa-spray-can-sparkles"></i>
-                                            Tiền dọn dẹp: {homeData.cleaningPrice} VNĐ/tháng
-                                        </div>
-                                    )}
-                                    {homeData?.internetPrice && (
-                                        <div>
-                                            <i className="fa-solid fa-wifi"></i>
-                                            Tiền mạng: {homeData.internetPrice} VNĐ/tháng
-                                        </div>
-                                    )}
-                                    {roomData.floor && (
-                                        <div>
-                                            <i className="fa-solid fa-arrow-right-to-city"></i>
-                                            Tầng số {roomData.floor}
-                                        </div>
-                                    )}
-                                    {roomData.square && (
-                                        <div className="roompage-property__square">
-                                            <i className="fa-solid fa-vector-square"></i>
-                                            <div>
-                                                Diện tích: {roomData.square} m<div>2</div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+
                                 <div className="homepage-description__description">
                                     {roomData.description ? (
                                         <>
@@ -421,7 +499,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                                         transition={{
                                                             duration: 0.25,
                                                         }}
-                                                        className="homepage-description__description"
                                                     >
                                                         {renderDescription[1]}
                                                     </motion.div>
@@ -429,7 +506,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                             </AnimatePresence>
                                         </>
                                     ) : (
-                                        <EmptyData text="hiện chưa có mô tả từ chủ trọ" />
+                                        <EmptyData text="hiện chưa có mô tả thêm từ chủ trọ" />
                                     )}
                                 </div>
                                 {roomData.description && (
@@ -443,6 +520,35 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         {showMoreDes ? 'Thu gọn' : 'Hiển thị thêm'}
                                     </Button>
                                 )}
+                                <hr />
+                            </div>
+                            <div className="roompage-amenities">
+                                <div className="roompage-amenities__title">
+                                    <h2>Tiện ích phòng</h2>
+                                    <Button
+                                        gap="5px"
+                                        onClick={() => {
+                                            createPopup(
+                                                <EditRoomAmenity
+                                                    key={JSON.stringify(listAmenity)}
+                                                    roomId={roomData._id}
+                                                    closeForm={closePopup}
+                                                    callback={refetchRoomData}
+                                                    amenities={listAmenity}
+                                                />
+                                            );
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-plus"></i>Thêm tiện ích
+                                    </Button>
+                                </div>
+                                <div>
+                                    {renderAmenities.length != 0 ? (
+                                        renderAmenities
+                                    ) : (
+                                        <EmptyData text="Chưa có tiện ích nào được thêm" />
+                                    )}
+                                </div>
                                 <hr />
                             </div>
                         </div>
@@ -465,6 +571,41 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                     marginBottom: aboutpageMarginBottom,
                 }}
             />
+            <AlertDialog
+                isOpen={isOpenDialog}
+                leastDestructiveRef={cancelDeleteRef}
+                onClose={onCloseDialog}
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                            Xóa phòng
+                        </AlertDialogHeader>
+
+                        <AlertDialogBody>Bạn có chắc chắn muốn xóa phòng này?</AlertDialogBody>
+
+                        <AlertDialogFooter>
+                            <Button ref={cancelDeleteRef} onClick={onCloseDialog}>
+                                Hủy
+                            </Button>
+                            <Button
+                                colorScheme="red"
+                                isLoading={roomDeleting}
+                                onClick={() => {
+                                    setRoomDeleting(true);
+                                    deleteRoom().then(async () => {
+                                        await deleteAllFile(listPath);
+                                        window.location.href = `/home/${homeData._id}`;
+                                    });
+                                }}
+                                ml={3}
+                            >
+                                Xóa
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
         </>
     );
 }

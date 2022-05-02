@@ -62,3 +62,25 @@ export const updateRoomDescription = {
         };
     },
 };
+
+export interface Amenity {
+    title: string;
+}
+
+export const updateRoomAmenity = {
+    command: gql`
+        mutation UpdateRoom($updateRoomUpdatedRoom2: RoomUpdateInput!, $updateRoomId2: ID!) {
+            updateRoom(updatedRoom: $updateRoomUpdatedRoom2, id: $updateRoomId2) {
+                amenities {
+                    title
+                }
+            }
+        }
+    `,
+    variables: (amenities: Amenity[], roomId: string) => ({
+        updateRoomUpdatedRoom2: {
+            amenities: amenities,
+        },
+        updateRoomId2: roomId,
+    }),
+};
