@@ -95,7 +95,7 @@ export default function MyHomes(props: any) {
     }, [page]);
 
     const renderListHome = useMemo(() => {
-        return (data && listHome.map)
+        return data && listHome.map
             ? listHome.map((item, index) => {
                   return (
                       <motion.div key={item._id}>
@@ -168,9 +168,7 @@ export default function MyHomes(props: any) {
                 <div>
                     <div className="user-homes__add">
                         <h1>Danh sách trọ của bạn</h1>
-                        <Button onClick={() => setShowAddForm(true)}>
-                            add home
-                        </Button>
+                        <Button onClick={() => setShowAddForm(true)}>add home</Button>
                     </div>
                     <div
                         className={`user-homes__listhome${

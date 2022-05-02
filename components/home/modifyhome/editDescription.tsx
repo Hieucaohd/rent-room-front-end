@@ -1,12 +1,10 @@
 import styles from '../styles/style.module.scss';
 import { Button, Input, Text, Textarea } from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
-import {  useCallback,  useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import useClassName from '../../../lib/useClassName';
-import {
-    updateHomeDescription,
-} from '../../../lib/apollo/home/update';
+import { updateHomeDescription } from '../../../lib/apollo/home/update';
 import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
 import { HomeData } from '../../../pages/home/[homeid]';
 import useScrollController from '../../../lib/useScrollController';

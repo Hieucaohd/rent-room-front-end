@@ -29,6 +29,9 @@ export const getSSRRoomById = {
                     provinceName
                     districtName
                     wardName
+                    province
+                    district
+                    ward
                     electricityPrice
                     waterPrice
                     internetPrice

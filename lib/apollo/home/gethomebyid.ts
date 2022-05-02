@@ -15,6 +15,9 @@ export const getHomeById = {
                 provinceName
                 districtName
                 wardName
+                province
+                district
+                ward
                 liveWithOwner
                 electricityPrice
                 waterPrice

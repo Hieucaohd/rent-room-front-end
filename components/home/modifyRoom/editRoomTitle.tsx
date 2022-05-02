@@ -52,8 +52,8 @@ interface FormProps {
     closeForm: () => void;
     roomId: string;
     callback?: () => void;
-    images?: string[]
-    userId: string
+    images?: string[];
+    userId: string;
 }
 
 export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: FormProps) => {

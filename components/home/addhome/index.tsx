@@ -238,7 +238,7 @@ export default function AddHome(props: AddHomeProps) {
             } else {
                 e.waterPrice = parseInt(e.waterPrice);
             }
-            if (!mapData) {
+            if (!mapData || !mapData.center || !mapData.center[0] || !mapData.center[1]) {
                 error.position = true;
                 hasError = true;
             }

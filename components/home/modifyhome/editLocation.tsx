@@ -261,7 +261,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                     errorHandleForm.ward = true;
                     errorSubmit = true;
                 }
-                if (!mapData) {
+                if (!mapData || !mapData.center || !mapData.center[0] || !mapData.center[1]) {
                     errorHandleForm.position = true;
                     errorSubmit = true;
                 } else {
@@ -276,6 +276,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
                 e.district = undefined;
                 e.province = undefined;
                 e.ward = undefined;
+                e.position = undefined;
             }
 
             if (!activeLiveWithOwner) {
@@ -343,6 +344,7 @@ const EditHomeLocation = ({ closeForm, homeId, callback, images, user }: FormPro
             activeLocation,
             activeLiveWithOwner,
             activeUploadImage,
+            activeTitle,
             mapData,
             listImage,
             provinceField,

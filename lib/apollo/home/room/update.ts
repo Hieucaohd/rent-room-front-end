@@ -24,7 +24,7 @@ export interface UpdateRoomTitle {
     square: number | undefined;
     isRented: boolean | undefined;
     floor: number | undefined;
-    images: any[] | undefined
+    images: any[] | undefined;
 }
 
 export const updateRoomTitle = {

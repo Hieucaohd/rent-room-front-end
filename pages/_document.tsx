@@ -20,10 +20,7 @@ export default function Document() {
             <body>
                 <Main />
                 <NextScript />
-                <script
-                    src="/kit.js"
-                    crossOrigin="anonymous"
-                ></script>
+                <script src="/kit.js" crossOrigin="anonymous"></script>
             </body>
         </Html>
     );
