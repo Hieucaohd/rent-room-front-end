@@ -18,8 +18,9 @@ export default function SelectProvince({ disableSelect }: ISelectProvinceProps) 
 
     useEffect(() => {
         const getProvinces = async () => {
-            const list = await getProvinceList();
-            setProvinceList(list);
+            const response = await fetch('/location/province.json');
+            const listProvince = await response.json();
+            setProvinceList(listProvince);
         };
 
         getProvinces();
@@ -90,7 +91,7 @@ export default function SelectProvince({ disableSelect }: ISelectProvinceProps) 
                     ))}
                 </Select>
                 <button type="submit">
-                    <i className="fi fi-rr-search"></i>
+                    <i className="fa-solid fa-magnifying-glass"></i>
                 </button>
             </form>
         </div>

@@ -22,8 +22,6 @@
     
     &__title {
         margin-top: 8px;
-        display: flex;
-        align-items: center;
         & p {
             font-size: 16px;
             font-weight: 600;
@@ -73,5 +71,30 @@
             align-items: center;
             justify-content: center;
         }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    .list {
+        padding: 8px;
+        height: 100%;
+    }
+    .item {
+        display: block;
+        padding: 16px 8px;
+    }
+    .detail {
+        margin-left: 0;
+        &__title {
+            margin-top: 0;
+        }
+        h3 {
+            position: relative;
+        }
+    }
+
+    .pagination {
+        margin-bottom: 68px;
     }
 }

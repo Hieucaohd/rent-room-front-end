@@ -295,7 +295,7 @@ export default function SignIn() {
                             className="signin-form__forgot"
                             variant="link"
                         >
-                            <Link href="forget">Bạn quên mật khẩu?</Link>
+                            <Link href="forgot">Bạn quên mật khẩu?</Link>
                         </Button>
                         <motion.div
                             {...(!loading
