@@ -48,6 +48,9 @@
         & button i {
             border-radius: 2px;
             margin: 2px 4px;
+            &:hover {
+                transform: none;
+            }
         }
     }
 }
