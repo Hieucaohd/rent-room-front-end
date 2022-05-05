@@ -104,10 +104,9 @@ const searchQuery = (query: any) => {
         maxElectricityPrice,
         sort,
     } = query;
-
     const isFilterWater = minWaterPrice || maxWaterPrice;
     const isFilterElectricity = minElectricityPrice || maxElectricityPrice;
-    const isFilterPrice = minPrice || maxPrice || sort === 'ASC' || sort === 'DESC';
+    const isFilterPrice = minPrice || maxPrice || sort === 'asc' || sort === 'desc';
 
     return {
         address: {
