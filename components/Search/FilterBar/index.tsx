@@ -1,8 +1,8 @@
 import { Button, Select } from '@chakra-ui/react';
+import clsx from 'clsx';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styles from './styles.module.scss';
-import clsx from 'clsx';
 
 export interface IFilterBarProps {}
 
@@ -18,24 +18,19 @@ export default function FilterBar(props: IFilterBarProps) {
     const {
         minPrice,
         maxPrice,
-        arrangePrice,
-        createdAt,
         minWaterPrice,
         maxWaterPrice,
-        arrangeWaterPrice,
         minElectricityPrice,
         maxElectricityPrice,
-        arrangeElectricityPrice,
         minSquare,
         maxSquare,
-        arrangeSquare,
+        sort,
     } = router.query;
 
-    const isPriceFilter = minPrice || maxPrice || arrangePrice;
-    const isWaterFilter = minWaterPrice || maxWaterPrice || arrangeWaterPrice;
-    const isElectricityFilter =
-        minElectricityPrice || maxElectricityPrice || arrangeElectricityPrice;
-    const isFilterSquare = minSquare || maxSquare || arrangeSquare;
+    const isPriceFilter = minPrice || maxPrice;
+    const isWaterFilter = minWaterPrice || maxWaterPrice;
+    const isElectricityFilter = minElectricityPrice || maxElectricityPrice;
+    const isFilterSquare = minSquare || maxSquare;
 
     const handleSubmitFilter = (e: any) => {
         e.preventDefault();
@@ -50,15 +45,27 @@ export default function FilterBar(props: IFilterBarProps) {
         setDropDown(DropDown.NONE);
     };
 
-    const handleSubmitCreatedAt = (createdAt:string) => {
+    const handleSubmitSort = (sort: string) => {
         router.push({
             pathname: 'search',
             query: {
                 ...router.query,
-                createdAt
+                sort,
             },
         });
-    }
+    };
+
+    const handleResetPrice = () => {
+        router.push({
+            pathname: 'search',
+            query: {
+                ...router.query,
+                minPrice: undefined,
+                maxPrice: undefined,
+            },
+        });
+        setDropDown(DropDown.NONE);
+    };
 
     return (
         <div className={styles.filterbar}>
@@ -96,14 +103,6 @@ export default function FilterBar(props: IFilterBarProps) {
                                     defaultValue={maxPrice && Number(maxPrice)}
                                     placeholder="tối đa"
                                 />
-                                <Select name="arrangePrice" placeholder="Sắp xếp">
-                                    <option value="ASC" selected={arrangePrice === 'ASC'}>
-                                        Tăng dần
-                                    </option>
-                                    <option value="DESC" selected={arrangePrice === 'DESC'}>
-                                        Giảm dần
-                                    </option>
-                                </Select>
                             </div>
                         </div>
                         <div>
@@ -125,20 +124,6 @@ export default function FilterBar(props: IFilterBarProps) {
                                         maxElectricityPrice && Number(maxElectricityPrice)
                                     }
                                 />
-                                <Select placeholder="Sắp xếp" name="arrangeElectricityPrice">
-                                    <option
-                                        value="ASC"
-                                        selected={arrangeElectricityPrice === 'ASC'}
-                                    >
-                                        Tăng dần
-                                    </option>
-                                    <option
-                                        value="DESC"
-                                        selected={arrangeElectricityPrice === 'DESC'}
-                                    >
-                                        Giảm dần
-                                    </option>
-                                </Select>
                             </div>
                         </div>
                         <div>
@@ -156,16 +141,11 @@ export default function FilterBar(props: IFilterBarProps) {
                                     name="maxWaterPrice"
                                     defaultValue={maxWaterPrice && Number(maxWaterPrice)}
                                 />
-                                <Select placeholder="Sắp xếp" name="arrangeWaterPrice">
-                                    <option value="ASC" selected={arrangeWaterPrice === 'ASC'}>
-                                        Tăng dần
-                                    </option>
-                                    <option value="DESC" selected={arrangeWaterPrice === 'DESC'}>
-                                        Giảm dần
-                                    </option>
-                                </Select>
                             </div>
                         </div>
+                        <Button colorScheme="red" marginRight={2} onClick={handleResetPrice}>
+                            Xoá
+                        </Button>
                         <Button type="submit" colorScheme="blue">
                             Lưu
                         </Button>
@@ -195,32 +175,14 @@ export default function FilterBar(props: IFilterBarProps) {
                                     type="number"
                                     placeholder="tối thiểu"
                                     name="minSquare"
-                                    defaultValue={
-                                        minSquare && Number(minSquare)
-                                    }
+                                    defaultValue={minSquare && Number(minSquare)}
                                 />
                                 <input
                                     type="number"
                                     placeholder="tối đa"
                                     name="maxSquare"
-                                    defaultValue={
-                                        maxSquare && Number(maxSquare)
-                                    }
+                                    defaultValue={maxSquare && Number(maxSquare)}
                                 />
-                                <Select placeholder="Sắp xếp" name="arrangeSquare">
-                                    <option
-                                        value="ASC"
-                                        selected={arrangeSquare === 'ASC'}
-                                    >
-                                        Tăng dần
-                                    </option>
-                                    <option
-                                        value="DESC"
-                                        selected={arrangeSquare === 'DESC'}
-                                    >
-                                        Giảm dần
-                                    </option>
-                                </Select>
                             </div>
                         </div>
                         <Button type="submit" colorScheme="blue">
@@ -229,13 +191,22 @@ export default function FilterBar(props: IFilterBarProps) {
                     </form>
                 )}
             </div>
-            <div className={styles.item__last} onChange={(e:any) => handleSubmitCreatedAt(e.target.value)}>
+            <div
+                className={styles.item__last}
+                onChange={(e: any) => handleSubmitSort(e.target.value)}
+            >
                 <Select>
-                    <option value="DESC" selected={createdAt === 'DESC'}>
+                    <option value="newest" selected={sort === 'newest'}>
                         Mới nhất
                     </option>
-                    <option value="ASC" selected={createdAt === 'ASC'}>
+                    <option value="oldest" selected={sort === 'oldest'}>
                         Cũ nhất
+                    </option>
+                    <option value="desc" selected={sort === 'desc'}>
+                        Giá cao
+                    </option>
+                    <option value="asc" selected={sort === 'asc'}>
+                        Giá thấp
                     </option>
                 </Select>
             </div>

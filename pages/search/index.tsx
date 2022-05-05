@@ -7,33 +7,10 @@ import SearchList from '../../components/Search/SearchList';
 import SelectProvince from '../../components/Search/SelectProvince';
 import { getFilterRoom } from '../../lib/apollo/search';
 import { getSearchPlaceName } from '../../lib/getPosition';
-import { isBrowser } from 'react-device-detect';
+import { Paginator, Room } from '../../lib/interface';
+import { useMediaQuery } from '@chakra-ui/react';
 
 const SearchMap = dynamic(() => import('../../components/Search/SearchMap'), { ssr: false });
-
-export interface Room {
-    __typename: string;
-    _id: string;
-    home: any;
-    price: number;
-    square: number;
-    isRented: Boolean;
-    floor: number;
-    images: [string];
-    description: string;
-    roomNumber: string;
-    createdAt: string;
-    title: string;
-}
-
-export interface Paginator {
-    __typename: string;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-    page: number;
-    totalDocs: number;
-    totalPages: number;
-}
 
 export interface ISearchProps {
     roomList: [Room];
@@ -48,12 +25,14 @@ export interface ISearchProps {
 
 export default function Search({ roomList, address, paginator }: ISearchProps) {
     const [showSelect, setShowSelect] = useState(false);
+    const [isMobile] = useMediaQuery('(max-width: 768px)');
+    
     return (
         <div className="search">
             <Head>
                 <title>{address.name ? `Phòng trọ ở ${address.name}` : 'Tìm kiếm'}</title>
             </Head>
-            {isBrowser && (
+            {!isMobile && (
                 <SearchMap
                     roomList={getMapRoomList(roomList)}
                     address={address}
@@ -62,7 +41,12 @@ export default function Search({ roomList, address, paginator }: ISearchProps) {
             )}
             <div className="search__room">
                 <FilterBar />
-                <SearchList roomList={roomList} paginator={paginator} />
+                <SearchList
+                    roomList={roomList}
+                    paginator={paginator}
+                    address={address.name}
+                    onShowSelect={() => setShowSelect(true)}
+                />
             </div>
             {(!address || showSelect) && (
                 <SelectProvince disableSelect={() => setShowSelect(false)} />
@@ -75,7 +59,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     try {
         const { province, district, ward, page } = query;
         const address = await getSearchPlaceName(province, district, ward);
-        const { filterRoom } = await getFilterRoom(searchQuery(query), Number(page));
+        const { filterRoom } = await getFilterRoom(searchQuery(query), Number(page), 10);
         return {
             props: {
                 roomList: filterRoom.docs,
@@ -110,49 +94,20 @@ const searchQuery = (query: any) => {
         ward,
         minPrice,
         maxPrice,
-        arrangePrice,
         floor,
         liveWithOwner,
         minSquare,
         maxSquare,
-        arrangeSquare,
-        createdAt,
         minWaterPrice,
         maxWaterPrice,
-        arrangeWaterPrice,
         minElectricityPrice,
         maxElectricityPrice,
-        arrangeElectricityPrice,
+        sort,
     } = query;
 
-    if (minPrice && !maxPrice) {
-        maxPrice = 999999999;
-    }
-    if (maxPrice && !minPrice) {
-        minPrice = 1;
-    }
-    if (minWaterPrice && !maxWaterPrice) {
-        maxWaterPrice = 999999999;
-    }
-    if (maxWaterPrice && !minWaterPrice) {
-        minWaterPrice = 1;
-    }
-    if (minElectricityPrice && !maxElectricityPrice) {
-        maxElectricityPrice = 999999999;
-    }
-    if (maxElectricityPrice && !minElectricityPrice) {
-        minElectricityPrice = 1;
-    }
-    if (minSquare && !maxSquare) {
-        maxSquare = 999999999;
-    }
-    if (maxSquare && !minSquare) {
-        minSquare = 1;
-    }
-
-    const isFilterWater = minWaterPrice || maxWaterPrice || arrangeWaterPrice;
-    const isFilterElectricity =
-        minElectricityPrice || maxElectricityPrice || arrangeElectricityPrice;
+    const isFilterWater = minWaterPrice || maxWaterPrice;
+    const isFilterElectricity = minElectricityPrice || maxElectricityPrice;
+    const isFilterPrice = minPrice || maxPrice || sort === 'ASC' || sort === 'DESC';
 
     return {
         address: {
@@ -160,7 +115,7 @@ const searchQuery = (query: any) => {
             ...(district && { district: Number(district) }),
             ...(ward && { ward: Number(ward) }),
         },
-        ...((minPrice || maxPrice || arrangePrice) && {
+        ...(isFilterPrice && {
             price: {
                 ...((minPrice || maxPrice) && {
                     scope: {
@@ -168,14 +123,14 @@ const searchQuery = (query: any) => {
                         ...(maxPrice && { max: Number(maxPrice) }),
                     },
                 }),
-                ...(arrangePrice && {
-                    arrange: arrangePrice,
+                ...((sort === 'asc' || sort === 'desc') && {
+                    arrange: sort.toUpperCase(),
                 }),
             },
         }),
         ...(floor && { floor: Number(floor) }),
         ...(liveWithOwner && { liveWithOwner: liveWithOwner === '0' ? true : false }),
-        ...((minSquare || maxSquare || arrangeSquare) && {
+        ...((minSquare || maxSquare) && {
             square: {
                 ...((minSquare || maxSquare) && {
                     scope: {
@@ -183,12 +138,9 @@ const searchQuery = (query: any) => {
                         ...(maxSquare && { max: Number(maxSquare) }),
                     },
                 }),
-                ...(arrangeSquare && {
-                    arrange: arrangeSquare,
-                }),
             },
         }),
-        ...(createdAt && { createdAt: createdAt }),
+        ...(sort === 'oldest' && { createdAt: 'ASC' }),
         ...((isFilterWater || isFilterElectricity) && {
             livingExpenses: {
                 ...(isFilterWater && {
@@ -199,9 +151,6 @@ const searchQuery = (query: any) => {
                                 ...(maxWaterPrice && { max: Number(maxWaterPrice) }),
                             },
                         }),
-                        ...(arrangeWaterPrice && {
-                            arrange: arrangeWaterPrice,
-                        }),
                     },
                 }),
                 ...(isFilterElectricity && {
@@ -211,9 +160,6 @@ const searchQuery = (query: any) => {
                                 ...(minElectricityPrice && { min: Number(minElectricityPrice) }),
                                 ...(maxElectricityPrice && { max: Number(maxElectricityPrice) }),
                             },
-                        }),
-                        ...(arrangeElectricityPrice && {
-                            arrange: arrangeElectricityPrice,
                         }),
                     },
                 }),
