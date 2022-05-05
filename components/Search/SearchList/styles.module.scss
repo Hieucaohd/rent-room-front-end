@@ -2,6 +2,27 @@
     list-style-type: none;
     overflow: auto;
     padding: 16px 32px;
+
+    &__address {
+        display: flex;
+        font-size: 16px;
+        
+        & strong {
+            margin: 0px 4px;
+            font-size: 16px;
+            display: flex;
+        }
+
+        & strong:last-child {
+            &:hover {   
+                cursor: pointer;
+                opacity: 0.8;
+            }
+        }
+        & i {
+            margin-left: 4px;
+        }
+    }
 }
 
 .item {
@@ -19,7 +40,7 @@
     width: 100%;
     position: relative;
     margin-left: 24px;
-    
+
     &__title {
         margin-top: 8px;
         & p {
@@ -43,6 +64,10 @@
         right: 0px;
         font-size: 20px;
         font-weight: 600;
+    }
+
+    &__description {
+        opacity: 0.8;
     }
 }
 
@@ -74,15 +99,21 @@
     }
 }
 
+.line {
+    width: 40px;
+    height: 1px;
+    background-color: #e0dede;
+    margin: 8px 0px;
+}
+
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .list {
-        padding: 8px;
+        padding: 8px 24px;
         height: 100%;
     }
     .item {
         display: block;
-        padding: 16px 8px;
     }
     .detail {
         margin-left: 0;

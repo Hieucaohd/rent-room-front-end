@@ -51,7 +51,8 @@
 }
 
 .dropdown {
-    &__price, &__square {
+    &__price,
+    &__square {
         position: absolute;
         background-color: white;
         padding: 8px 12px;
@@ -64,12 +65,8 @@
             border: 1px solid #e0dede;
             border-radius: 4px;
             width: 160px;
-            padding: 0px 8px;
+            padding: 4px 8px;
             margin-right: 12px;
-        }
-
-        & select {
-            width: 120px;
         }
 
         & > div {
@@ -94,7 +91,8 @@
     }
 
     .dropdown {
-        &__price, &__square {
+        &__price,
+        &__square {
             width: 220px;
             & > div {
                 & select {
@@ -106,7 +104,7 @@
                     padding: 4px 12px;
                     margin-bottom: 4px;
                 }
-                &>div {
+                & > div {
                     flex-direction: column;
                 }
             }

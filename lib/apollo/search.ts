@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 import client from './apollo-client';
 
-export const getFilterRoom = async (conditions: any, page: number) => {
+export const getFilterRoom = async (conditions: any, page: number, limit: number) => {
     const SEARCH = gql`
-        query filterRoom($conditions: FilterRoomInput!, $page: Int) {
-            filterRoom(conditions: $conditions, page: $page, limit: 10) {
+        query filterRoom($conditions: FilterRoomInput!, $page: Int, $limit: Int) {
+            filterRoom(conditions: $conditions, page: $page, limit: $limit) {
                 docs {
                     _id
                     home {
@@ -15,6 +15,8 @@ export const getFilterRoom = async (conditions: any, page: number) => {
                         provinceName
                         districtName
                         wardName
+                        waterPrice
+                        electricityPrice
                         position {
                             lat
                             lng
@@ -46,7 +48,7 @@ export const getFilterRoom = async (conditions: any, page: number) => {
     `;
     const { data } = await client.query({
         query: SEARCH,
-        variables: { conditions, page },
+        variables: { conditions, page, limit },
     });
 
     return data;

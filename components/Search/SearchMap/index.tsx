@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { formatPrice } from '../../../lib/formatPrice';
 import { getPosition } from '../../../lib/getPosition';
-import { Room } from '../../../pages/search';
+import { Room } from '../../../lib/interface';
 import useSearchStore from '../../../store/searchStore';
 import Slider from '../../Slider';
 import styles from './styles.module.scss';
@@ -95,7 +95,7 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
         <div className={styles.searchmap}>
             <div className={styles.searchmap__address} onClick={() => onShowSelect()}>
                 {address.name}
-                <i className="fa-solid fa-up-right-from-square"></i>
+                <i className="fa-solid fa-pen-to-square"></i>
             </div>
             <MapContainer
                 style={{ height: '100%', width: '100%', zIndex: 1 }}

@@ -1,10 +1,10 @@
+import { useMediaQuery } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { isMobile } from 'react-device-detect';
 import { timeAgo } from '../../../lib/date';
 import { formatPrice } from '../../../lib/formatPrice';
 import { formatAddressName } from '../../../lib/getPosition';
-import { Room } from '../../../pages/search';
+import { Room } from '../../../lib/interface';
 import useSearchStore from '../../../store/searchStore';
 import styles from './styles.module.scss';
 
@@ -16,8 +16,10 @@ export interface ISearchRoomProps {
 }
 
 export default function SearchRoom({ room, index }: ISearchRoomProps) {
-    const { wardName, districtName, provinceName } = room.home;
+    const { wardName, districtName, provinceName, waterPrice, electricityPrice } = room.home;
     const setRoomHovered = useSearchStore((state) => state.setRoomHovered);
+    const [isMobile] = useMediaQuery('(max-width: 768px)');
+    
     return (
         <li>
             <Link href={`/room/${room._id}`}>
@@ -34,28 +36,6 @@ export default function SearchRoom({ room, index }: ISearchRoomProps) {
                         <span>
                             {timeAgo(room.createdAt)} bởi {room.home.owner.fullname}
                         </span>
-                        {/* <div>
-                    <i className="fi fi-rr-marker"></i>
-                    <p>
-                        {formatName(
-                            `${wardName && wardName + ', '}${
-                                districtName && districtName + ', '
-                            }${provinceName}`
-                        )}
-                    </p>
-                </div>
-                <div>
-                    <i className="fi fi-rr-home"></i>
-                    <p>
-                        Tầng 4, diện tích 12m2
-                    </p>
-                </div>
-                <div>
-                    <i className="fi fi-rr-label"></i>
-                    <p>
-                        Tiền điện 4000đ, tiền nước 25000đ
-                    </p>
-                </div> */}
                         <div className={styles.detail__title}>
                             <i className="fi fi-rr-home"></i>
                             <p>
@@ -67,6 +47,16 @@ export default function SearchRoom({ room, index }: ISearchRoomProps) {
                                               : wardName + ', ' + districtName
                                       }`}
                             </p>
+                        </div>
+                        <div className={styles.line}></div>
+                        <div className={styles.detail__description}>
+                            {waterPrice && `Giá nước ${formatPrice(waterPrice)}`}{' '}
+                            {waterPrice && electricityPrice && '∙'}{' '}
+                            {electricityPrice && `Giá điện ${formatPrice(electricityPrice)}`}{' '}
+                            {electricityPrice && room.square && electricityPrice && '∙'}{' '}
+                            {room.square && `Diện tích ${room.square}m²`}{' '}
+                            {room.floor && room.square && electricityPrice && '∙'}{' '}
+                            {room.floor && `Tầng ${room.floor}`}{' '}
                         </div>
                         <h3>{formatPrice(room.price)}/tháng</h3>
                     </div>

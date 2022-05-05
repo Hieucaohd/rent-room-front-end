@@ -1,12 +1,16 @@
 import { Button, Input } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import type { GetServerSidePropsContext } from 'next';
+import type { GetStaticPropsContext } from 'next';
+import AppAbout from '../components/app-about';
+import RoomByArea from '../components/HomePage/RoomByArea';
+import { getFilterRoom } from '../lib/apollo/search';
+import { Room } from '../lib/interface';
 
 export interface IHomePageProps {
-    user: any;
+    roomsInHaNoi: Room[];
 }
 
-const Home = ({ user }: IHomePageProps) => {
+const Home = ({ roomsInHaNoi }: IHomePageProps) => {
     return (
         <motion.div className="main-page">
             <div className="mp-header">
@@ -42,13 +46,26 @@ const Home = ({ user }: IHomePageProps) => {
                     </div>
                 </div>
             </div>
+            <RoomByArea label={'Khu vực Hà Nội'} roomList={roomsInHaNoi} />
+            <AppAbout />
         </motion.div>
     );
 };
 
-export const getServerSideProps = (context: GetServerSidePropsContext) => {
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+    const roomsInHaNoi = await getFilterRoom(
+        {
+            address: {
+                province: 1,
+            },
+        },
+        1,
+        4
+    );
     return {
-        props: {},
+        props: {
+            roomsInHaNoi: roomsInHaNoi.filterRoom.docs,
+        },
     };
 };
 
