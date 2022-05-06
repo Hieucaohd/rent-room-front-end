@@ -90,7 +90,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
         <ChakraProvider>
             <ApolloProvider client={client}>
                 <Head>
-                    <title>Rent Zoom</title>
+                    <title>Tìm phòng trọ</title>
                 </Head>
 
                 <AnimatePresence>
