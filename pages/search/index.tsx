@@ -25,14 +25,14 @@ export interface ISearchProps {
 
 export default function Search({ roomList, address, paginator }: ISearchProps) {
     const [showSelect, setShowSelect] = useState(false);
-    const [isMobile] = useMediaQuery('(max-width: 768px)');
+    const [isBigScreen] = useMediaQuery('(min-width: 769px)');
     
     return (
         <div className="search">
             <Head>
                 <title>{address.name ? `Phòng trọ ở ${address.name}` : 'Tìm kiếm'}</title>
             </Head>
-            {!isMobile && (
+            {isBigScreen  && (
                 <SearchMap
                     roomList={getMapRoomList(roomList)}
                     address={address}

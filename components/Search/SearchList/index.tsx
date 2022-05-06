@@ -21,7 +21,7 @@ export default function SearchList({
 }: ISearchListProps) {
     const listRef = useRef<any>();
     const router = useRouter();
-    const [isMobile] = useMediaQuery('(max-width: 768px)');
+    const [isMobile] = useMediaQuery('(max-width: 600px)');
 
     useEffect(() => {
         listRef.current.scrollTop = 0;
@@ -43,7 +43,7 @@ export default function SearchList({
                 </strong>
             </p>
             {roomList.map((room, index) => (
-                <SearchRoom room={room} key={index} index={index} />
+                <SearchRoom room={room} key={index} index={index} isSearchPage={true}/>
             ))}
             <Pagination onChangePage={changePage} paginator={paginator} />
         </ul>

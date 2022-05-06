@@ -13,17 +13,18 @@ const Slider = dynamic(() => import('../../Slider'), { ssr: false });
 export interface ISearchRoomProps {
     room: Room;
     index: number;
+    isSearchPage?: boolean;
 }
 
-export default function SearchRoom({ room, index }: ISearchRoomProps) {
+export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomProps) {
     const { wardName, districtName, provinceName, waterPrice, electricityPrice } = room.home;
     const setRoomHovered = useSearchStore((state) => state.setRoomHovered);
-    const [isMobile] = useMediaQuery('(max-width: 768px)');
+    const [isMobile] = useMediaQuery('(max-width: 600px)');
     
     return (
         <li>
             <Link href={`/room/${room._id}`}>
-                <a className={styles.item} onMouseOver={() => setRoomHovered(room._id)}>
+                <a className={styles.item} onMouseOver={isSearchPage ? (() => setRoomHovered(room._id)) : undefined}>
                     <div className={styles.slider}>
                         <Slider
                             images={room.images}
@@ -38,7 +39,7 @@ export default function SearchRoom({ room, index }: ISearchRoomProps) {
                         </span>
                         <div className={styles.detail__title}>
                             <i className="fi fi-rr-home"></i>
-                            <p>
+                            <h4>
                                 {room.title
                                     ? room.title
                                     : `Phòng ${room.roomNumber ? room.roomNumber : 'trọ'} gần ${
@@ -46,7 +47,7 @@ export default function SearchRoom({ room, index }: ISearchRoomProps) {
                                               ? formatAddressName(wardName + ', ' + districtName)
                                               : wardName + ', ' + districtName
                                       }`}
-                            </p>
+                            </h4>
                         </div>
                         <div className={styles.line}></div>
                         <div className={styles.detail__description}>
