@@ -50,7 +50,7 @@ const index = new Document({
 export default async function handler(req:any, res:any) {
     try {
         const {query, limit} = req.query;
-        const data = await index.search(query, {enrich: true, limit: limit || 5 });
+        const data = await index.search(query, {enrich: true, limit: Number(limit) || 5 });
         res.status(200).json(data[0].result);
     } catch (e) {
         res.status(200).json([]);

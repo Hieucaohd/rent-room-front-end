@@ -16,9 +16,9 @@
     }
 
     @media screen and (max-width: 500px) {
-        --mainpage__header-h1--fontsize: 12px;
+        --mainpage__header-h1--fontsize: 20px;
         --mainpage__header--bdradius: 5px;
-        --mainpage__header-search--width: 100%;
+        --mainpage__header-search--width: 86%;
     }
 }
 
@@ -64,62 +64,6 @@
             font-size: var(--mainpage__header-h1--fontsize);
         }
         z-index: 2;
-
-        & > div {
-            position: relative;
-            width: var(--mainpage__header-search--width);
-            margin-top: 10px;
-            border-radius: 20px;
-            padding: 3px 3px 3px 3px;
-            box-sizing: content-box;
-            background-color: white;
-
-            & input {
-                background-color: white;
-                padding-right: 75px;
-                border-radius: 20px;
-            }
-
-            & > ul {
-                position: absolute;
-                top: 42px;
-                left: 0;
-                right: 36px;
-                min-height: 100px;
-                background: white;
-                border-bottom-left-radius: 12px;
-                border-bottom-right-radius: 12px;
-
-                & > li {
-                    display: flex;
-                    padding: 8px 16px;
-
-                    & i {
-                        margin-right: 4px;
-                    }
-
-                    &:hover {
-                        cursor: pointer;
-                        background-color: #f0f2f5;
-                    }
-                }
-            }
-
-            & > button {
-                position: absolute;
-                right: 3px;
-                top: 3px;
-                display: flex;
-                gap: 10px;
-                width: calc(2rem - 6px);
-                border-radius: 100%;
-                background-color: var(--app-btn-bgcolor);
-
-                & > i {
-                    color: white;
-                }
-            }
-        }
     }
 }
 
