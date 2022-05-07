@@ -1,24 +1,24 @@
 :root {
     --mainpage__header-h1--fontsize: 30px;
     --mainpage__header--bdradius: 15px;
-    --mainpage__header-search--width: 60%;
+    --mainpage__header-search--width: 70%;
 
     @media screen and (max-width: 100px) {
         --mainpage__header-h1--fontsize: 26px;
         --mainpage__header--bdradius: 10px;
-        --mainpage__header-search--width: 70%;
+        --mainpage__header-search--width: 80%;
     }
 
     @media screen and (max-width: 800px) {
         --mainpage__header-h1--fontsize: 20px;
         --mainpage__header--bdradius: 10px;
-        --mainpage__header-search--width: 80%;
+        --mainpage__header-search--width: 90%;
     }
 
     @media screen and (max-width: 500px) {
         --mainpage__header-h1--fontsize: 12px;
         --mainpage__header--bdradius: 5px;
-        --mainpage__header-search--width: 90%;
+        --mainpage__header-search--width: 100%;
     }
 }
 
@@ -27,7 +27,7 @@
     flex-direction: column;
     padding: 28px;
     height: 100%;
-    background-color: #F0F2F5;
+    background-color: #f0f2f5;
 }
 
 .mp-header {
@@ -40,13 +40,11 @@
     height: min(500px, 60vw);
     border-radius: var(--mainpage__header--bdradius);
 
-    overflow: hidden;
-
     &__bg {
         position: absolute;
         left: 0;
         top: 0;
-
+        
         width: 100%;
         height: 100%;
 
@@ -55,6 +53,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: var(--mainpage__header--bdradius);
         }
     }
 
@@ -73,36 +72,51 @@
             border-radius: 20px;
             padding: 3px 3px 3px 3px;
             box-sizing: content-box;
-            overflow: hidden;
             background-color: white;
 
-            & > input {
+            & input {
                 background-color: white;
                 padding-right: 75px;
+                border-radius: 20px;
             }
 
-            & > div {
+            & > ul {
+                position: absolute;
+                top: 42px;
+                left: 0;
+                right: 36px;
+                min-height: 100px;
+                background: white;
+                border-bottom-left-radius: 12px;
+                border-bottom-right-radius: 12px;
+
+                & > li {
+                    display: flex;
+                    padding: 8px 16px;
+
+                    & i {
+                        margin-right: 4px;
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: #f0f2f5;
+                    }
+                }
+            }
+
+            & > button {
                 position: absolute;
                 right: 3px;
                 top: 3px;
                 display: flex;
                 gap: 10px;
+                width: calc(2rem - 6px);
+                border-radius: 100%;
+                background-color: var(--app-btn-bgcolor);
 
-                & > button {
-                    width: calc(2rem - 6px);
-
-                    &:nth-child(1) {
-                        background-color: transparent;
-                    }
-
-                    &:nth-child(2) {
-                        border-radius: 100%;
-                        background-color: var(--app-btn-bgcolor);
-
-                        & > i {
-                            color: white;
-                        }
-                    }
+                & > i {
+                    color: white;
                 }
             }
         }
@@ -149,7 +163,6 @@
 
 .homepage-topic {
     display: flex;
-
 }
 
 .homepage-posts {
@@ -174,7 +187,7 @@
             right: 0;
             bottom: -10px;
             left: 0;
-            content: "";
+            content: '';
             width: 90px;
             height: 2px;
             margin: 0 auto;

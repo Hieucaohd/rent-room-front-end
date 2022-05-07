@@ -20,11 +20,14 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
     const { wardName, districtName, provinceName, waterPrice, electricityPrice } = room.home;
     const setRoomHovered = useSearchStore((state) => state.setRoomHovered);
     const [isMobile] = useMediaQuery('(max-width: 600px)');
-    
+    const address = wardName + ', ' + districtName + `${!isSearchPage ? `, ${formatAddressName(provinceName)}` : ""}`;
     return (
         <li>
             <Link href={`/room/${room._id}`}>
-                <a className={styles.item} onMouseOver={isSearchPage ? (() => setRoomHovered(room._id)) : undefined}>
+                <a
+                    className={styles.item}
+                    onMouseOver={isSearchPage ? () => setRoomHovered(room._id) : undefined}
+                >
                     <div className={styles.slider}>
                         <Slider
                             images={room.images}
@@ -42,10 +45,10 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
                             <h4>
                                 {room.title
                                     ? room.title
-                                    : `Phòng ${room.roomNumber ? room.roomNumber : 'trọ'} gần ${
+                                    : `${!isSearchPage && isMobile ? 'P. ' : 'Phòng'} ${room.roomNumber ? room.roomNumber : 'trọ'} gần ${
                                           isMobile
-                                              ? formatAddressName(wardName + ', ' + districtName)
-                                              : wardName + ', ' + districtName
+                                              ? formatAddressName(address)
+                                              : address
                                       }`}
                             </h4>
                         </div>
