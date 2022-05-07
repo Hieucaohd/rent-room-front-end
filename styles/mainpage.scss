@@ -15,8 +15,8 @@
         --mainpage__header-search--width: 90%;
     }
 
-    @media screen and (max-width: 500px) {
-        --mainpage__header-h1--fontsize: 20px;
+    @media screen and (max-width: 600px) {
+        --mainpage__header-h1--fontsize: 18px;
         --mainpage__header--bdradius: 5px;
         --mainpage__header-search--width: 86%;
     }
