@@ -147,12 +147,20 @@ const Home = ({ lastestRooms }: IHomePageProps) => {
 };
 
 export const getServerSideProps = async () => {
-    const lastestRooms = await getFilterRoom({}, 1, 8);
-    return {
-        props: {
-            lastestRooms: lastestRooms.filterRoom.docs,
-        },
-    };
+    try {
+        const lastestRooms = await getFilterRoom({}, 1, 8);
+        return {
+            props: {
+                lastestRooms: lastestRooms.filterRoom.docs,
+            },
+        };
+    } catch (e) {
+        return {
+            props: {
+                lastestRooms: []
+            }
+        }
+    }
 };
 
 export default Home;
