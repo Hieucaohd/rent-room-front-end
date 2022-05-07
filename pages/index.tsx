@@ -1,13 +1,10 @@
-import { Button, Input } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import type { GetStaticPropsContext } from 'next';
 import Link from 'next/link';
 import AppAbout from '../components/app-about';
-import SearchList from '../components/Search/SearchList';
+import SearchBox from '../components/SeachBox';
 import SearchRoom from '../components/Search/SearchList/SearchRoom';
 import { getFilterRoom } from '../lib/apollo/search';
 import { Room } from '../lib/interface';
-
 export interface IHomePageProps {
     lastestRooms: Room[];
 }
@@ -22,31 +19,7 @@ const Home = ({ lastestRooms }: IHomePageProps) => {
                     </div>
                     <div className="mp-header__search">
                         <h1>WEBSITE TÌM PHÒNG TRỌ MIỄN PHÍ</h1>
-                        <div>
-                            <Input
-                                placeholder="Khu vực của bạn"
-                                border="none"
-                                _focus={{
-                                    outline: 'none',
-                                }}
-                            />
-                            <div>
-                                <Button
-                                    _focus={{
-                                        outline: 'none',
-                                    }}
-                                >
-                                    <i className="fa-solid fa-map-location-dot"></i>
-                                </Button>
-                                <Button
-                                    _focus={{
-                                        outline: 'none',
-                                    }}
-                                >
-                                    <i className="fa-solid fa-magnifying-glass"></i>
-                                </Button>
-                            </div>
-                        </div>
+                        <SearchBox />
                     </div>
                 </section>
                 <section className="homepage-address">
@@ -173,7 +146,7 @@ const Home = ({ lastestRooms }: IHomePageProps) => {
     );
 };
 
-export const getStaticProps = async (context: GetStaticPropsContext) => {
+export const getServerSideProps = async () => {
     const lastestRooms = await getFilterRoom({}, 1, 8);
     return {
         props: {
