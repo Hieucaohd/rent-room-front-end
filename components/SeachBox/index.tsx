@@ -11,6 +11,7 @@ interface SearchResult {
         province: number;
         district: number;
         ward: number;
+        name: string;
     };
 }
 
@@ -65,12 +66,12 @@ export default function SearchBox(props: ISearchBoxProps) {
                     <li>
                         <i className="fa-solid fa-location-crosshairs"></i> Tìm quanh đây
                     </li>
-                    {searchResult.map(({ id, doc }, index) => (
+                    {searchResult.map(({ doc }, index) => (
                         <li
                             key={index}
                             onClick={() => handleSeach(doc.province, doc.district, doc.ward)}
                         >
-                            <i className="fa-solid fa-magnifying-glass"></i> {id}
+                            <i className="fa-solid fa-magnifying-glass"></i> {doc.name}
                         </li>
                     ))}
                 </ul>
