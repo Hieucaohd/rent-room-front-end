@@ -4,13 +4,22 @@
     padding: 16px 32px;
 
     &__address {
-        display: flex;
         font-size: 16px;
         
         & strong {
             margin: 0px 4px;
             font-size: 16px;
-            display: flex;
+
+            & i {
+                display: inline-flex!important;
+                position: relative!important;
+
+                &:before {
+                    position: absolute;
+                    left: -2px;
+                    bottom: 0px;
+                }
+            }
         }
 
         & strong:last-child {
