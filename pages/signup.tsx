@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import {
     Button,
@@ -9,6 +9,7 @@ import {
     InputRightElement,
     Select,
     Tooltip,
+    useToast,
 } from '@chakra-ui/react';
 import { ConnectWithBtnStyle, InputStyle, linkBtnStyle } from '../chakra';
 import { useMutation } from '@apollo/client';
@@ -22,11 +23,12 @@ interface FormSignUp {
     email: string;
     password: string;
     passwordConfirm: string;
+    userType: 'TENANT' | 'HOST';
     fullname: string;
     callNumber: string;
-    province: string;
-    district: string;
-    ward: string;
+    province: string | undefined;
+    district: string | undefined;
+    ward: string | undefined;
 }
 
 interface FormError {
@@ -58,8 +60,8 @@ const errorReducer = (state: FormError, data: FormError) => {
     return state;
 };
 
-const convertDataForm = (value: string, type: 'number' | 'string' = 'string') => {
-    if (value === '') {
+const convertDataForm = (value: string | undefined, type: 'number' | 'string' = 'string') => {
+    if (!value || value === '') {
         return null;
     } else if (type === 'string') {
         return value;
@@ -114,12 +116,32 @@ const containerChild = {
     },
 };
 
+const containerMore = {
+    hidden: {
+        height: '0',
+    },
+    visible: {
+        height: 'auto',
+        transition: {
+            delayChildren: 0.4,
+            staggerChildren: 0.1,
+        },
+    },
+    out: {
+        height: '0',
+        transition: {
+            delay: 0.5,
+            staggerChildren: 0.05,
+        },
+    },
+};
+
 export default function SignUp(props: ISignUpProps) {
     const [signUpHandle] = useMutation(SIGNUP);
     const { user } = useStore();
     const router = useRouter();
     //#region form
-    const { register, handleSubmit } = useForm<FormSignUp>();
+    const { register, handleSubmit, watch, setValue } = useForm<FormSignUp>();
     const emailField = register('email');
     const passwordField = register('password');
     const passwordConfirmField = register('passwordConfirm');
@@ -128,6 +150,8 @@ export default function SignUp(props: ISignUpProps) {
     const provinceField = register('province');
     const districtField = register('district');
     const wardField = register('ward');
+
+    const userType = watch('userType');
     //#endregion province
 
     //#region error state
@@ -210,6 +234,9 @@ export default function SignUp(props: ISignUpProps) {
             }),
         [wardList]
     );
+
+    const toast = useToast();
+
     //#endregion
     const [showPassword, setShowPassword] = useState(false);
     const submitForm = useCallback(async (e: FormSignUp) => {
@@ -228,17 +255,23 @@ export default function SignUp(props: ISignUpProps) {
             errorSet.fullname = true;
             error = true;
         }
-        if (e.province === '') {
-            errorSet.province = true;
-            error = true;
-        }
-        if (e.district === '') {
-            errorSet.district = true;
-            error = true;
-        }
-        if (e.ward === '') {
-            errorSet.ward = true;
-            error = true;
+        if (e.userType == 'HOST') {
+            if (e.province === '') {
+                errorSet.province = true;
+                error = true;
+            }
+            if (e.district === '') {
+                errorSet.district = true;
+                error = true;
+            }
+            if (e.ward === '') {
+                errorSet.ward = true;
+                error = true;
+            }
+        } else {
+            e.province = undefined;
+            e.district = undefined;
+            e.ward = undefined;
         }
 
         if (error) {
@@ -248,11 +281,16 @@ export default function SignUp(props: ISignUpProps) {
         const newUser = {
             email: convertDataForm(e.email),
             password: convertDataForm(e.password),
+            userType: e.userType,
             fullname: convertDataForm(e.fullname),
             numberPhone: convertDataForm(e.callNumber),
-            province: convertDataForm(e.province, 'number'),
-            district: convertDataForm(e.district, 'number'),
-            ward: convertDataForm(e.ward, 'number'),
+            ...(e.userType == 'HOST'
+                ? {
+                      province: convertDataForm(e.province, 'number'),
+                      district: convertDataForm(e.district, 'number'),
+                      ward: convertDataForm(e.ward, 'number'),
+                  }
+                : {}),
         };
         setLoading(true);
         signUpHandle({
@@ -270,6 +308,15 @@ export default function SignUp(props: ISignUpProps) {
                 if (message.includes('duplicate key error collection')) {
                     dispatch({
                         email: true,
+                    });
+                }
+                if (message.includes('position')) {
+                    toast({
+                        title: `Server time out`,
+                        status: 'error',
+                        position: 'bottom-left',
+                        description: 'Có sự cố khi kết nối với server',
+                        isClosable: true,
                     });
                 }
             });
@@ -369,6 +416,7 @@ export default function SignUp(props: ISignUpProps) {
                                     cursor="pointer"
                                     children={
                                         <Button
+                                            tabIndex={-1}
                                             backgroundColor="transparent"
                                             _focus={{ outline: 'none' }}
                                             _active={{ backgroundColor: 'transparent' }}
@@ -420,6 +468,7 @@ export default function SignUp(props: ISignUpProps) {
                                         cursor="pointer"
                                         children={
                                             <Button
+                                                tabIndex={-1}
                                                 backgroundColor="transparent"
                                                 _focus={{ outline: 'none' }}
                                                 _active={{ backgroundColor: 'transparent' }}
@@ -435,6 +484,30 @@ export default function SignUp(props: ISignUpProps) {
                                     />
                                 </InputGroup>
                             </Tooltip>
+                        </motion.div>
+                        <motion.div variants={containerChild} className="signup-form__usertype">
+                            <div>Bạn là </div>
+                            {/*@ts-ignore  */}
+                            <Select
+                                {...InputStyle}
+                                height="50px"
+                                defaultValue="TENANT"
+                                {...register('userType')}
+                                onChange={(e) => {
+                                    register('userType').onChange(e);
+                                    setValue('province', '');
+                                    setValue('district', '');
+                                    setValue('ward', '');
+                                    dispatch({
+                                        province: false,
+                                        district: false,
+                                        ward: false,
+                                    });
+                                }}
+                            >
+                                <option value={'TENANT'}>Người đi thuê</option>
+                                <option value={'HOST'}>Chủ nhà</option>
+                            </Select>
                         </motion.div>
                         <motion.div variants={containerChild}>
                             <Tooltip
@@ -497,105 +570,128 @@ export default function SignUp(props: ISignUpProps) {
                                 </InputGroup>
                             </Tooltip>
                         </motion.div>
-                        <motion.div variants={containerChild} className="signup-form__locate">
-                            <div>Vị trí của bạn</div>
-                            <div>
-                                <Tooltip
-                                    label="Tỉnh/TP không hợp lệ"
-                                    borderRadius="3px"
-                                    isDisabled={!errorState.province}
-                                    placement="bottom"
-                                    bg="red"
-                                    hasArrow
-                                >
-                                    <Select
-                                        height="50px"
-                                        borderWidth="3px"
-                                        cursor="pointer"
-                                        _focus={{
-                                            outline: 'none',
-                                            borderColor: '#80befc',
-                                        }}
-                                        placeholder="Tỉnh/TP"
-                                        {...provinceField}
-                                        {...(errorState.province ? { borderColor: 'red' } : {})}
-                                        onChange={(e) => {
-                                            if (errorState.province) {
-                                                dispatch({
-                                                    province: false,
-                                                });
-                                            }
-                                            provinceField.onChange(e);
-                                            setProvinceActive(e.target.value);
-                                        }}
+                        <motion.div variants={containerChild}>
+                            <AnimatePresence>
+                                {userType == 'HOST' && (
+                                    <motion.div
+                                        variants={containerMore}
+                                        initial="hidden"
+                                        animate="visible"
+                                        exit="out"
+                                        className="signup-form__hostdata"
                                     >
-                                        {renderProvinceList}
-                                    </Select>
-                                </Tooltip>
-                                <Tooltip
-                                    label="Quận/Huyện không hợp lệ"
-                                    borderRadius="3px"
-                                    isDisabled={!errorState.district}
-                                    placement="bottom"
-                                    bg="red"
-                                    hasArrow
-                                >
-                                    <Select
-                                        height="50px"
-                                        borderWidth="3px"
-                                        cursor="pointer"
-                                        _focus={{
-                                            outline: 'none',
-                                            borderColor: '#80befc',
-                                        }}
-                                        placeholder="Quận/Huyện"
-                                        {...districtField}
-                                        {...(errorState.district ? { borderColor: 'red' } : {})}
-                                        onChange={(e) => {
-                                            if (errorState.district) {
-                                                dispatch({
-                                                    district: false,
-                                                });
-                                            }
-                                            districtField.onChange(e);
-                                            setDistrictActive(e.target.value);
-                                        }}
-                                    >
-                                        {renderDistrictList}
-                                    </Select>
-                                </Tooltip>
-                                <Tooltip
-                                    label="Xã/Phường không hợp lệ"
-                                    borderRadius="3px"
-                                    isDisabled={!errorState.ward}
-                                    placement="bottom"
-                                    bg="red"
-                                    hasArrow
-                                >
-                                    <Select
-                                        height="50px"
-                                        borderWidth="3px"
-                                        cursor="pointer"
-                                        _focus={{
-                                            outline: 'none',
-                                            borderColor: '#80befc',
-                                        }}
-                                        placeholder="Xã/Phường"
-                                        {...wardField}
-                                        {...(errorState.ward ? { borderColor: 'red' } : {})}
-                                        onChange={(e) => {
-                                            if (errorState.ward) {
-                                                dispatch({
-                                                    ward: false,
-                                                });
-                                            }
-                                            wardField.onChange(e);
-                                        }}
-                                    >
-                                        {renderWardList}
-                                    </Select>
-                                </Tooltip>
-                            </div>
+                                        <motion.div
+                                            variants={containerChild}
+                                            className="signup-form__locate"
+                                        >
+                                            <div>Vị trí của bạn</div>
+                                            <div>
+                                                <Tooltip
+                                                    label="Tỉnh/TP không hợp lệ"
+                                                    borderRadius="3px"
+                                                    isDisabled={!errorState.province}
+                                                    placement="bottom"
+                                                    bg="red"
+                                                    hasArrow
+                                                >
+                                                    <Select
+                                                        height="50px"
+                                                        borderWidth="3px"
+                                                        cursor="pointer"
+                                                        _focus={{
+                                                            outline: 'none',
+                                                            borderColor: '#80befc',
+                                                        }}
+                                                        placeholder="Tỉnh/TP"
+                                                        {...provinceField}
+                                                        {...(errorState.province
+                                                            ? { borderColor: 'red' }
+                                                            : {})}
+                                                        onChange={(e) => {
+                                                            if (errorState.province) {
+                                                                dispatch({
+                                                                    province: false,
+                                                                });
+                                                            }
+                                                            provinceField.onChange(e);
+                                                            setProvinceActive(e.target.value);
+                                                        }}
+                                                    >
+                                                        {renderProvinceList}
+                                                    </Select>
+                                                </Tooltip>
+                                                <Tooltip
+                                                    label="Quận/Huyện không hợp lệ"
+                                                    borderRadius="3px"
+                                                    isDisabled={!errorState.district}
+                                                    placement="bottom"
+                                                    bg="red"
+                                                    hasArrow
+                                                >
+                                                    <Select
+                                                        height="50px"
+                                                        borderWidth="3px"
+                                                        cursor="pointer"
+                                                        _focus={{
+                                                            outline: 'none',
+                                                            borderColor: '#80befc',
+                                                        }}
+                                                        placeholder="Quận/Huyện"
+                                                        {...districtField}
+                                                        {...(errorState.district
+                                                            ? { borderColor: 'red' }
+                                                            : {})}
+                                                        onChange={(e) => {
+                                                            if (errorState.district) {
+                                                                dispatch({
+                                                                    district: false,
+                                                                });
+                                                            }
+                                                            districtField.onChange(e);
+                                                            setDistrictActive(e.target.value);
+                                                        }}
+                                                    >
+                                                        {renderDistrictList}
+                                                    </Select>
+                                                </Tooltip>
+                                                <Tooltip
+                                                    label="Xã/Phường không hợp lệ"
+                                                    borderRadius="3px"
+                                                    isDisabled={!errorState.ward}
+                                                    placement="bottom"
+                                                    bg="red"
+                                                    hasArrow
+                                                >
+                                                    <Select
+                                                        height="50px"
+                                                        borderWidth="3px"
+                                                        cursor="pointer"
+                                                        _focus={{
+                                                            outline: 'none',
+                                                            borderColor: '#80befc',
+                                                        }}
+                                                        placeholder="Xã/Phường"
+                                                        {...wardField}
+                                                        {...(errorState.ward
+                                                            ? { borderColor: 'red' }
+                                                            : {})}
+                                                        onChange={(e) => {
+                                                            if (errorState.ward) {
+                                                                dispatch({
+                                                                    ward: false,
+                                                                });
+                                                            }
+                                                            wardField.onChange(e);
+                                                        }}
+                                                    >
+                                                        {renderWardList}
+                                                    </Select>
+                                                </Tooltip>
+                                            </div>
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </motion.div>
                         <motion.div
                             className="signup-form__submit"

@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import { HomeData } from '../../../../pages/home/[homeid]';
+import client from '../../apollo-client';
 import { Amenity } from './update';
 
 export interface RoomData {
@@ -26,6 +27,7 @@ export const getSSRRoomById = {
                         _id
                         fullname
                         avatar
+                        numberPhone
                     }
                     title
                     provinceName
@@ -61,4 +63,55 @@ export const getSSRRoomById = {
             roomId: roomId,
         };
     },
+};
+
+export const getRoomByIds = {
+    command: gql`
+        query GetListRoomByIds($listIds: [ID!]!, $page: Int, $limit: Int) {
+            getListRoomByIds(listIds: $listIds, page: $page, limit: $limit) {
+                docs {
+                    _id
+                    price
+                    square
+                    isRented
+                    floor
+                    images
+                    roomNumber
+                }
+                paginator {
+                    limit
+                    page
+                    nextPage
+                    prevPage
+                    totalPages
+                    pagingCounter
+                    hasPrevPage
+                    hasNextPage
+                    totalDocs
+                }
+            }
+        }
+    `,
+    variables: (listIds: string[], page?: number, limit?: number) => {
+        page ??= 1;
+        limit ??= 12;
+
+        return {
+            listIds,
+            page,
+            limit,
+        };
+    },
+};
+
+export const getListRoomByIds = async (listRoom: string[], page: number) => {
+    try {
+        const { data } = await client.query({
+            query: getRoomByIds.command,
+            variables: getRoomByIds.variables(listRoom, page, 12),
+        });
+        return data.getListRoomByIds;
+    } catch (error) {
+        console.log(error);
+    }
 };

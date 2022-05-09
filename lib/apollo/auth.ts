@@ -35,6 +35,7 @@ export const PROFILE = gql`
         profile {
             isAuth
             user {
+                avatar
                 fullname
                 email
                 numberPhone
@@ -42,6 +43,7 @@ export const PROFILE = gql`
                 district
                 ward
                 _id
+                userType
             }
         }
     }

@@ -46,6 +46,18 @@ export const getUserHomes = {
         query Profile($page: Int, $limit: Int) {
             profile {
                 user {
+                    _id
+                    email
+                    fullname
+                    avatar
+                    userType
+                    province
+                    district
+                    ward
+                    provinceName
+                    districtName
+                    wardName
+                    numberPhone
                     listHomes(page: $page, limit: $limit) {
                         docs {
                             _id

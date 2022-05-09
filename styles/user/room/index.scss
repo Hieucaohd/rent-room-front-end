@@ -4,20 +4,24 @@
     --app__icon-color: #1d80ca;
     --roompage__icon-property-size: 20px;
     --roompage__property-font-size: 15px;
+    --roompage__numberphone-font-size: 16px;
     --roompage__description-font-size: 15px;
 
     @media screen and (max-width: 800px) {
         --roompage__icon-property-size: 18px;
+        --roompage__numberphone-font-size: 15px;
         --roompage__property-font-size: 14px;
     }
 
     @media screen and (max-width: 750px) {
         --roompage__icon-property-size: 17px;
+        --roompage__numberphone-font-size: 14px;
         --roompage__property-font-size: 13px;
     }
 
     @media screen and (max-width: 500px) {
         --roompage__icon-property-size: 16px;
+        --roompage__numberphone-font-size: 13px;
         --roompage__property-font-size: 12px;
     }
 }
@@ -36,6 +40,7 @@
     &-header {
         width: 100%;
         & > h1 {
+            position: relative;
             font-weight: 700;
             font-size: var(--home-page__title--fontsize);
             & > a {
@@ -78,6 +83,21 @@
                     & > span {
                         font-weight: 700;
                         font-size: calc(var(--home-page__title--fontsize) - 2px);
+                    }
+
+                    & > div {
+                        // width: 100%;
+                        display: flex;
+                        justify-content: flex-end;
+                        & > button {
+                            width: 100%;
+                            & > a {
+                                gap: 15px;
+                                display: flex;
+                                font-weight: 700;
+                                font-size: var(--roompage__numberphone-font-size);
+                            }
+                        }
                     }
 
                     @media screen and (max-width: 600px) {

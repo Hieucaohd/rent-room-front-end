@@ -5,10 +5,19 @@ import React, { useEffect, useState } from 'react';
 import { LOGIN } from '../lib/apollo/auth';
 import { User, withAuth } from '../lib/withAuth';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Button, Input, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Input,
+    InputGroup,
+    InputLeftElement,
+    InputRightElement,
+    useToast,
+} from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { ConnectWithBtnStyle, InputStyle } from '../chakra';
 import useStore from '../store/useStore';
+import { ForgotPopup } from '../components/forgot';
 
 export interface ISignInProps {
     user: User;
@@ -20,22 +29,28 @@ interface LoginForm {
 }
 
 interface ErrorLog {
-    type: 'user' | 'password';
-    message: string | null;
+    type: 'user' | 'password' | 'all';
+    message: string | string[] | null;
 }
 
-const addError = (message: string): ErrorLog => {
+const addError = (message: string | string[], type?: 'user' | 'password' | 'all'): ErrorLog => {
+    if (type) {
+        return {
+            type: type,
+            message: message,
+        };
+    }
     if (message.indexOf('This email is not registed') != -1) {
         return {
             type: 'user',
-            message: message,
+            message: 'Tài khoản không tồn tại',
         };
     }
 
     if (message.indexOf('Password is incorrect') != -1) {
         return {
             type: 'password',
-            message: message,
+            message: 'Mật khẩu không đúng',
         };
     }
 
@@ -141,37 +156,58 @@ export default function SignIn() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<ErrorLog>({ type: 'user', message: null });
-    const emailError = !!(error.type === 'user' && error.message);
-    const passwordError = !!(error.type === 'password' && error.message);
+    const emailError = !!((error.type === 'user' || error.type == 'all') && error.message);
+    const passwordError = !!((error.type === 'password' || error.type === 'all') && error.message);
+    const toast = useToast();
+
+    console.log(error);
 
     //quay trở lại page đang truy cập nếu có
     const { p: currentPage } = router.query;
 
     const loginSubmit = (e: LoginForm) => {
-        console.log(e);
-        setLoading(true);
-        login({
-            variables: {
-                email: e.email,
-                password: e.password,
-            },
-        }).catch((error) => {
-            console.log(error);
-            setLoading(false);
-            setError(addError(error.message));
-        });
-    };
-
-    useEffect(() => {
-        console.log(data, user);
-        if (data || user) {
-            if (currentPage) {
-                window.location.href = currentPage.toString();
-            } else {
-                window.location.href = '/';
-            }
+        let isError = false;
+        if ((!e.email || e.email == '') && (!e.password || e.password == '')) {
+            isError = true;
+            setError(addError(['Tài khoản không hợp lệ', 'Mật khẩu không hợp lệ'], 'all'));
+        } else if (!e.email || e.email == '') {
+            isError = true;
+            setError(addError('Tài khoản không hợp lệ', 'user'));
+        } else if (!e.password || e.password == '') {
+            isError = true;
+            setError(addError('Mật khẩu không hợp lệ', 'password'));
         }
-    }, [data, user]);
+        if (!isError) {
+            setLoading(true);
+            login({
+                variables: {
+                    email: e.email,
+                    password: e.password,
+                },
+            })
+                .then((res) => {
+                    if (currentPage) {
+                        window.location.href = currentPage.toString();
+                    } else {
+                        window.location.href = '/';
+                    }
+                })
+                .catch((error: Error) => {
+                    console.log(error);
+                    if (error.message.indexOf('position') !== -1) {
+                        toast({
+                            title: `Server time out`,
+                            status: 'error',
+                            position: 'bottom-left',
+                            description: 'Có sự cố khi kết nối với server',
+                            isClosable: true,
+                        });
+                    }
+                    setLoading(false);
+                    setError(addError(error.message));
+                });
+        }
+    };
 
     if (user) {
         return <></>;
@@ -241,7 +277,12 @@ export default function SignIn() {
                             />
                         </InputGroup>
                         <div className="signin-errorlog">
-                            {emailError && <span>{error.message}</span>}
+                            {emailError && error.type === 'user' ? (
+                                <span>{error.message}</span>
+                            ) : (
+                                error.type === 'all' &&
+                                Array.isArray(error.message) && <span>{error.message[0]}</span>
+                            )}
                         </div>
                         <InputGroup>
                             <InputLeftElement
@@ -266,6 +307,7 @@ export default function SignIn() {
                                 cursor="pointer"
                                 children={
                                     <Button
+                                        tabIndex={-1}
                                         backgroundColor="transparent"
                                         width="100%"
                                         _focus={{ outline: 'none' }}
@@ -282,20 +324,24 @@ export default function SignIn() {
                             />
                         </InputGroup>
                         <div className="signin-errorlog">
-                            {passwordError && <span>{error.message}</span>}
+                            {passwordError && error.type === 'password' ? (
+                                <span>{error.message}</span>
+                            ) : (
+                                error.type === 'all' &&
+                                Array.isArray(error.message) && <span>{error.message[1]}</span>
+                            )}
                         </div>
-                        <Button
-                            type="button"
+                        <Box
                             display="flex"
                             justifyContent="flex-start"
                             _focus={{
                                 outline: 'none',
                             }}
                             className="signin-form__forgot"
-                            variant="link"
                         >
-                            Bạn quên mật khẩu?
-                        </Button>
+                            <ForgotPopup />
+                        </Box>
+
                         <motion.div
                             {...(!loading
                                 ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } }

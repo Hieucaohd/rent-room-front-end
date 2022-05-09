@@ -134,6 +134,14 @@ const getWardList = async (code: any) => {
     }
 };
 
+const getListExitPosition = async (p: number, d: number) => {
+    const listProvince: any[] = await getProvinceList();
+    const listDistrict: any[] = (await getDistrictList(p)).districts;
+    const listWard: any[] = (await getWardList(d)).wards;
+    const data: [any[], any[], any[]] = [listProvince, listDistrict, listWard];
+    return data;
+};
+
 export {
     getPosition,
     getPlace,
@@ -143,6 +151,7 @@ export {
     getDistrictList,
     getWardList,
     formatName,
+    getListExitPosition,
 };
 
 export default {};

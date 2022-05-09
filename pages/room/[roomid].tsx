@@ -8,7 +8,6 @@ import {
     AlertDialogOverlay,
     Avatar,
     Button,
-    Heading,
     Tooltip,
     useDisclosure,
 } from '@chakra-ui/react';
@@ -33,6 +32,11 @@ import listAmenityIcon from '../../lib/amenities';
 import client from '../../lib/apollo/apollo-client';
 import { Amenity, deleteRoomById } from '../../lib/apollo/home/room';
 import { getSSRRoomById, RoomData } from '../../lib/apollo/home/room/getroombyid';
+import {
+    getRoomSaved as getRoomSaved,
+    saveRoom,
+    updateRoom as updateRoomSaved,
+} from '../../lib/apollo/profile';
 import getTitleHome from '../../lib/getNameHome';
 import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
 import useResize from '../../lib/use-resize';
@@ -86,13 +90,19 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
                 variables: getSSRRoomById.variables(roomId.toString()),
             });
             const roomData = getRoomDataFromQuery(data2);
-            return {
-                props: {
-                    roomSSRData: roomData,
-                    roomId: roomId.toString(),
-                    isOwner: user?._id == roomData?.home?.owner?._id,
-                },
-            };
+            if (roomData) {
+                return {
+                    props: {
+                        roomSSRData: roomData,
+                        roomId: roomId.toString(),
+                        isOwner: user?._id == roomData?.home?.owner?._id,
+                    },
+                };
+            } else {
+                return {
+                    notFound: true,
+                };
+            }
         } catch (error) {
             console.log(error);
             return {
@@ -107,7 +117,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
 };
 
 function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
-    const router = useRouter();
     const [getRoomData, { data }] = useLazyQuery(getSSRRoomById.command, {
         variables: getSSRRoomById.variables(roomId),
         onCompleted: (data) => {
@@ -115,7 +124,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
             setRoomData({ ...roomSSRData, ...newData });
         },
     });
-
     const [roomData, setRoomData] = useState(roomSSRData);
     const homeData = roomData.home;
 
@@ -162,7 +170,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
             const barHeight = document.querySelector(
                 '.roompage-header__detail > div:nth-of-type(2)'
             );
-            console.log(barHeight);
+            // console.log(barHeight);
             if (barHeight) {
                 return barHeight.clientHeight;
             }
@@ -171,10 +179,23 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
         return 0;
     }, [mobilemode, renderState]);
 
+    const isSavedRoom = useMemo(() => {
+        if (!isOwner && !isServerSide && user) {
+            const data = getRoomSaved(user._id);
+            if (data) {
+                if (data.includes(roomId)) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }, [isServerSide, homeData, renderState]);
+
     //description
     useEffect(() => {
         if (roomData) {
-            console.log(roomData);
+            // console.log(roomData);
             const dataDes = JSON.parse(roomData.description);
             setRoomDescription(dataDes);
         }
@@ -251,7 +272,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
         } else {
             return (
                 <>
-                    Phòng {roomData.roomNumber} gần{' '}
+                    Phòng {roomData.roomNumber},{' '}
                     <Link href={`/home/${homeData._id}`}>
                         <a>{homeTitle.value}</a>
                     </Link>
@@ -293,7 +314,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                     <div className="roompage-header">
                         <h1>
                             {roomTitle}
-                            {isOwner && (
+                            {isOwner ? (
                                 <Button
                                     variant="link"
                                     _focus={{
@@ -314,6 +335,53 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                     }}
                                 >
                                     <i className="fa-solid fa-pen-to-square"></i>
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="link"
+                                    _focus={{
+                                        boxShadow: 'none',
+                                    }}
+                                    marginLeft="10px"
+                                    color="var(--app-color)"
+                                    height="100%"
+                                    gap="5px"
+                                    onClick={() => {
+                                        if (user) {
+                                            if (!isSavedRoom) {
+                                                if (
+                                                    confirm('Bạn có chắc chắn muốn lưu phòng này?')
+                                                ) {
+                                                    saveRoom(user._id, roomId);
+                                                    reRender();
+                                                }
+                                            } else {
+                                                if (
+                                                    confirm(
+                                                        'Bạn có chắc chắn muốn bỏ lưu phòng này?'
+                                                    )
+                                                ) {
+                                                    const listSaved = getRoomSaved(user._id);
+                                                    const newList = listSaved.filter(
+                                                        (item) => item != roomId
+                                                    );
+                                                    updateRoomSaved(user._id, newList);
+                                                    reRender();
+                                                }
+                                            }
+                                        } else {
+                                        }
+                                    }}
+                                >
+                                    {isSavedRoom ? (
+                                        <>
+                                            <i className="fa-solid fa-heart"></i>Đã lưu
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fa-regular fa-heart"></i>Lưu lại
+                                        </>
+                                    )}
                                 </Button>
                             )}
                         </h1>
@@ -347,7 +415,12 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 >
                                     <div>
                                         {!isOwner ? (
-                                            <Button {...payBtnStyle}>Liên hệ chủ nhà</Button>
+                                            <Button {...payBtnStyle}>
+                                                <a href={`tel:${homeData.owner.numberPhone}`}>
+                                                    <i className="fa-solid fa-phone-flip"></i>
+                                                    {homeData.owner.numberPhone}
+                                                </a>
+                                            </Button>
                                         ) : (
                                             <Button
                                                 isLoading={roomDeleting}
@@ -396,7 +469,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 <div>
                                     <h2>
                                         Phòng được cho thuê bởi chủ nhà{' '}
-                                        <Link href={`#`}>
+                                        <Link href={`/user/${homeData.owner._id}`}>
                                             <a>{homeData.owner.fullname}</a>
                                         </Link>
                                     </h2>
@@ -525,22 +598,24 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                             <div className="roompage-amenities">
                                 <div className="roompage-amenities__title">
                                     <h2>Tiện ích phòng</h2>
-                                    <Button
-                                        gap="5px"
-                                        onClick={() => {
-                                            createPopup(
-                                                <EditRoomAmenity
-                                                    key={JSON.stringify(listAmenity)}
-                                                    roomId={roomData._id}
-                                                    closeForm={closePopup}
-                                                    callback={refetchRoomData}
-                                                    amenities={listAmenity}
-                                                />
-                                            );
-                                        }}
-                                    >
-                                        <i className="fa-solid fa-plus"></i>Thêm tiện ích
-                                    </Button>
+                                    {isOwner && (
+                                        <Button
+                                            gap="5px"
+                                            onClick={() => {
+                                                createPopup(
+                                                    <EditRoomAmenity
+                                                        key={JSON.stringify(listAmenity)}
+                                                        roomId={roomData._id}
+                                                        closeForm={closePopup}
+                                                        callback={refetchRoomData}
+                                                        amenities={listAmenity}
+                                                    />
+                                                );
+                                            }}
+                                        >
+                                            <i className="fa-solid fa-plus"></i>Thêm tiện ích
+                                        </Button>
+                                    )}
                                 </div>
                                 <div>
                                     {renderAmenities.length != 0 ? (

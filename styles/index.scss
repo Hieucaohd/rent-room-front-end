@@ -9,6 +9,7 @@
 @import 'user/room';
 @import 'gallery';
 @import 'search';
+@import 'forgot';
 
 html {
     overflow-y: scroll;
@@ -18,8 +19,7 @@ html {
     display: none !important;
 }
 
-*,
-*:not(svg),
+*:not(path, svg, i),
 *:not(i)::before,
 *:not(.swiper-button-next, .swiper-button-prev)::after {
     // font-family: 'Roboto Slab', sans-serif;
@@ -82,4 +82,19 @@ div.chakra-input__left-element {
 
 div.chakra-input__right-element {
     right: 3px;
+}
+
+ul[id*='chakra-toast-manager'] {
+    color: white;
+    & * {
+        color: white;
+    }
+}
+
+.chakra-avatar {
+    & > svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
 }

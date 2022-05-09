@@ -97,5 +97,5 @@ export const ConnectWithBtnStyle: ButtonProps = {
     borderWidth: '1px',
     width: '100px',
 };
-
+export * from './thems';
 export default headerStyle;

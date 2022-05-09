@@ -105,7 +105,7 @@
             display: flex;
             align-items: center;
 
-            & > div {
+            & > div:not(.chakra-popover__popper) {
                 height: 100%;
                 display: flex;
                 align-items: center;
@@ -117,7 +117,7 @@
             }
         }
 
-        & > div > button:not(.signin-form__forgot) {
+        & > div:not(.signin-form__forgot) > button {
             width: 100%;
             color: white;
             height: 50px;

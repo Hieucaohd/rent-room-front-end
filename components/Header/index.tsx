@@ -75,7 +75,7 @@ export default function Header({ user }: IHeaderProps) {
         try {
             setLoading(true);
             logOut().then(() => {
-                router.reload();
+                location.href = '/signin';
             });
         } catch (e) {
             console.log(e);

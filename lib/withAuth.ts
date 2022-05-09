@@ -8,10 +8,17 @@ export interface User {
     email: string;
     fullname: string;
     province: number;
+    provinceName: string;
+    district: number;
+    districtName: string;
+    ward: number;
+    wardName: string;
+    numberPhone: string;
     position: {
         lng: number;
         lat: number;
     };
+    userType: 'HOST' | 'TENANT';
 }
 
 export const checkLoggedIn = async (Cookie: string) => {

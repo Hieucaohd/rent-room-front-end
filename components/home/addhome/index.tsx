@@ -8,6 +8,7 @@ import {
     Select,
     Text,
     Tooltip,
+    useToast,
 } from '@chakra-ui/react';
 import { getDownloadURL, list, ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
 import { motion, Variants } from 'framer-motion';
@@ -89,6 +90,8 @@ export default function AddHome(props: AddHomeProps) {
     const provinceField = watch('province');
     const districtField = watch('district');
     const wardField = watch('ward');
+
+    const toast = useToast();
 
     useEffect(() => {
         setErrorAction({ ...errorAction, province: false });
@@ -259,6 +262,12 @@ export default function AddHome(props: AddHomeProps) {
                         })
                             .then(() => {
                                 props.afterUpload && props.afterUpload();
+                                toast({
+                                    title: `Thêm trọ thành công`,
+                                    position: 'bottom-left',
+                                    status: 'success',
+                                    isClosable: true,
+                                });
                                 props.onClose && props.onClose();
                             })
                             .catch((error) => {
@@ -268,7 +277,12 @@ export default function AddHome(props: AddHomeProps) {
                                 deleteAllFile(paths).catch((err) => {
                                     console.log(err);
                                 });
-                                alert(error.message);
+                                toast({
+                                    title: `Server timeout`,
+                                    position: 'bottom-left',
+                                    status: 'error',
+                                    isClosable: true,
+                                });
                                 setUpLoading(false);
                             });
                     })
