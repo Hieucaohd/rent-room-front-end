@@ -17,6 +17,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { ConnectWithBtnStyle, InputStyle } from '../chakra';
 import useStore from '../store/useStore';
+import Link from 'next/link';
 import { ForgotPopup } from '../components/forgot';
 
 export interface ISignInProps {

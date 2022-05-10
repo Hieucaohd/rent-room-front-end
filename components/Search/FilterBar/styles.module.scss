@@ -1,6 +1,6 @@
 .filterbar {
     width: 100%;
-    padding: 16px 32px;
+    padding: 12px 32px;
     border-bottom: 1px solid #e0dede;
     display: flex;
 }
@@ -15,9 +15,9 @@
         padding: 8px 16px;
         border-radius: 32px;
         margin-right: 16px;
-        
+        font-weight: 600;
         & i {
-            font-size: 8px;
+            font-size: 12px;
             margin-left: 8px;
             font-weight: 800;
         }
@@ -36,6 +36,7 @@
         padding: 8px 16px;
         border-radius: 32px;
         margin-right: 16px;
+        font-weight: 600;
         height: 100%;
         &:hover {
             cursor: pointer;
@@ -50,7 +51,8 @@
 }
 
 .dropdown {
-    &__price {
+    &__price,
+    &__square {
         position: absolute;
         background-color: white;
         padding: 8px 12px;
@@ -63,12 +65,8 @@
             border: 1px solid #e0dede;
             border-radius: 4px;
             width: 160px;
-            padding: 0px 8px;
+            padding: 4px 8px;
             margin-right: 12px;
-        }
-
-        & select {
-            width: 120px;
         }
 
         & > div {
@@ -85,4 +83,31 @@
 
 .choose {
     border: 1px solid;
+}
+
+@media only screen and (max-width: 600px) {
+    .filterbar {
+        padding: 8px 16px;
+    }
+
+    .dropdown {
+        &__price,
+        &__square {
+            width: 220px;
+            & > div {
+                & select {
+                    width: 100%;
+                }
+                & input {
+                    width: 100%;
+                    margin-right: 0px;
+                    padding: 4px 12px;
+                    margin-bottom: 4px;
+                }
+                & > div {
+                    flex-direction: column;
+                }
+            }
+        }
+    }
 }

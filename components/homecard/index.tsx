@@ -42,7 +42,7 @@ export interface HomeCardProps {
 }
 
 export default function HomeCard(props: HomeCardProps) {
-    props.removeAble ??= true;
+    const removeAble = props.removeAble ?? true;
     const mount = useRef(false);
     const toast = useToast();
     const [deleteCurrentHome] = useMutation(deleteHome.command, {
@@ -99,7 +99,7 @@ export default function HomeCard(props: HomeCardProps) {
                             props.onClick && props.onClick();
                         }}
                     ></a>
-                    {props.removeAble && (
+                    {removeAble && (
                         <div className="homecard-main__action">
                             <Menu placement="bottom-end">
                                 <MenuButton>
@@ -113,7 +113,7 @@ export default function HomeCard(props: HomeCardProps) {
                     )}
                 </div>
             </motion.div>
-            {props.removeAble && (
+            {removeAble && (
                 <AlertDialog
                     isOpen={isOpenDialog}
                     leastDestructiveRef={cancelDeleteRef}

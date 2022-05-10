@@ -11,9 +11,9 @@
     background: rgba(0, 0, 0, 0.5);
     & form {
         background-color: white;
-        padding: 16px 8px;
+        padding: 8px;
         display: flex;
-        border-radius: 12px;
+        border-radius: 8px;
         z-index: 1;
     }
 
@@ -37,4 +37,20 @@
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+@media only screen and (max-width: 600px) {
+    .select__province {
+        & form {
+            flex-direction: column;
+            border-radius: 8px;
+        }
+        & button i {
+            border-radius: 2px;
+            margin: 2px 4px;
+            &:hover {
+                transform: none;
+            }
+        }
+    }
 }

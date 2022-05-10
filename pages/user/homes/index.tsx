@@ -198,14 +198,17 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
 
     const roomCallBack = useCallback(async () => {
         const p = page ? parseInt(page.toString()) : 1;
+        console.log(listRoomId, !isHost , !isNaN(p) , listRoomId , data)
         if (!isHost && !isNaN(p) && listRoomId && data) {
             getListRoomByIds(listRoomId, p).then((res) => {
-                setListRoom(res.docs);
-                setRoomPageRouter(res.paginator);
-                setLoadingListRoom(false);
+                if (res) {
+                    setListRoom(res.docs);
+                    setRoomPageRouter(res.paginator);
+                    setLoadingListRoom(false);
+                }
             });
         }
-    }, []);
+    }, [listRoomId]);
 
     const isHost = useMemo(() => {
         return currentUser.userType == 'HOST';

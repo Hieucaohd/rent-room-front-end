@@ -8,9 +8,17 @@ const nextConfig = {
         return {
             fallback: [
                 {
-                    source: '/api',
-                    destination: process.env.NEXT_PUBLIC_ENDPOINT,
+                    source: '/api/graphql',
+                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/graphql',
                 },
+                {
+                    source: '/api/forgot/send',
+                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/forgot/send',
+                },
+                {
+                    source: '/api/forgot/',
+                    destination: process.env.NEXT_PUBLIC_ENDPOINT + '/forgot/',
+                }
             ],
         };
     },

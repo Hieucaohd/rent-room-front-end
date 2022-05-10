@@ -69,7 +69,7 @@ const getPlaceName = async (p: number, d: number, w: number) => {
     ]);
 };
 
-const formatName = (name: string) => {
+const formatAddressName = (name: string) => {
     return name
         .replace('Thành phố', '')
         .replace('Tỉnh', '')
@@ -101,7 +101,7 @@ const getSearchPlaceName = async (p: any, d: any, w: any) => {
                 .then((data) => data.name),
     ]);
 
-    return formatName(listAddress.filter((item) => item).join(', '));
+    return formatAddressName(listAddress.filter((item) => item).join(', '));
 };
 
 const getProvinceList = async () => {
@@ -150,7 +150,7 @@ export {
     getProvinceList,
     getDistrictList,
     getWardList,
-    formatName,
+    formatAddressName,
     getListExitPosition,
 };
 

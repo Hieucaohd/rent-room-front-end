@@ -1,23 +1,20 @@
 import { ApolloProvider } from '@apollo/client';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, theme } from '@chakra-ui/react';
 import { AnimatePresence } from 'framer-motion';
-import type { AppContext, AppProps } from 'next/app';
-import { NextRouter, useRouter } from 'next/router';
-import client from '../lib/apollo/apollo-client';
-import 'nprogress/nprogress.css';
-import '../styles/index.scss';
-import 'swiper/css/bundle';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { checkLoggedIn, User } from '../lib/withAuth';
+import type { AppContext, AppProps } from 'next/app';
 import App from 'next/app';
-import useStore from '../store/useStore';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Header from '../components/Header';
 import Head from 'next/head';
-import { getPosition } from '../lib/getPosition';
+import { NextRouter, useRouter } from 'next/router';
 import Nprogress from 'nprogress';
-import { NextScript } from 'next/document';
-import { theme } from '../chakra';
+import 'nprogress/nprogress.css';
+import React, { useCallback, useEffect, useRef } from 'react';
+import 'swiper/css/bundle';
+import Header from '../components/Header';
+import client from '../lib/apollo/apollo-client';
+import { checkLoggedIn, User } from '../lib/withAuth';
+import useStore from '../store/useStore';
+import '../styles/index.scss';
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -34,7 +31,6 @@ const getPath = (path: string) => {
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     const { user, addUser, removeUser, imageprev, closeImages, popup } = useStore();
     const router = useRouter();
-
     useEffect(() => {
         console.log(myProps);
         if (user.SSR && myProps.user) {
@@ -83,7 +79,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
         <ChakraProvider theme={theme}>
             <ApolloProvider client={client}>
                 <Head>
-                    <title>Rent Zoom</title>
+                    <title>Tìm phòng trọ</title>
                 </Head>
 
                 <AnimatePresence>

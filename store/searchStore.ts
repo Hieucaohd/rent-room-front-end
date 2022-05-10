@@ -1,13 +1,13 @@
 import create from 'zustand'
 
 interface SearchStore {
-    roomHovered: number;
-    setRoomHovered: (index: number) => void;
+    roomHovered: string;
+    setRoomHovered: (_id: string) => void;
 }
 
 const useSearchStore = create<SearchStore>((set) => ({
-    roomHovered: -1,
-    setRoomHovered: (index:number) => {set(state => ({roomHovered: index}))}
+    roomHovered: "",
+    setRoomHovered: (_id: string) => {set(state => ({roomHovered: _id}))}
 }))
 
 export default useSearchStore;

@@ -39,7 +39,7 @@ export function ForgotPopup() {
             setError(true);
             return;
         }
-        fetch(`${process.env.NEXT_PUBLIC_FETCH}/forgot/send`, {
+        fetch(`${process.env.NEXT_PUBLIC_ENDPOINT}/forgot/send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

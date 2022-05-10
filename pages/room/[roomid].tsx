@@ -117,6 +117,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
 };
 
 function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
+    const router = useRouter()
     const [getRoomData, { data }] = useLazyQuery(getSSRRoomById.command, {
         variables: getSSRRoomById.variables(roomId),
         onCompleted: (data) => {
@@ -370,6 +371,13 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                                 }
                                             }
                                         } else {
+                                            if (
+                                                confirm(
+                                                    'Bạn phải đăng nhập để thực hiện thao tác này!'
+                                                )
+                                            ) {
+                                                router.push('/signin')
+                                            }
                                         }
                                     }}
                                 >
@@ -669,7 +677,11 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 onClick={() => {
                                     setRoomDeleting(true);
                                     deleteRoom().then(async () => {
-                                        await deleteAllFile(listPath);
+                                        try {
+                                            await deleteAllFile(listPath);
+                                        } catch (error) {
+                                            console.log(error)
+                                        }
                                         window.location.href = `/home/${homeData._id}`;
                                     });
                                 }}

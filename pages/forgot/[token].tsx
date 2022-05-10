@@ -140,7 +140,7 @@ export default function ForgotPassword({ token, user }: ForgotProps) {
             setErrorAction(errorHandle);
         } else {
             setLoading(true);
-            fetch(`${process.env.NEXT_PUBLIC_FETCH}/forgot/`, {
+            fetch(`${process.env.NEXT_PUBLIC_ENDPOINT}/forgot/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

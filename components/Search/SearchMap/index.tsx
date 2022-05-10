@@ -1,12 +1,14 @@
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { formatPrice } from '../../../lib/formatPrice';
 import { getPosition } from '../../../lib/getPosition';
-import { Room } from '../../../pages/search';
+import { Room } from '../../../lib/interface';
 import useSearchStore from '../../../store/searchStore';
+import Slider from '../../Slider';
 import styles from './styles.module.scss';
 
 export interface ISearchMapProps {
@@ -53,7 +55,7 @@ function ChangeView({ center, zoom, setZoom }: any) {
 
 export default function SearchMap({ onShowSelect, address, roomList }: ISearchMapProps) {
     const router = useRouter();
-    const roomHovered = useSearchStore((state) => state.roomHovered);
+    const roomHoveredId = useSearchStore((state) => state.roomHovered);
     const [zoom, setZoom] = useState(address.district ? 14 : 12);
     const [center, setCenter] = useState<LatLngExpression>();
     const mapRef = useRef<any>(null);
@@ -62,17 +64,18 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
         if (roomList.length === 0) {
             return;
         }
-        const index = roomHovered === -1 ? 0 : roomHovered;
-        setCenter([roomList[index].home.position.lat, roomList[index].home.position.lng]);
-    }, [roomHovered]);
+
+        const { home } = roomList.find(({ _id }) => _id === roomHoveredId) || roomList[0];
+        setCenter([home.position.lat, home.position.lng]);
+    }, [roomHoveredId]);
 
     useEffect(() => {
         const { province, district, ward } = router.query;
-        
+
         if (!province) {
             setCenter([21.036238, 105.790581]);
             return;
-        };
+        }
 
         const getDefaultCenter = async () => {
             const center = await getPosition(Number(province), Number(district), Number(ward));
@@ -92,7 +95,7 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
         <div className={styles.searchmap}>
             <div className={styles.searchmap__address} onClick={() => onShowSelect()}>
                 {address.name}
-                <i className="fi fi-br-edit"></i>
+                <i className="fa-solid fa-pen-to-square"></i>
             </div>
             <MapContainer
                 style={{ height: '100%', width: '100%', zIndex: 1 }}
@@ -105,24 +108,28 @@ export default function SearchMap({ onShowSelect, address, roomList }: ISearchMa
                 <TileLayer
                     url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_APIKEY}`}
                 />
-                {handleDuplicatePosition(roomList).map(({ home, price }, index) => (
+                {handleDuplicatePosition(roomList).map(({ _id, home, price, images }, index) => (
                     <Marker
                         key={index}
                         position={[home.position.lat, home.position.lng]}
                         icon={L.divIcon({
                             iconSize: [4, 4],
                             iconAnchor: [4 / 2, 4 + 9],
-                            className: `mymarker ${roomHovered === index && 'marker-hover'}`,
+                            className: `mymarker ${roomHoveredId === _id && 'marker-hover'}`,
                             html: formatPrice(price),
                         })}
-                        eventHandlers={{
-                            click: (e) => {
-                                console.log('marker clicked', e);
-                            },
-                        }}
                     >
                         <Popup>
-                            <div>room</div>
+                            <Link href={`/room/${_id}`}>
+                                <a>
+                                    <Slider
+                                        images={images}
+                                        height={180}
+                                        width={240}
+                                        showPreview={true}
+                                    />
+                                </a>
+                            </Link>
                         </Popup>
                     </Marker>
                 ))}

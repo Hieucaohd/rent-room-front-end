@@ -522,7 +522,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                         {user && isOwner && (
                                             <div className="homezooms-add">
                                                 {/*@ts-ignore */}
-                                                <AddZoom homeId={homeId} user={user} />
+                                                <AddZoom homeId={homeId} user={user} callback={refreshData}/>
                                             </div>
                                         )}
                                         <div className="homezooms-listlabel">Danh sách phòng</div>
