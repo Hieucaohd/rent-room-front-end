@@ -1,0 +1,17 @@
+.avatar {
+    position: relative;
+
+    & > img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 100%;
+        user-select: none;
+    }
+
+    & > svg {
+        position: absolute;
+    }
+}

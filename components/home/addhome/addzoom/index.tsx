@@ -13,6 +13,8 @@ import { User } from '../../../../lib/withAuth';
 import { deleteAllFile, getPathFileFromLink } from '../../../../lib/upLoadAllFile';
 import useClassName from '../../../../lib/useClassName';
 import useScrollController from '../../../../lib/useScrollController';
+import { HomeData } from '../../../../pages/home/[homeid]';
+import { getHomeById } from '../../../../lib/apollo/home/gethomebyid';
 
 const container: Variants = {
     show: {
@@ -46,11 +48,11 @@ interface FormProps {
     closeForm: () => void;
     homeId: string;
     user: User;
+    callback?: () => Promise<any>
 }
 
-const Form = ({ closeForm, homeId, user }: FormProps) => {
+const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
     const mount = useRef(false);
-    const scroll = useScrollController();
     const [createNewZoom, { data }] = useMutation(createZoom.command);
     const { register, handleSubmit } = useForm<AddZoomForm>();
     const [listImage, setListImage] = useState<Image[]>([]);
@@ -67,10 +69,8 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
 
     useEffect(() => {
         mount.current = true;
-        scroll.disableScroll();
         return () => {
             mount.current = false;
-            scroll.enableScroll();
         };
     }, []);
 
@@ -177,7 +177,8 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
                         variables: createZoom.variables(e, homeId),
                     })
                         .then(() => {
-                            closeForm();
+                            callback && callback()
+                            closeForm()
                         })
                         .catch((error) => {
                             const paths = e.images.map((item) => {
@@ -421,7 +422,15 @@ const Form = ({ closeForm, homeId, user }: FormProps) => {
     );
 };
 
-export default function AddZoom({ homeId, user }: { homeId: string; user: User }) {
+export default function AddZoom({
+    homeId,
+    user,
+    callback
+}: {
+    homeId: string;
+    user: User;
+    callback?: () => Promise<any>;
+}) {
     const [isOpen, setOpen] = useBoolean();
 
     return (
@@ -430,7 +439,7 @@ export default function AddZoom({ homeId, user }: { homeId: string; user: User }
                 <i className="fa-solid fa-plus"></i>Add Zoom
             </Button>
             <AnimatePresence>
-                {isOpen && <Form closeForm={setOpen.off} homeId={homeId} user={user} />}
+                {isOpen && <Form closeForm={setOpen.off} callback={callback} homeId={homeId} user={user} />}
             </AnimatePresence>
         </>
     );

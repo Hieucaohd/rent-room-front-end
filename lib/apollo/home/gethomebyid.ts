@@ -11,6 +11,7 @@ export const getHomeById = {
                     _id
                     fullname
                     avatar
+                    numberPhone
                 }
                 provinceName
                 districtName

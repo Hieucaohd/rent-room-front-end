@@ -135,8 +135,13 @@
                 font-weight: 600;
                 font-size: calc(var(--home-page__title--fontsize) - 1px);
                 & > span {
-                    font-size: calc(var(--home-page__title--fontsize) - 1px);
-                    font-weight: 700;
+                    & > a {
+                        font-size: calc(var(--home-page__title--fontsize) - 1px);
+                        font-weight: 700;
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
                 }
             }
         }
@@ -233,11 +238,7 @@
     }
 
     &-map {
-        height: min-content;
-
-        & > div {
-            height: 400px;
-        }
+        height: 400px;
 
         & > h2 {
             font-weight: 600;

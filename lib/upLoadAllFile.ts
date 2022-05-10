@@ -25,7 +25,7 @@ export default function upLoadAllFile(files: { file: File }[], id: string) {
                 uploadTask = uploadBytesResumable(storageRef, file);
             }
             uploadTask.on('state_changed', (status) => {
-                console.log('status:', (status.bytesTransferred / status.totalBytes) * 100);
+                // console.log('status:', (status.bytesTransferred / status.totalBytes) * 100);
             });
             return uploadTask.then((res) => {
                 return getDownloadURL(res.ref);

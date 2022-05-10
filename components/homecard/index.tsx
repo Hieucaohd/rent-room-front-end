@@ -13,6 +13,7 @@ import {
     MenuList,
     Text,
     useDisclosure,
+    useToast,
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { deleteHome } from '../../lib/apollo/home';
@@ -37,10 +38,13 @@ export interface HomeCardProps {
     __typename?: any;
     afterDelete?: () => any;
     onClick?: () => any;
+    removeAble?: boolean;
 }
 
 export default function HomeCard(props: HomeCardProps) {
+    const removeAble = props.removeAble ?? true;
     const mount = useRef(false);
+    const toast = useToast();
     const [deleteCurrentHome] = useMutation(deleteHome.command, {
         variables: deleteHome.variable(props._id),
     });
@@ -95,69 +99,79 @@ export default function HomeCard(props: HomeCardProps) {
                             props.onClick && props.onClick();
                         }}
                     ></a>
-                    <div className="homecard-main__action">
-                        <Menu placement="bottom-end">
-                            <MenuButton>
-                                <i className="fa-solid fa-ellipsis-vertical"></i>
-                            </MenuButton>
-                            <MenuList>
-                                <MenuItem onClick={onOpenDialog}>Xóa trọ</MenuItem>
-                            </MenuList>
-                        </Menu>
-                    </div>
+                    {removeAble && (
+                        <div className="homecard-main__action">
+                            <Menu placement="bottom-end">
+                                <MenuButton>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
+                                </MenuButton>
+                                <MenuList>
+                                    <MenuItem onClick={onOpenDialog}>Xóa trọ</MenuItem>
+                                </MenuList>
+                            </Menu>
+                        </div>
+                    )}
                 </div>
             </motion.div>
-            <AlertDialog
-                isOpen={isOpenDialog}
-                leastDestructiveRef={cancelDeleteRef}
-                onClose={onCloseDialog}
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                            Xóa trọ
-                        </AlertDialogHeader>
+            {removeAble && (
+                <AlertDialog
+                    isOpen={isOpenDialog}
+                    leastDestructiveRef={cancelDeleteRef}
+                    onClose={onCloseDialog}
+                >
+                    <AlertDialogOverlay>
+                        <AlertDialogContent>
+                            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                                Xóa trọ
+                            </AlertDialogHeader>
 
-                        <AlertDialogBody>Bạn có chắc chắn muốn xóa trọ này?</AlertDialogBody>
+                            <AlertDialogBody>Bạn có chắc chắn muốn xóa trọ này?</AlertDialogBody>
 
-                        <AlertDialogFooter>
-                            <Button ref={cancelDeleteRef} onClick={onCloseDialog}>
-                                Hủy
-                            </Button>
-                            <Button
-                                colorScheme="red"
-                                isLoading={deleting}
-                                onClick={() => {
-                                    setDeleting(true);
-                                    deleteAllFile(listPath)
-                                        .then(() => {
-                                            deleteCurrentHome().then(() => {
-                                                props.afterDelete
-                                                    ? props.afterDelete().then(() => {
-                                                          mount.current && onCloseDialog();
-                                                      })
-                                                    : mount.current && onCloseDialog();
+                            <AlertDialogFooter>
+                                <Button ref={cancelDeleteRef} onClick={onCloseDialog}>
+                                    Hủy
+                                </Button>
+                                <Button
+                                    colorScheme="red"
+                                    isLoading={deleting}
+                                    onClick={() => {
+                                        setDeleting(true);
+                                        deleteAllFile(listPath)
+                                            .then(() => {
+                                                deleteCurrentHome().then(() => {
+                                                    props.afterDelete
+                                                        ? props.afterDelete().then(() => {
+                                                              mount.current && onCloseDialog();
+                                                          })
+                                                        : mount.current && onCloseDialog();
+                                                    toast({
+                                                        title: `Xóa trọ thành công`,
+                                                        position: 'bottom-left',
+                                                        status: 'success',
+                                                        isClosable: true,
+                                                    });
+                                                });
+                                            })
+                                            .catch((e) => {
+                                                console.log(e);
+                                                toast({
+                                                    title: `Server timeout`,
+                                                    description: 'Xóa ảnh thất bại',
+                                                    position: 'bottom-left',
+                                                    status: 'error',
+                                                    isClosable: true,
+                                                });
                                             });
-                                        })
-                                        .catch((e) => {
-                                            console.log(e);
-                                            deleteCurrentHome().then(() => {
-                                                props.afterDelete
-                                                    ? props.afterDelete().then(() => {
-                                                          mount.current && onCloseDialog();
-                                                      })
-                                                    : mount.current && onCloseDialog();
-                                            });
-                                        });
-                                }}
-                                ml={3}
-                            >
-                                Đồng ý
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
+                                    }}
+                                    ml={3}
+                                >
+                                    Đồng ý
+                                </Button>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialogOverlay>
+                </AlertDialog>
+            )}
         </>
     );
 }

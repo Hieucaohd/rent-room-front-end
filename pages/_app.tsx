@@ -1,5 +1,5 @@
 import { ApolloProvider } from '@apollo/client';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, theme } from '@chakra-ui/react';
 import { AnimatePresence } from 'framer-motion';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import type { AppContext, AppProps } from 'next/app';
@@ -31,20 +31,9 @@ const getPath = (path: string) => {
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     const { user, addUser, removeUser, imageprev, closeImages, popup } = useStore();
     const router = useRouter();
-    const lastPath = useRef<string>('');
-    
     useEffect(() => {
+        console.log(myProps);
         if (user.SSR && myProps.user) {
-            // console.clear();
-            /* if (myProps.position) {
-                const position = {
-                    lng: myProps.position.longitude,
-                    lat: myProps.position.latitude,
-                };
-                addUser({ ...myProps.user, position });
-            } else {
-                
-            } */
             addUser(myProps.user);
         } else if (user.SSR) {
             removeUser();
@@ -87,7 +76,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     }, [imageprev]);
 
     return (
-        <ChakraProvider>
+        <ChakraProvider theme={theme}>
             <ApolloProvider client={client}>
                 <Head>
                     <title>Tìm phòng trọ</title>
@@ -113,17 +102,10 @@ MyApp.getInitialProps = async (context: AppContext) => {
     const req = context.ctx.req;
     if (req) {
         const cookie = req.headers.cookie;
-        // console.log(cookie);
         const user: User = await checkLoggedIn(cookie || '');
-        /* let position: any = null;
-        if (user && user.province) {
-            position = await getPosition(user.province);
-        } */
-        // console.log(user);
         return {
             myProps: {
                 user,
-                // position,
             },
             ...pageProps,
         };

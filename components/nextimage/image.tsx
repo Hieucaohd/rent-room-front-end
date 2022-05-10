@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 interface NextImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {}
 
 export default function NextImage(props: NextImageProps) {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const imageRef = useRef<HTMLImageElement>(null);
     return (
         <>

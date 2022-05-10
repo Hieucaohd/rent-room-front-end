@@ -1,7 +1,13 @@
 import { Select, Tooltip } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
+import { getListExitPosition } from '../../lib/getPosition';
 
+interface DefaultLocation {
+    province?: number;
+    district?: number;
+    ward?: number;
+}
 interface FormLocationProps {
     provinceField: UseFormRegisterReturn;
     districtField: UseFormRegisterReturn;
@@ -12,6 +18,15 @@ interface FormLocationProps {
         ward: boolean;
     };
     disable?: boolean;
+    allProvince?: boolean;
+    defaultValue?: {
+        list: [any[], any[], any[]];
+        value: {
+            province: number;
+            district: number;
+            ward: number;
+        };
+    };
 }
 
 export default function FormLocation({
@@ -20,17 +35,37 @@ export default function FormLocation({
     wardField,
     errorEvent,
     disable,
+    allProvince = false,
+    defaultValue,
 }: FormLocationProps) {
-    const [provinceList, setProvinceList] = useState<any[]>([]);
+    // const [initialValue, setInitialValue] = use
+    const [value, setValue] = useState<DefaultLocation>(defaultValue?.value ?? {});
+    const [provinceList, setProvinceList] = useState<any[]>(defaultValue?.list[0] ?? []);
     const [provinceActive, setProvinceActive] = useState<any>(null);
+    const [districtList, setdistrictList] = useState<any[]>(defaultValue?.list[1] ?? []);
+    const [districtActive, setDistrictActive] = useState<any>(null);
+    const [wardList, setWardList] = useState<any[]>(defaultValue?.list[2] ?? []);
+
     useEffect(() => {
-        fetch('/location/province.json')
-            .then((res) => res.json())
-            .then((data) => {
-                if (data?.length) {
-                    setProvinceList(data);
-                }
-            });
+        if (!defaultValue) {
+            if (allProvince) {
+                fetch('https://provinces.open-api.vn/api/p/?depth=2')
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data?.length) {
+                            setProvinceList(data);
+                        }
+                    });
+            } else {
+                fetch('/location/province.json')
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data?.length) {
+                            setProvinceList(data);
+                        }
+                    });
+            }
+        }
     }, []);
     const renderProvinceList = useMemo(
         () =>
@@ -46,8 +81,7 @@ export default function FormLocation({
     );
 
     //district
-    const [districtList, setdistrictList] = useState<any[]>([]);
-    const [districtActive, setDistrictActive] = useState<any>(null);
+
     useEffect(() => {
         if (provinceActive) {
             fetch(`https://provinces.open-api.vn/api/p/${provinceActive}?depth=2`)
@@ -69,11 +103,11 @@ export default function FormLocation({
                     </option>
                 );
             }),
-        [districtList]
+        [districtList, value]
     );
 
     //district
-    const [wardList, setWardList] = useState<any[]>([]);
+
     useEffect(() => {
         if (districtActive) {
             fetch(`https://provinces.open-api.vn/api/d/${districtActive}?depth=2`)
@@ -95,7 +129,7 @@ export default function FormLocation({
                     </option>
                 );
             }),
-        [wardList]
+        [wardList, value]
     );
     return (
         <>
@@ -123,11 +157,15 @@ export default function FormLocation({
                                 : 'inherit'
                             : 'inherit'
                     }
-                    placeholder="Tỉnh/TP"
+                    placeholder={'Tỉnh/TP'}
                     {...provinceField}
+                    defaultValue={value.province}
                     onChange={(e) => {
-                        provinceField.onChange(e);
-                        setProvinceActive(e.target.value);
+                        const val = parseInt(e.target.value);
+                        if (val && !isNaN(val)) {
+                            provinceField.onChange(e);
+                            setProvinceActive(e.target.value);
+                        }
                     }}
                 >
                     {renderProvinceList}
@@ -159,9 +197,14 @@ export default function FormLocation({
                     }
                     placeholder="Quận/Huyện"
                     {...districtField}
+                    defaultValue={value.district}
                     onChange={(e) => {
-                        districtField.onChange(e);
-                        setDistrictActive(e.target.value);
+                        const val = parseInt(e.target.value);
+                        if (val && !isNaN(val)) {
+                            districtField.onChange(e);
+                            setValue({ ...value, district: val, ward: -1 });
+                            setDistrictActive(e.target.value);
+                        }
                     }}
                 >
                     {renderDistrictList}
@@ -189,8 +232,13 @@ export default function FormLocation({
                     }
                     placeholder="Xã/Phường"
                     {...wardField}
+                    defaultValue={value.ward}
                     onChange={(e) => {
-                        wardField.onChange(e);
+                        const val = parseInt(e.target.value);
+                        if (val && !isNaN(val)) {
+                            wardField.onChange(e);
+                            setValue({ ...value, ward: val });
+                        }
                     }}
                 >
                     {renderWardList}

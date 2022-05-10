@@ -1,34 +1,142 @@
 :root {
     --homecard-height: 350px;
-    --userhomes-padding: 20px 50px;
+    --userhomes-padding: 50px 50px 20px 50px;
     --addhome-mapheight: 450px;
     --userhomes__title-fontsize: 18px;
+    --userhomes__username-fontsize: 22px;
+    --userhomes__bg-color: #18a0fb4f;
 
     @media screen and (max-width: 1000px) {
-        --userhomes-padding: 20px 30px;
+        --userhomes-padding: 40px 30px 20px 30px;
         --userhomes__title-fontsize: 16px;
+        --userhomes__username-fontsize: 18px;
     }
 
     @media screen and (max-width: 500px) {
-        --userhomes-padding: 15px 15px;
+        --userhomes-padding: 35px 15px 15px 15px;
         --userhomes__title-fontsize: 14px;
+        --userhomes__username-fontsize: 16px;
     }
 }
 
-.user-homes {
+.userhomes {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    justify-content: space-between;
-
-    min-height: calc(100vh - var(--app-navbar-height));
     padding: var(--userhomes-padding);
+    background: linear-gradient(to bottom, var(--userhomes__bg-color) 50px, white 200px);
+    background-repeat: no-repeat;
 
-    & > div:nth-child(1) {
+    &-homes {
         display: flex;
         flex-direction: column;
         gap: 20px;
-        height: 60vh;
+    }
+
+    &-profile {
+        position: relative;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: flex;
+            gap: 10px;
+
+            &::after {
+                content: 'Chỉnh sửa';
+                font-weight: 600;
+            }
+
+            @media screen and (max-width: 500px) {
+                &::after {
+                    display: none;
+                }
+            }
+        }
+
+        &__avatar {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+
+            @media screen and (max-width: 500px) {
+                flex-flow: column;
+                width: max-content;
+            }
+
+            & > div {
+                display: flex;
+                justify-content: center;
+                flex-flow: column;
+                gap: 10px;
+
+                & > h2 {
+                    font-weight: 700;
+                    font-size: var(--userhomes__username-fontsize);
+                }
+
+                & > div {
+                    display: flex;
+                    gap: 10px;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        & > div {
+            display: flex;
+            flex-flow: column;
+            gap: 10px;
+            align-items: center;
+            width: 95%;
+        }
+
+        &__name {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            & > div {
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translate(150%, -40%);
+                & > img {
+                    width: 1.5rem;
+                }
+            }
+        }
+
+        &__property {
+            width: calc(100% - 50px);
+
+            & > span {
+                height: 100%;
+                font-weight: 600;
+                &:nth-child(1) {
+                    & > i {
+                        width: 1.5rem;
+                        display: inline-flex !important;
+                        margin-right: 10px;
+                    }
+                }
+            }
+
+            &--numberphone {
+                & > span {
+                    &:nth-child(2) {
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
     }
 
     &__add {
@@ -47,14 +155,16 @@
 
     &__listhome {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0px, 1fr));
+        grid-template-columns: repeat(6, minmax(0px, 1fr));
         gap: 20px;
+        min-height: 80vh;
 
         &--empty {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100%;
+            min-height: 30vh;
         }
 
         &--loading {
@@ -75,6 +185,10 @@
                     }
                 }
             }
+        }
+
+        @media screen and (max-width: 1750px) {
+            grid-template-columns: repeat(4, minmax(0px, 1fr));
         }
 
         @media screen and (max-width: 1200px) {

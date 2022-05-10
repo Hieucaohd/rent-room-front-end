@@ -1,32 +1,18 @@
-import { gql, useLazyQuery } from '@apollo/client';
-import {
-    Avatar,
-    Box,
-    Button,
-    Skeleton,
-    SkeletonText,
-    Tooltip,
-    useDisclosure,
-    useToast,
-} from '@chakra-ui/react';
-import getSecurityCookie from '../../../security';
+import { gql, useLazyQuery, useQuery } from '@apollo/client';
+import { Avatar, Box, Button, Skeleton, SkeletonText, Tooltip, useToast } from '@chakra-ui/react';
+import getSecurityCookie from '../../security';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import AddHome from '../../../components/home/addhome';
-import HomeCard, { HomeCardProps } from '../../../components/homecard';
-import { getUserHomes } from '../../../lib/apollo/home';
+import { useEffect, useMemo, useRef } from 'react';
+import HomeCard, { HomeCardProps } from '../../components/homecard';
 import { motion } from 'framer-motion';
-import useStore from '../../../store/useStore';
-import AppAbout from '../../../components/app-about';
-import EmptyData from '../../../components/emptydata';
-import { User } from '../../../lib/withAuth';
+import useStore from '../../store/useStore';
+import AppAbout from '../../components/app-about';
+import EmptyData from '../../components/emptydata';
+import { User } from '../../lib/withAuth';
 import { GetServerSideProps } from 'next';
-import client from '../../../lib/apollo/apollo-client';
-import { EditProfile } from '../../../components/profile/editprofile';
-import { getRoomSaved } from '../../../lib/apollo/profile';
-import { getListRoomByIds } from '../../../lib/apollo/home/room';
-import { RoomData, RoomSaveCard } from '../../../components/homecard/roomcard';
+import client from '../../lib/apollo/apollo-client';
+import { getRoomSaved, getUserById } from '../../lib/apollo/profile';
 
 function getSaveRooms(userId: string, SSR: boolean) {
     if (!SSR && userId) {
@@ -36,19 +22,16 @@ function getSaveRooms(userId: string, SSR: boolean) {
     return [];
 }
 
-function getData(data: any, SSR: boolean) {
-    const dt = data?.profile?.user;
+function getData(data: any) {
+    const dt = data?.getUserById;
     if (dt) {
-        const userType = dt.userType;
-        if (userType && userType == 'HOST') {
-            return dt ? dt?.listHomes?.docs.slice() : [];
-        }
+        return dt ? dt?.listHomes?.docs.slice() : [];
     }
     return [];
 }
 
 function getUser(data: any) {
-    return data.profile.user;
+    return data?.getUserById;
 }
 
 /*  */
@@ -66,52 +49,60 @@ interface PageData {
 }
 
 function getPages(data: any) {
-    return data?.profile?.user?.listHomes?.paginator;
+    return data?.getUserById?.listHomes?.paginator;
 }
 
 interface ProfileProps {
     data: any;
+    userId: string;
+    page: number;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     try {
-        const { page } = query;
-        const Cookie = getSecurityCookie(req);
-        if (page) {
+        const { _id, page } = query;
+        if (_id) {
             const { data } = await client.query({
                 query: gql`
-                    query Profile {
-                        profile {
-                            user {
-                                _id
-                                email
-                                fullname
-                                avatar
-                                userType
-                                province
-                                district
-                                ward
-                                provinceName
-                                districtName
-                                wardName
-                                numberPhone
-                            }
+                    query GetUserById($getUserByIdId: ID!) {
+                        getUserById(id: $getUserByIdId) {
+                            _id
+                            email
+                            fullname
+                            avatar
+                            userType
+                            province
+                            district
+                            ward
+                            provinceName
+                            districtName
+                            wardName
+                            numberPhone
                         }
                     }
                 `,
-                context: {
-                    headers: {
-                        Cookie,
-                    },
+                variables: {
+                    getUserByIdId: _id.toString(),
                 },
                 fetchPolicy: 'no-cache',
             });
-            if (data && data.profile?.user) {
-                return {
-                    props: {
-                        data,
-                    },
-                };
+
+            if (data && data.getUserById) {
+                if (data.getUserById?.userType == 'HOST') {
+                    let p = page ? parseInt(page.toString()) : 1;
+                    if (isNaN(p)) {
+                        p = 1;
+                    }
+                    return {
+                        props: {
+                            data,
+                            userId: _id,
+                            page: p,
+                        },
+                    };
+                } else {
+                    throw 'wrong page';
+                }
             } else {
                 throw 'wrong page';
             }
@@ -128,36 +119,18 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
 
 const listSkeleton: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-export default function MyHomes({ data: homeData }: ProfileProps) {
-    const [getMyHomes, { data }] = useLazyQuery(getUserHomes.command);
+export default function Profile({ data: homeData, userId, page }: ProfileProps) {
+    const router = useRouter();
+    const { data, refetch, loading } = useQuery(getUserById.command, {
+        variables: getUserById.variables(userId, page),
+    });
     const currentUser: User = getUser(data || homeData);
-    const { createPopup, removePopup, user, SSR } = useStore((state) => ({
-        createPopup: state.createPopup,
-        removePopup: state.removePopup,
-        SSR: state.user.SSR,
-        user: state.user.info,
-    }));
 
-    const listHome: HomeCardProps[] = getData(data || homeData, SSR);
+    const listHome: HomeCardProps[] = getData(data || homeData);
     const pageRouter: PageData = getPages(data || homeData);
 
-    const listRoomId = getSaveRooms(currentUser._id, SSR);
-    const [listRoom, setListRoom] = useState<RoomData[] | null>(null);
-    const [loadingListRoom, setLoadingListRoom] = useState(true);
-    const [roomPageRouter, setRoomPageRouter] = useState<PageData | null>(null);
-
-    const router = useRouter();
-    const { page, userid } = router.query;
-
     const toast = useToast();
-    const {} = useStore((state) => state.user);
     const mount = useRef<boolean>(false);
-
-    useEffect(() => {
-        if (!user && !SSR) {
-            location.href = `/signin?p=${router.asPath}`;
-        }
-    }, [SSR]);
 
     useEffect(() => {
         mount.current = true;
@@ -167,118 +140,32 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
         };
     }, []);
 
-    useEffect(() => {
-        // console.log(router.asPath);
-        const path = router.asPath.split('/')[1];
-
-        if (!mount.current || path != 'user') {
-            return;
-        }
-        if (page && typeof page == 'string') {
-            getMyHomes({
-                variables: getUserHomes.variable(page, 12),
-            }).then((res) => {});
-        } else {
-            getMyHomes({
-                variables: getUserHomes.variable('1', 12),
-            }).then((res) => {});
-        }
-    }, [page]);
-
-    const dataCallback = useCallback(async () => {
-        if (page && typeof page == 'string') {
-            return await getMyHomes({
-                variables: getUserHomes.variable(page, 12),
-            });
-        }
-        return await getMyHomes({
-            variables: getUserHomes.variable('1', 12),
-        });
-    }, [page]);
-
-    const roomCallBack = useCallback(async () => {
-        const p = page ? parseInt(page.toString()) : 1;
-        if (!isHost && !isNaN(p) && listRoomId && data) {
-            getListRoomByIds(listRoomId, p).then((res) => {
-                setListRoom(res.docs);
-                setRoomPageRouter(res.paginator);
-                setLoadingListRoom(false);
-            });
-        }
-    }, []);
-
-    const isHost = useMemo(() => {
-        return currentUser.userType == 'HOST';
-    }, []);
-
-    useEffect(() => {
-        let p = page ? parseInt(page.toString()) : 1;
-        if (!isNaN(p)) {
-            p = 1;
-        }
-        if (!isHost && listRoomId && data && !listRoom) {
-            getListRoomByIds(listRoomId, p).then((res) => {
-                console.log(res);
-                if (res?.docs && res.docs.length) {
-                    setListRoom(res.docs);
-                } else {
-                    setListRoom([]);
-                }
-                setRoomPageRouter(res.paginator);
-                setLoadingListRoom(false);
-            });
-        }
-    }, [data, listRoomId]);
-
     const renderListHome = useMemo(() => {
-        if (isHost) {
-            return data
-                ? listHome?.map &&
-                      listHome.map((item, index) => {
-                          return (
-                              <motion.div key={item._id}>
-                                  <HomeCard
-                                      {...item}
-                                      afterDelete={dataCallback}
-                                      onClick={() => {
-                                          router.push(`/home/${item._id}`);
-                                      }}
-                                  />
-                              </motion.div>
-                          );
-                      })
-                : listSkeleton.map((_, key) => (
-                      <Box key={key}>
-                          <Skeleton borderRadius={'10px'} height="270px"></Skeleton>
-                          <SkeletonText mt="4" noOfLines={3} spacing="4" />
-                      </Box>
-                  ));
-        } else {
-            return !loadingListRoom
-                ? listRoom &&
-                      listRoom.map((item, index) => {
-                          return (
-                              <motion.div key={item._id}>
-                                  <RoomSaveCard
-                                      callBack={roomCallBack}
-                                      data={item}
-                                      userid={currentUser._id}
-                                      height="300px"
-                                  />
-                              </motion.div>
-                          );
-                      })
-                : listSkeleton.map((_, key) => (
-                      <Box key={key}>
-                          <Skeleton borderRadius={'10px'} height="270px"></Skeleton>
-                          <SkeletonText mt="4" noOfLines={3} spacing="4" />
-                      </Box>
-                  ));
-        }
-    }, [data, loadingListRoom, listRoom]);
+        return data
+            ? listHome?.map &&
+                  listHome.map((item, index) => {
+                      return (
+                          <motion.div key={item._id}>
+                              <HomeCard
+                                  {...item}
+                                  removeAble={false}
+                                  onClick={() => {
+                                      router.push(`/home/${item._id}`);
+                                  }}
+                              />
+                          </motion.div>
+                      );
+                  })
+            : listSkeleton.map((_, key) => (
+                  <Box key={key}>
+                      <Skeleton borderRadius={'10px'} height="270px"></Skeleton>
+                      <SkeletonText mt="4" noOfLines={3} spacing="4" />
+                  </Box>
+              ));
+    }, [data, page]);
 
     const renderListPage = useMemo(() => {
-        const route = isHost ? pageRouter : roomPageRouter;
+        const route = pageRouter;
         if (route) {
             const limit = route.totalPages;
             const p = route.page;
@@ -291,14 +178,14 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                     listPage.push(p + i);
                 }
             }
-            const path = router.pathname.replace('[userid]', `${userid}`);
+            const path = router.pathname.replace('[_id]', `${userId}`);
             return listPage.map((item, index) => (
                 <li key={index}>
                     <Button
                         onClick={() => {
                             router.push(`${path}?page=${item}`);
                         }}
-                        isDisabled={page?.toString() == item.toString()}
+                        isDisabled={page.toString() == item.toString()}
                         variant="link"
                         _focus={{
                             boxShadow: 'none',
@@ -311,18 +198,16 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
             ));
         }
         return [];
-    }, [pageRouter, roomPageRouter, userid, page]);
+    }, [pageRouter, userId, page]);
 
     const renderRouterPage = useMemo(() => {
-        const route = isHost ? pageRouter : roomPageRouter;
+        const route = pageRouter;
         return (
             <>
                 {route && route.hasPrevPage && (
                     <Button
                         onClick={() => {
-                            router.push(
-                                `${router.pathname.replace('[userid]', `${userid}`)}?page=0`
-                            );
+                            router.push(`${router.pathname.replace('[_id]', `${userId}`)}?page=1`);
                         }}
                         variant="link"
                         _focus={{
@@ -337,7 +222,7 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                     <Button
                         onClick={() => {
                             router.push(
-                                `${router.pathname.replace('[userid]', `${userid}`)}?page=${
+                                `${router.pathname.replace('[_id]', `${userId}`)}?page=${
                                     route.prevPage
                                 }`
                             );
@@ -356,7 +241,7 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                     <Button
                         onClick={() => {
                             router.push(
-                                `${router.pathname.replace('[userid]', `${userid}`)}?page=${
+                                `${router.pathname.replace('[_id]', `${userId}`)}?page=${
                                     route.nextPage
                                 }`
                             );
@@ -374,8 +259,8 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                     <Button
                         onClick={() => {
                             router.push(
-                                `${router.pathname.replace('[userid]', `${userid}`)}?page=${
-                                    route.totalPages - 1
+                                `${router.pathname.replace('[_id]', `${userId}`)}?page=${
+                                    route.totalPages
                                 }`
                             );
                         }}
@@ -412,19 +297,6 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                 className="userhomes"
             >
                 <div className="userhomes-profile">
-                    <Button
-                        onClick={() => {
-                            createPopup(
-                                <EditProfile
-                                    closeForm={removePopup}
-                                    user={currentUser}
-                                    callback={dataCallback}
-                                />
-                            );
-                        }}
-                    >
-                        <i className="fa-solid fa-pen"></i>
-                    </Button>
                     <div>
                         <div className="userhomes-profile__avatar">
                             <Avatar
@@ -522,18 +394,6 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                         {currentUser.userType == 'HOST' ? (
                             <>
                                 <h1>Danh sách trọ của bạn</h1>
-                                <Button
-                                    onClick={() => {
-                                        createPopup(
-                                            <AddHome
-                                                afterUpload={dataCallback}
-                                                onClose={() => removePopup()}
-                                            />
-                                        );
-                                    }}
-                                >
-                                    Thêm trọ
-                                </Button>
                             </>
                         ) : (
                             <>

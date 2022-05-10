@@ -72,8 +72,9 @@ $display-query2: 500px;
         grid-template-areas:
             'email email'
             'password confirmpassword'
-            'fullname phone'
-            'tinh tinh'
+            'usertype usertype'
+            'fullname phonenumber'
+            'more more'
             'submit submit';
         gap: 15px;
 
@@ -82,9 +83,8 @@ $display-query2: 500px;
                 'email'
                 'password'
                 'confirmpassword'
-                'fullname'
-                'phone'
-                'tinh'
+                'usertype'
+                'more'
                 'submit';
         }
 
@@ -140,6 +140,26 @@ $display-query2: 500px;
             }
         }
 
+        &__usertype {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            & > div {
+                &:nth-child(1) {
+                    min-width: max-content;
+                }
+            }
+
+            @media screen and (max-width: 500px) {
+                gap: 10px;
+            }
+        }
+
+        &__hostdata {
+            width: 100%;
+        }
+
         & > div {
             display: flex;
             &:nth-of-type(1) {
@@ -152,16 +172,19 @@ $display-query2: 500px;
                 grid-area: confirmpassword;
             }
             &:nth-of-type(4) {
-                grid-area: fullname;
+                grid-area: usertype;
             }
             &:nth-of-type(5) {
-                grid-area: phone;
+                grid-area: fullname;
             }
             &:nth-of-type(6) {
-                grid-area: tinh;
+                grid-area: phonenumber;
             }
-
-            & > div {
+            &:nth-of-type(7) {
+                grid-area: more;
+            }
+            &:nth-of-type(8) {
+                grid-area: submit;
             }
         }
     }

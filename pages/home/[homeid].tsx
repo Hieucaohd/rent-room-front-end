@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '../../chakra';
 import AddZoom from '../../components/home/addhome/addzoom';
 import Gallery, { GallerySkeleton } from '../../components/gallery';
-import RoomCard, { ZoomData } from '../../components/homecard/roomcard';
+import RoomCard, { RoomData } from '../../components/homecard/roomcard';
 import { getHomeById } from '../../lib/apollo/home/gethomebyid';
 import useStore from '../../store/useStore';
 import ModifyHomePrices from '../../components/home/modifyhome';
@@ -20,9 +20,11 @@ import { GetServerSideProps } from 'next';
 import getSecurityCookie from '../../security';
 import client from '../../lib/apollo/apollo-client';
 import AppAbout from '../../components/app-about';
+import GoogleMap from '../../components/mapbox/googleMap';
+import Link from 'next/link';
 
 export interface ListZoomData {
-    docs: ZoomData[];
+    docs: RoomData[];
     paginator: {
         limit: number;
         page: number;
@@ -42,6 +44,7 @@ export interface HomeData {
         _id: string;
         fullname: string;
         avatar: string;
+        numberPhone: string;
     };
     provinceName: string;
     districtName: string;
@@ -156,18 +159,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
         } catch (error) {
             console.log(error);
             return {
-                redirect: {
-                    permanent: false,
-                    destination: '/404',
-                },
+                notFound: true,
             };
         }
     } else {
         return {
-            redirect: {
-                permanent: false,
-                destination: '/404',
-            },
+            notFound: true,
         };
     }
 };
@@ -198,6 +195,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
         }
         return getData(data);
     }, [data]);
+    console.log(homeData);
     const pageRouter: PageData = getPages(homeData.listRooms);
     const [homeDescription, setHomeDescription] = useState<
         {
@@ -289,7 +287,6 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
 
     const placeName = useMemo(() => {
         if (homeData) {
-            console.log(homeData);
             return (
                 homeData.wardName +
                 ', ' +
@@ -347,8 +344,6 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
         return [];
     }, [pageRouter, homeId, page]);
 
-    console.log(renderListPage, pageRouter);
-
     return (
         <>
             <div className="homepage-base">
@@ -372,7 +367,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                                             removePopup();
                                                             setTimeout(() => {
                                                                 setShowMapBox(true);
-                                                            }, 250);
+                                                            }, 400);
                                                         }}
                                                         user={user!}
                                                         homeId={homeData._id}
@@ -430,7 +425,11 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                         <div className="homepage-owner__title">
                                             <h1>
                                                 {'Khu trọ được cho thuê bởi chủ nhà '}
-                                                <span>{homeData.owner.fullname}</span>
+                                                <span>
+                                                    <Link href={`/user/${homeData.owner._id}`}>
+                                                        <a>{homeData.owner.fullname}</a>
+                                                    </Link>
+                                                </span>
                                             </h1>
                                             <div>
                                                 {homeData.totalRooms ? homeData.totalRooms : 0}
@@ -520,10 +519,10 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                     </div>
                                     <div className="homerooms">
                                         {/* show zoom */}
-                                        {user && (
+                                        {user && isOwner && (
                                             <div className="homezooms-add">
                                                 {/*@ts-ignore */}
-                                                <AddZoom homeId={homeId} user={user} />
+                                                <AddZoom homeId={homeId} user={user} callback={refreshData}/>
                                             </div>
                                         )}
                                         <div className="homezooms-listlabel">Danh sách phòng</div>
@@ -539,7 +538,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                                         />
                                                     ))}
                                                 </div>
-                                                <div className="user-homes__routerpage">
+                                                <div className="userhomes__routerpage">
                                                     <ul>
                                                         {pageRouter && pageRouter.hasPrevPage && (
                                                             <Button

@@ -10,6 +10,7 @@ import {
     Button,
     Tooltip,
     useDisclosure,
+    useToast,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
@@ -49,6 +50,7 @@ export default function HomeImagePreivew({
     homeId,
     owner,
 }: HomeImagePreviewProps) {
+    const toast = useToast();
     const { user } = useStore((state) => ({ user: state.user.info }));
     const [updateHome, { data }] = useMutation(updateHomeImages.command, {
         update(cache, { data: { updateHome } }) {
@@ -314,8 +316,21 @@ export default function HomeImagePreivew({
                                             if (viewindex > 0) {
                                                 setViewIndex((prev) => prev - 1);
                                             }
+                                            toast({
+                                                title: `Xóa ảnh thành công`,
+                                                position: 'bottom-left',
+                                                status: 'success',
+                                                isClosable: true,
+                                            });
                                         })
                                         .catch(() => {
+                                            toast({
+                                                title: `Server timeout`,
+                                                description: 'Xóa ảnh thất bại',
+                                                position: 'bottom-left',
+                                                status: 'error',
+                                                isClosable: true,
+                                            });
                                             setImageDeleting(false);
                                         });
                                 }}
@@ -338,9 +353,9 @@ export function RoomImagePreivew({
     roomId,
     isOwner,
 }: RoomImagePreviewProps) {
+    const toast = useToast();
     const [images, setImages] = useState(roomImages);
-    const { user } = useStore((state) => ({ user: state.user.info }));
-    const [updateRoom, { data }] = useMutation(updateRoomImages.command, {
+    const [updateRoom] = useMutation(updateRoomImages.command, {
         update(cache, { data: { updateRoom } }) {
             let data;
             try {
@@ -617,10 +632,23 @@ export function RoomImagePreivew({
                                             if (viewindex > 0) {
                                                 setViewIndex((prev) => prev - 1);
                                             }
+                                            toast({
+                                                title: `Xóa ảnh thành công`,
+                                                position: 'bottom-left',
+                                                status: 'success',
+                                                isClosable: true,
+                                            });
                                         })
                                         .catch((error) => {
                                             console.log(error);
                                             setImageDeleting(false);
+                                            toast({
+                                                title: `Server timeout`,
+                                                description: 'Xóa ảnh thất bại',
+                                                position: 'bottom-left',
+                                                status: 'error',
+                                                isClosable: true,
+                                            });
                                         });
                                 }}
                                 ml={3}
