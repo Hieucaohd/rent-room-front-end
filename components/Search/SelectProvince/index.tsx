@@ -1,8 +1,7 @@
 import { Select } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import queryString from 'query-string';
 import { useEffect, useState } from 'react';
-import { getDistrictList, getWardList } from '../../../lib/getPosition';
+import { getDistrictList, getWardList } from '@lib/getPosition';
 import styles from './styles.module.scss';
 
 export interface ISelectProvinceProps {
@@ -48,13 +47,13 @@ export default function SelectProvince({ disableSelect }: ISelectProvinceProps) 
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        const data:any = Object.fromEntries(new FormData(e.target).entries());
+        const data: any = Object.fromEntries(new FormData(e.target).entries());
         disableSelect();
         router.push({
             pathname: 'search',
             query: {
                 ...router.query,
-                ...data
+                ...data,
             },
         });
     };
@@ -76,26 +75,30 @@ export default function SelectProvince({ disableSelect }: ISelectProvinceProps) 
                         </option>
                     ))}
                 </Select>
-                {districtList.length > 0 && <Select
-                    name="district"
-                    placeholder="Quận/Huyện"
-                    width={60}
-                    margin={1}
-                    onChange={(e) => handleChangeDistrict(e.target.value)}
-                >
-                    {districtList?.map(({ name, code }, index) => (
-                        <option key={index} value={code} selected={district == code}>
-                            {name}
-                        </option>
-                    ))}
-                </Select>}
-                {wardList.length > 0 && <Select name="ward" placeholder="Phường Xã" width={60} margin={1}>
-                    {wardList?.map(({ name, code }, index) => (
-                        <option key={index} value={code} selected={ward == code}>
-                            {name}
-                        </option>
-                    ))}
-                </Select>}
+                {districtList.length > 0 && (
+                    <Select
+                        name="district"
+                        placeholder="Quận/Huyện"
+                        width={60}
+                        margin={1}
+                        onChange={(e) => handleChangeDistrict(e.target.value)}
+                    >
+                        {districtList?.map(({ name, code }, index) => (
+                            <option key={index} value={code} selected={district == code}>
+                                {name}
+                            </option>
+                        ))}
+                    </Select>
+                )}
+                {wardList.length > 0 && (
+                    <Select name="ward" placeholder="Phường Xã" width={60} margin={1}>
+                        {wardList?.map(({ name, code }, index) => (
+                            <option key={index} value={code} selected={ward == code}>
+                                {name}
+                            </option>
+                        ))}
+                    </Select>
+                )}
                 <button type="submit">
                     <i className="fa-solid fa-magnifying-glass"></i>
                 </button>

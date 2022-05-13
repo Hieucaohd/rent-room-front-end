@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { gql } from '@apollo/client';
-import { User } from '../../withAuth';
+import { User } from '@lib/withAuth';
 import { useToast } from '@chakra-ui/react';
-import upLoadAllFile, { deleteFile, getPathFileFromLink } from '../../upLoadAllFile';
+import upLoadAllFile, { deleteFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 
 export interface UpdateProfile {
     fullname?: string;

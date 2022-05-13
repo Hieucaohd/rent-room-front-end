@@ -4,20 +4,15 @@ import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
-import useClassName from '../../../lib/useClassName';
+import useClassName from '@lib/useClassName';
 import { Checkbox } from '@chakra-ui/checkbox';
-import useScrollController from '../../../lib/useScrollController';
-import {
-    getSSRRoomById,
-    RoomData,
-    UpdateRoomTitle,
-    updateRoomTitle,
-} from '../../../lib/apollo/home/room';
+import useScrollController from '@lib/useScrollController';
+import { getSSRRoomById, RoomData, UpdateRoomTitle, updateRoomTitle } from '@lib/apollo/home/room';
 import { Image } from '../addhome';
 import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storage';
-import randomkey, { getTypeFile } from '../../../lib/randomkey';
-import { fStorage } from '../../../firebase';
-import { deleteAllFile, getPathFileFromLink } from '../../../lib/upLoadAllFile';
+import randomkey, { getTypeFile } from '@lib/randomkey';
+import { fStorage } from '@firebase';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 
 const container: Variants = {
     show: {

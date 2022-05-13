@@ -1,20 +1,17 @@
 import styles from './addzoom.module.scss';
-import { Button, Input, InputGroup, Progress, Text, Tooltip, useBoolean } from '@chakra-ui/react';
+import { Button, Input, Progress, Text, Tooltip, useBoolean } from '@chakra-ui/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from '..';
 import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storage';
-import randomkey, { getTypeFile } from '../../../../lib/randomkey';
-import { fStorage } from '../../../../firebase';
+import randomkey, { getTypeFile } from '@lib/randomkey';
+import { fStorage } from '@firebase';
 import { useForm } from 'react-hook-form';
-import { AddZoomForm, createZoom } from '../../../../lib/apollo/home/room';
+import { AddZoomForm, createZoom } from '@lib/apollo/home/room';
 import { useMutation } from '@apollo/client';
-import { User } from '../../../../lib/withAuth';
-import { deleteAllFile, getPathFileFromLink } from '../../../../lib/upLoadAllFile';
-import useClassName from '../../../../lib/useClassName';
-import useScrollController from '../../../../lib/useScrollController';
-import { HomeData } from '../../../../pages/home/[homeid]';
-import { getHomeById } from '../../../../lib/apollo/home/gethomebyid';
+import { User } from '@lib/withAuth';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
+import useClassName from '@lib/useClassName';
 
 const container: Variants = {
     show: {
@@ -48,12 +45,12 @@ interface FormProps {
     closeForm: () => void;
     homeId: string;
     user: User;
-    callback?: () => Promise<any>
+    callback?: () => Promise<any>;
 }
 
 const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
     const mount = useRef(false);
-    const [createNewZoom, { data }] = useMutation(createZoom.command);
+    const [createNewZoom] = useMutation(createZoom.command);
     const { register, handleSubmit } = useForm<AddZoomForm>();
     const [listImage, setListImage] = useState<Image[]>([]);
     const [upLoading, setUpLoading] = useState(false);
@@ -177,8 +174,8 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
                         variables: createZoom.variables(e, homeId),
                     })
                         .then(() => {
-                            callback && callback()
-                            closeForm()
+                            callback && callback();
+                            closeForm();
                         })
                         .catch((error) => {
                             const paths = e.images.map((item) => {
@@ -425,7 +422,7 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
 export default function AddZoom({
     homeId,
     user,
-    callback
+    callback,
 }: {
     homeId: string;
     user: User;
@@ -439,7 +436,9 @@ export default function AddZoom({
                 <i className="fa-solid fa-plus"></i>Add Zoom
             </Button>
             <AnimatePresence>
-                {isOpen && <Form closeForm={setOpen.off} callback={callback} homeId={homeId} user={user} />}
+                {isOpen && (
+                    <Form closeForm={setOpen.off} callback={callback} homeId={homeId} user={user} />
+                )}
             </AnimatePresence>
         </>
     );

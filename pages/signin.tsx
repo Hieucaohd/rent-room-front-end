@@ -1,10 +1,9 @@
 import { useLazyQuery } from '@apollo/client';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { LOGIN } from '../lib/apollo/auth';
-import { User, withAuth } from '../lib/withAuth';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { LOGIN } from '@lib/apollo/auth';
+import { User } from '@lib/withAuth';
+import { motion } from 'framer-motion';
 import {
     Box,
     Button,
@@ -15,10 +14,9 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import { ConnectWithBtnStyle, InputStyle } from '../chakra';
-import useStore from '../store/useStore';
-import Link from 'next/link';
-import { ForgotPopup } from '../components/forgot';
+import { ConnectWithBtnStyle, InputStyle } from '@chakra';
+import useStore from '@store/useStore';
+import { ForgotPopup } from '@components/forgot';
 
 export interface ISignInProps {
     user: User;
@@ -147,7 +145,7 @@ const containerChild = {
 //
 
 export default function SignIn() {
-    const [login, { data }] = useLazyQuery(LOGIN);
+    const [login] = useLazyQuery(LOGIN);
     const router = useRouter();
     const { info: user } = useStore((state) => state.user);
     const [showPassword, setShowPassword] = useState(false);

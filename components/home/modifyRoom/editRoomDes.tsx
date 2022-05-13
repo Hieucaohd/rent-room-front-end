@@ -12,10 +12,10 @@ import {
     Text,
     Textarea,
 } from '@chakra-ui/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import useClassName from '../../../lib/useClassName';
-import { getSSRRoomById, RoomData, updateRoomDescription } from '../../../lib/apollo/home/room';
+import useClassName from '@lib/useClassName';
+import { getSSRRoomById, RoomData, updateRoomDescription } from '@lib/apollo/home/room';
 
 interface FormProps {
     closeForm: () => void;
@@ -28,7 +28,6 @@ interface FormProps {
 }
 
 export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: FormProps) => {
-    const mount = useRef(false);
     const [updateRoom] = useMutation(updateRoomDescription.command, {
         update(cache, { data: { updateRoom } }) {
             const data = cache.readQuery<{ getRoomById: RoomData }>({

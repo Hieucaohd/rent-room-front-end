@@ -13,18 +13,17 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { getHomeById } from '../../lib/apollo/home/gethomebyid';
-import { RoomData, getSSRRoomById } from '../../lib/apollo/home/room/getroombyid';
-import { updateRoomImages } from '../../lib/apollo/home/room/update';
-import { updateHomeImages } from '../../lib/apollo/home/update';
-import { deleteFile, getMetaDataFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
-import useResize from '../../lib/use-resize';
-import useClassName from '../../lib/useClassName';
-import { HomeData } from '../../pages/home/[homeid]';
-import useStore from '../../store/useStore';
-import NextImage from '../nextimage/image';
+import { getHomeById } from '@lib/apollo/home/gethomebyid';
+import { RoomData, getSSRRoomById } from '@lib/apollo/home/room/getroombyid';
+import { updateRoomImages } from '@lib/apollo/home/room/update';
+import { updateHomeImages } from '@lib/apollo/home/update';
+import { deleteFile, getMetaDataFile, getPathFileFromLink } from '@lib/upLoadAllFile';
+import useResize from '@lib/use-resize';
+import useClassName from '@lib/useClassName';
+import { HomeData } from '@pages/home/[homeid]';
+import useStore from '@store/useStore';
+import NextImage from '@components/nextimage/image';
 import styles from './style.module.scss';
 
 export interface HomeImagePreviewProps {

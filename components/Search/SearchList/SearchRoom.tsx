@@ -1,11 +1,11 @@
 import { useMediaQuery } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { timeAgo } from '../../../lib/date';
-import { formatPrice } from '../../../lib/formatPrice';
-import { formatAddressName } from '../../../lib/getPosition';
-import { Room } from '../../../lib/interface';
-import useSearchStore from '../../../store/searchStore';
+import { timeAgo } from '@lib/date';
+import { formatPrice } from '@lib/formatPrice';
+import { formatAddressName } from '@lib/getPosition';
+import { Room } from '@lib/interface';
+import useSearchStore from '@store/searchStore';
 import styles from './styles.module.scss';
 
 const Slider = dynamic(() => import('../../Slider'), { ssr: false });
@@ -20,7 +20,11 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
     const { wardName, districtName, provinceName, waterPrice, electricityPrice } = room.home;
     const setRoomHovered = useSearchStore((state) => state.setRoomHovered);
     const [isMobile] = useMediaQuery('(max-width: 600px)');
-    const address = wardName + ', ' + districtName + `${!isSearchPage ? `, ${formatAddressName(provinceName)}` : ""}`;
+    const address =
+        wardName +
+        ', ' +
+        districtName +
+        `${!isSearchPage ? `, ${formatAddressName(provinceName)}` : ''}`;
     return (
         <li>
             <Link href={`/room/${room._id}`}>
@@ -45,11 +49,9 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
                             <h4>
                                 {room.title
                                     ? room.title
-                                    : `${!isSearchPage && isMobile ? 'P. ' : 'Phòng'} ${room.roomNumber ? room.roomNumber : 'trọ'} gần ${
-                                          isMobile
-                                              ? formatAddressName(address)
-                                              : address
-                                      }`}
+                                    : `${!isSearchPage && isMobile ? 'P. ' : 'Phòng'} ${
+                                          room.roomNumber ? room.roomNumber : 'trọ'
+                                      } gần ${isMobile ? formatAddressName(address) : address}`}
                             </h4>
                         </div>
                         <div className={styles.line}></div>

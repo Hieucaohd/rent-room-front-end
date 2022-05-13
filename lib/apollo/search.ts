@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import client from './apollo-client';
+import client from '@lib/apollo/apollo-client';
 
 export const getFilterRoom = async (conditions: any, page: number, limit: number) => {
     const SEARCH = gql`

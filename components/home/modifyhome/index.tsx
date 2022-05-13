@@ -4,12 +4,12 @@ import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
-import useClassName from '../../../lib/useClassName';
-import { HomePrices, updateHomePrices } from '../../../lib/apollo/home/update';
-import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
-import { HomeData } from '../../../pages/home/[homeid]';
+import useClassName from '@lib/useClassName';
+import { HomePrices, updateHomePrices } from '@lib/apollo/home/update';
+import { getHomeById } from '@lib/apollo/home/gethomebyid';
+import { HomeData } from '@pages/home/[homeid]';
 import { Checkbox } from '@chakra-ui/checkbox';
-import useScrollController from '../../../lib/useScrollController';
+import useScrollController from '@lib/useScrollController';
 
 const container: Variants = {
     show: {

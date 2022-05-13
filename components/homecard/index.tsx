@@ -16,10 +16,10 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { deleteHome } from '../../lib/apollo/home';
-import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
+import { deleteHome } from '@lib/apollo/home';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import { motion } from 'framer-motion';
-import Slider from '../Slider';
+import Slider from '@components/Slider';
 
 export interface HomeCardProps {
     _id: string;

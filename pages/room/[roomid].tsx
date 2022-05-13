@@ -17,10 +17,10 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { signUpBtnStyle } from '../../chakra';
-import AppAbout from '../../components/app-about';
-import EmptyData from '../../components/emptydata';
-import Gallery from '../../components/gallery';
+import { signUpBtnStyle } from '@chakra';
+import AppAbout from '@components/app-about';
+import EmptyData from '@components/emptydata';
+import Gallery from '@components/gallery';
 import {
     EditRoomAmenity,
     EditRoomDescription,
@@ -117,7 +117,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
 };
 
 function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
-    const router = useRouter()
+    const router = useRouter();
     const [getRoomData, { data }] = useLazyQuery(getSSRRoomById.command, {
         variables: getSSRRoomById.variables(roomId),
         onCompleted: (data) => {
@@ -376,7 +376,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                                     'Bạn phải đăng nhập để thực hiện thao tác này!'
                                                 )
                                             ) {
-                                                router.push('/signin')
+                                                router.push('/signin');
                                             }
                                         }
                                     }}
@@ -680,7 +680,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         try {
                                             await deleteAllFile(listPath);
                                         } catch (error) {
-                                            console.log(error)
+                                            console.log(error);
                                         }
                                         window.location.href = `/home/${homeData._id}`;
                                     });

@@ -1,7 +1,5 @@
 import { ButtonProps, InputProps } from '@chakra-ui/react';
 
-type HeaderStyle = ButtonProps | InputProps;
-
 export const signUpBtnStyle: ButtonProps = {
     height: '100%',
     borderRadius: '5px',
@@ -97,5 +95,4 @@ export const ConnectWithBtnStyle: ButtonProps = {
     borderWidth: '1px',
     width: '100px',
 };
-export * from './thems';
 export default headerStyle;

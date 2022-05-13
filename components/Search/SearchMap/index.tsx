@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { formatPrice } from '../../../lib/formatPrice';
-import { getPosition } from '../../../lib/getPosition';
-import { Room } from '../../../lib/interface';
-import useSearchStore from '../../../store/searchStore';
-import Slider from '../../Slider';
+import { formatPrice } from '@lib/formatPrice';
+import { getPosition } from '@lib/getPosition';
+import { Room } from '@lib/interface';
+import useSearchStore from '@store/searchStore';
+import Slider from '@components/Slider';
 import styles from './styles.module.scss';
 
 export interface ISearchMapProps {

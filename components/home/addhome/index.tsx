@@ -14,12 +14,12 @@ import { getDownloadURL, list, ref, uploadBytes, uploadBytesResumable } from 'fi
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { fStorage } from '../../../firebase';
-import { createNewHome, NewHome } from '../../../lib/apollo/home';
-import useScrollController from '../../../lib/useScrollController';
-import randomkey, { getTypeFile } from '../../../lib/randomkey';
-import { deleteAllFile, getPathFileFromLink } from '../../../lib/upLoadAllFile';
-import useStore from '../../../store/useStore';
+import { fStorage } from '@firebase';
+import { createNewHome, NewHome } from '@lib/apollo/home';
+import useScrollController from '@lib/useScrollController';
+import randomkey, { getTypeFile } from '@lib/randomkey';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
+import useStore from '@store/useStore';
 import FormLocation from '../../location';
 import MapBox, { MapField } from '../../mapbox';
 

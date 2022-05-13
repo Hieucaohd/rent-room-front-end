@@ -2,25 +2,24 @@ import { gql, useLazyQuery } from '@apollo/client';
 import { Avatar, Button, Skeleton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { signUpBtnStyle } from '../../chakra';
-import AddZoom from '../../components/home/addhome/addzoom';
-import Gallery, { GallerySkeleton } from '../../components/gallery';
-import RoomCard, { RoomData } from '../../components/homecard/roomcard';
-import { getHomeById } from '../../lib/apollo/home/gethomebyid';
-import useStore from '../../store/useStore';
-import ModifyHomePrices from '../../components/home/modifyhome';
-import EditHomeLocation from '../../components/home/modifyhome/editLocation';
-import EditDescription from '../../components/home/modifyhome/editDescription';
+import { signUpBtnStyle } from '@chakra';
+import AddZoom from '@components/home/addhome/addzoom';
+import Gallery, { GallerySkeleton } from '@components/gallery';
+import RoomCard, { RoomData } from '@components/homecard/roomcard';
+import { getHomeById } from '@lib/apollo/home/gethomebyid';
+import useStore from '@store/useStore';
+import ModifyHomePrices from '@components/home/modifyhome';
+import EditHomeLocation from '@components/home/modifyhome/editLocation';
+import EditDescription from '@components/home/modifyhome/editDescription';
 import { AnimatePresence, motion } from 'framer-motion';
-import HomeImagePreivew from '../../components/image-preview';
-import EmptyData from '../../components/emptydata';
-import MapBox from '../../components/mapbox';
-import getTitleHome from '../../lib/getNameHome';
+import HomeImagePreivew from '@components/image-preview';
+import EmptyData from '@components/emptydata';
+import MapBox from '@components/mapbox';
+import getTitleHome from '@lib/getNameHome';
 import { GetServerSideProps } from 'next';
-import getSecurityCookie from '../../security';
-import client from '../../lib/apollo/apollo-client';
-import AppAbout from '../../components/app-about';
-import GoogleMap from '../../components/mapbox/googleMap';
+import getSecurityCookie from '@security';
+import client from '@lib/apollo/apollo-client';
+import AppAbout from '@components/app-about';
 import Link from 'next/link';
 
 export interface ListZoomData {
@@ -522,7 +521,11 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                         {user && isOwner && (
                                             <div className="homezooms-add">
                                                 {/*@ts-ignore */}
-                                                <AddZoom homeId={homeId} user={user} callback={refreshData}/>
+                                                <AddZoom
+                                                    homeId={homeId}
+                                                    user={user}
+                                                    callback={refreshData}
+                                                />
                                             </div>
                                         )}
                                         <div className="homezooms-listlabel">Danh sách phòng</div>

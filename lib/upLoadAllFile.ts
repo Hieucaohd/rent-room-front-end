@@ -7,8 +7,8 @@ import {
     getMetadata,
     getBlob,
 } from 'firebase/storage';
-import { fStorage } from '../firebase';
-import randomkey, { getTypeFile } from './randomkey';
+import { fStorage } from '@firebase';
+import randomkey, { getTypeFile } from '@lib/randomkey';
 
 export default function upLoadAllFile(files: { file: File }[], id: string) {
     return Promise.all(

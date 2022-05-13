@@ -1,8 +1,8 @@
 import dynamic from 'next/dynamic';
-import { Room } from '../../lib/interface';
+import { Room } from '@lib/interface';
 import styles from './styles.module.scss';
 
-const Slider = dynamic(() => import('../Slider'), { ssr: false });
+const Slider = dynamic(() => import('@components/Slider'), { ssr: false });
 
 export interface IRoomByAreaProps {
     label: string;

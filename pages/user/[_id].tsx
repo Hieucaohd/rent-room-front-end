@@ -1,26 +1,16 @@
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { Avatar, Box, Button, Skeleton, SkeletonText, Tooltip, useToast } from '@chakra-ui/react';
-import getSecurityCookie from '../../security';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef } from 'react';
-import HomeCard, { HomeCardProps } from '../../components/homecard';
+import HomeCard, { HomeCardProps } from '@components/homecard';
 import { motion } from 'framer-motion';
-import useStore from '../../store/useStore';
-import AppAbout from '../../components/app-about';
-import EmptyData from '../../components/emptydata';
-import { User } from '../../lib/withAuth';
+import AppAbout from '@components/app-about';
+import EmptyData from '@components/emptydata';
+import { User } from '@lib/withAuth';
 import { GetServerSideProps } from 'next';
-import client from '../../lib/apollo/apollo-client';
-import { getRoomSaved, getUserById } from '../../lib/apollo/profile';
-
-function getSaveRooms(userId: string, SSR: boolean) {
-    if (!SSR && userId) {
-        const data = getRoomSaved(userId);
-        return data;
-    }
-    return [];
-}
+import client from '@lib/apollo/apollo-client';
+import { getUserById } from '@lib/apollo/profile';
 
 function getData(data: any) {
     const dt = data?.getUserById;

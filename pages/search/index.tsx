@@ -2,15 +2,15 @@ import { GetServerSideProps } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { useState } from 'react';
-import FilterBar from '../../components/Search/FilterBar';
-import SearchList from '../../components/Search/SearchList';
-import SelectProvince from '../../components/Search/SelectProvince';
-import { getFilterRoom } from '../../lib/apollo/search';
-import { getSearchPlaceName } from '../../lib/getPosition';
-import { Paginator, Room } from '../../lib/interface';
+import FilterBar from '@components/Search/FilterBar';
+import SearchList from '@components/Search/SearchList';
+import SelectProvince from '@components/Search/SelectProvince';
+import { getFilterRoom } from '@lib/apollo/search';
+import { getSearchPlaceName } from '@lib/getPosition';
+import { Paginator, Room } from '@lib/interface';
 import { useMediaQuery } from '@chakra-ui/react';
 
-const SearchMap = dynamic(() => import('../../components/Search/SearchMap'), { ssr: false });
+const SearchMap = dynamic(() => import('@components/Search/SearchMap'), { ssr: false });
 
 export interface ISearchProps {
     roomList: [Room];
@@ -26,13 +26,13 @@ export interface ISearchProps {
 export default function Search({ roomList, address, paginator }: ISearchProps) {
     const [showSelect, setShowSelect] = useState(false);
     const [isBigScreen] = useMediaQuery('(min-width: 769px)');
-    
+
     return (
         <div className="search">
             <Head>
                 <title>{address.name ? `Phòng trọ ở ${address.name}` : 'Tìm kiếm'}</title>
             </Head>
-            {isBigScreen  && (
+            {isBigScreen && (
                 <SearchMap
                     roomList={getMapRoomList(roomList)}
                     address={address}

@@ -6,14 +6,13 @@ import {
     AlertDialogHeader,
     AlertDialogOverlay,
     Button,
-    useDisclosure,
     useToast,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import React, { useCallback, useState } from 'react';
-import { getRoomSaved, saveRoom, updateRoom as updateRoomSaved } from '../../../lib/apollo/profile';
-import useStore from '../../../store/useStore';
-import Slider from '../../Slider';
+import { getRoomSaved, updateRoom as updateRoomSaved } from '@lib/apollo/profile';
+import useStore from '@store/useStore';
+import Slider from '@components/Slider';
 
 interface RoomCardProps {
     width?: any;

@@ -13,20 +13,20 @@ import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
-import useClassName from '../../../lib/useClassName';
-import { HomeLocation, updateHomeLocation } from '../../../lib/apollo/home/update';
-import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
-import { HomeData } from '../../../pages/home/[homeid]';
+import useClassName from '@lib/useClassName';
+import { HomeLocation, updateHomeLocation } from '@lib/apollo/home/update';
+import { getHomeById } from '@lib/apollo/home/gethomebyid';
+import { HomeData } from '@pages/home/[homeid]';
 import { Checkbox } from '@chakra-ui/checkbox';
-import useScrollController from '../../../lib/useScrollController';
+import useScrollController from '@lib/useScrollController';
 import FormLocation from '../../location';
 import MapBox, { MapField } from '../../mapbox';
 import { Image } from '../addhome';
 import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storage';
-import { fStorage } from '../../../firebase';
-import randomkey, { getTypeFile } from '../../../lib/randomkey';
-import { User } from '../../../lib/withAuth';
-import { deleteAllFile, getPathFileFromLink } from '../../../lib/upLoadAllFile';
+import { fStorage } from '@firebase';
+import randomkey, { getTypeFile } from '@lib/randomkey';
+import { User } from '@lib/withAuth';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 
 const container: Variants = {
     show: {

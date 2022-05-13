@@ -11,10 +11,10 @@ import {
     Tooltip,
     useToast,
 } from '@chakra-ui/react';
-import { ConnectWithBtnStyle, InputStyle, linkBtnStyle } from '../chakra';
+import { ConnectWithBtnStyle, InputStyle } from '@chakra';
 import { useMutation } from '@apollo/client';
-import { SIGNUP } from '../lib/apollo/auth';
-import useStore from '../store/useStore';
+import { SIGNUP } from '@lib/apollo/auth';
+import useStore from '@store/useStore';
 import { useRouter } from 'next/router';
 
 export interface ISignUpProps {}

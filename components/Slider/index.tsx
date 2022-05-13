@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import NextImage from '../nextimage/image';
+import NextImage from '@components/nextimage/image';
 import styles from './slider.module.scss';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Pagination, Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import useResize from '../../lib/use-resize';
+import useResize from '@lib/use-resize';
 
 export interface ISliderProps {
     images: string[];
