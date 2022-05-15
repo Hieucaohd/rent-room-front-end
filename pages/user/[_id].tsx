@@ -1,26 +1,17 @@
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { Avatar, Box, Button, Skeleton, SkeletonText, Tooltip, useToast } from '@chakra-ui/react';
-import getSecurityCookie from '../../security';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useRef } from 'react';
-import HomeCard, { HomeCardProps } from '../../components/homecard';
+import HomeCard, { HomeCardProps } from '@components/homecard';
 import { motion } from 'framer-motion';
-import useStore from '../../store/useStore';
-import AppAbout from '../../components/app-about';
-import EmptyData from '../../components/emptydata';
-import { User } from '../../lib/withAuth';
+import AppAbout from '@components/app-about';
+import EmptyData from '@components/emptydata';
+import { User } from '@lib/withAuth';
 import { GetServerSideProps } from 'next';
-import client from '../../lib/apollo/apollo-client';
-import { getRoomSaved, getUserById } from '../../lib/apollo/profile';
-
-function getSaveRooms(userId: string, SSR: boolean) {
-    if (!SSR && userId) {
-        const data = getRoomSaved(userId);
-        return data;
-    }
-    return [];
-}
+import client from '@lib/apollo/apollo-client';
+import { getUserById } from '@lib/apollo/profile';
+import { Paginator } from '@lib/interface';
 
 function getData(data: any) {
     const dt = data?.getUserById;
@@ -36,18 +27,6 @@ function getUser(data: any) {
 
 /*  */
 
-interface PageData {
-    limit: number;
-    page: number;
-    nextPage: number;
-    prevPage: number;
-    totalPages: number;
-    pagingCounter: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    totalDocs: number;
-}
-
 function getPages(data: any) {
     return data?.getUserById?.listHomes?.paginator;
 }
@@ -58,7 +37,7 @@ interface ProfileProps {
     page: number;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     try {
         const { _id, page } = query;
         if (_id) {
@@ -127,7 +106,7 @@ export default function Profile({ data: homeData, userId, page }: ProfileProps) 
     const currentUser: User = getUser(data || homeData);
 
     const listHome: HomeCardProps[] = getData(data || homeData);
-    const pageRouter: PageData = getPages(data || homeData);
+    const pageRouter: Paginator = getPages(data || homeData);
 
     const toast = useToast();
     const mount = useRef<boolean>(false);

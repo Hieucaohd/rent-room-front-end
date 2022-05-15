@@ -1,9 +1,8 @@
 import { Box, Button, CloseButton, Skeleton, Spinner } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { getPlace, getPosition } from '../../lib/getPosition';
-import mapboxgl from '../../lib/mapbox';
-import useStore from '../../store/useStore';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { getPlace, getPosition } from '@lib/getPosition';
+import mapboxgl from '@lib/mapbox';
 import styles from './mapbox.module.scss';
 
 export interface MapField {

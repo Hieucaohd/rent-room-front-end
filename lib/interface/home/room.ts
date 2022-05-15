@@ -1,4 +1,4 @@
-export interface Room {
+export interface RoomData {
     __typename: string;
     _id: string;
     home: any;
@@ -20,4 +20,11 @@ export interface Paginator {
     page: number;
     totalDocs: number;
     totalPages: number;
+    prevPage: number;
+    nextPage: number;
+}
+
+export interface ListZoomData {
+    docs: RoomData[];
+    paginator: Paginator;
 }

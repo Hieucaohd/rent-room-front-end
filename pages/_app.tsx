@@ -8,13 +8,13 @@ import Head from 'next/head';
 import { NextRouter, useRouter } from 'next/router';
 import Nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import 'swiper/css/bundle';
-import Header from '../components/Header';
-import client from '../lib/apollo/apollo-client';
-import { checkLoggedIn, User } from '../lib/withAuth';
-import useStore from '../store/useStore';
-import '../styles/index.scss';
+import Header from '@components/Header';
+import client from '@lib/apollo/apollo-client';
+import { checkLoggedIn, User } from '@lib/withAuth';
+import useStore from '@store/useStore';
+import 'styles/index.scss';
 
 interface MyAppProps extends AppProps {
     myProps: {

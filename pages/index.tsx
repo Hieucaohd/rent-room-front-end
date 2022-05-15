@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import AppAbout from '../components/app-about';
-import SearchBox from '../components/SeachBox';
-import SearchRoom from '../components/Search/SearchList/SearchRoom';
-import { getFilterRoom } from '../lib/apollo/search';
-import { Room } from '../lib/interface';
+import AppAbout from '@components/app-about';
+import SearchBox from '@components/SeachBox';
+import SearchRoom from '@components/Search/SearchList/SearchRoom';
+import { getFilterRoom } from '@lib/apollo/search';
+import { RoomData } from '@lib/interface';
+
 export interface IHomePageProps {
-    lastestRooms: Room[];
+    lastestRooms: RoomData[];
 }
 
 const Home = ({ lastestRooms }: IHomePageProps) => {
@@ -157,9 +158,9 @@ export const getServerSideProps = async () => {
     } catch (e) {
         return {
             props: {
-                lastestRooms: []
-            }
-        }
+                lastestRooms: [],
+            },
+        };
     }
 };
 

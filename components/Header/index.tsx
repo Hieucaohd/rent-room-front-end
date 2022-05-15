@@ -20,35 +20,14 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useMemo, useRef, useState } from 'react';
-import headerStyle from '../../chakra';
-import { LOGOUT } from '../../lib/apollo/auth';
-import useResize from '../../lib/use-resize';
-import { User } from '../../lib/withAuth';
+import headerStyle from '@chakra';
+import { LOGOUT } from '@lib/apollo/auth';
+import useResize from '@lib/use-resize';
+import { User } from '@lib/withAuth';
 
 export interface IHeaderProps {
     user: User | null;
 }
-
-const getPath = (path: string): number => {
-    const index = path.split('/');
-    if (index.length <= 0) {
-        return 0;
-    }
-    switch (index[0]) {
-        case '':
-            return 0;
-        case '/home':
-            return 1;
-        case '/search':
-            return 2;
-        case '/contact':
-            return 3;
-        case '/about':
-            return 4;
-        default:
-            return 0;
-    }
-};
 
 const Path = (props: any) => (
     <motion.path

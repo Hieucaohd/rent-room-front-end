@@ -1,5 +1,5 @@
 import ReactPaginate from 'react-paginate';
-import { Paginator } from '../../../lib/interface';
+import { Paginator } from '@lib/interface';
 import styles from './styles.module.scss';
 
 export interface IPaginationProps {
@@ -17,7 +17,7 @@ export default function Pagination({ onChangePage, paginator }: IPaginationProps
                 previousLabel="<<"
                 pageCount={paginator.totalPages || 1}
                 initialPage={paginator.page === 0 ? 0 : paginator.page - 1}
-                onPageChange={({selected}) => onChangePage(selected + 1)}
+                onPageChange={({ selected }) => onChangePage(selected + 1)}
                 disableInitialCallback={true}
             />
         </div>

@@ -1,32 +1,24 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import {
-    Avatar,
-    Box,
-    Button,
-    Skeleton,
-    SkeletonText,
-    Tooltip,
-    useDisclosure,
-    useToast,
-} from '@chakra-ui/react';
-import getSecurityCookie from '../../../security';
+import { Avatar, Box, Button, Skeleton, SkeletonText, Tooltip, useToast } from '@chakra-ui/react';
+import getSecurityCookie from '@security';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import AddHome from '../../../components/home/addhome';
-import HomeCard, { HomeCardProps } from '../../../components/homecard';
-import { getUserHomes } from '../../../lib/apollo/home';
+import AddHome from '@components/home/addhome';
+import HomeCard, { HomeCardProps } from '@components/homecard';
+import { getUserHomes } from '@lib/apollo/home';
 import { motion } from 'framer-motion';
-import useStore from '../../../store/useStore';
-import AppAbout from '../../../components/app-about';
-import EmptyData from '../../../components/emptydata';
-import { User } from '../../../lib/withAuth';
+import useStore from '@store/useStore';
+import AppAbout from '@components/app-about';
+import EmptyData from '@components/emptydata';
+import { User } from '@lib/withAuth';
 import { GetServerSideProps } from 'next';
-import client from '../../../lib/apollo/apollo-client';
-import { EditProfile } from '../../../components/profile/editprofile';
-import { getRoomSaved } from '../../../lib/apollo/profile';
-import { getListRoomByIds } from '../../../lib/apollo/home/room';
-import { RoomData, RoomSaveCard } from '../../../components/homecard/roomcard';
+import client from '@lib/apollo/apollo-client';
+import { EditProfile } from '@components/profile/editprofile';
+import { getRoomSaved } from '@lib/apollo/profile';
+import { getListRoomByIds } from '@lib/apollo/home/room';
+import { RoomSaveCard } from '@components/homecard/roomcard';
+import { Paginator, RoomData } from '@lib/interface';
 
 function getSaveRooms(userId: string, SSR: boolean) {
     if (!SSR && userId) {
@@ -36,7 +28,7 @@ function getSaveRooms(userId: string, SSR: boolean) {
     return [];
 }
 
-function getData(data: any, SSR: boolean) {
+function getData(data: any) {
     const dt = data?.profile?.user;
     if (dt) {
         const userType = dt.userType;
@@ -49,20 +41,6 @@ function getData(data: any, SSR: boolean) {
 
 function getUser(data: any) {
     return data.profile.user;
-}
-
-/*  */
-
-interface PageData {
-    limit: number;
-    page: number;
-    nextPage: number;
-    prevPage: number;
-    totalPages: number;
-    pagingCounter: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    totalDocs: number;
 }
 
 function getPages(data: any) {
@@ -138,13 +116,13 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
         user: state.user.info,
     }));
 
-    const listHome: HomeCardProps[] = getData(data || homeData, SSR);
-    const pageRouter: PageData = getPages(data || homeData);
+    const listHome: HomeCardProps[] = getData(data || homeData);
+    const pageRouter: Paginator = getPages(data || homeData);
 
     const listRoomId = getSaveRooms(currentUser._id, SSR);
     const [listRoom, setListRoom] = useState<RoomData[] | null>(null);
     const [loadingListRoom, setLoadingListRoom] = useState(true);
-    const [roomPageRouter, setRoomPageRouter] = useState<PageData | null>(null);
+    const [roomPageRouter, setRoomPageRouter] = useState<Paginator | null>(null);
 
     const router = useRouter();
     const { page, userid } = router.query;
@@ -198,14 +176,17 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
 
     const roomCallBack = useCallback(async () => {
         const p = page ? parseInt(page.toString()) : 1;
+        console.log(listRoomId, !isHost, !isNaN(p), listRoomId, data);
         if (!isHost && !isNaN(p) && listRoomId && data) {
             getListRoomByIds(listRoomId, p).then((res) => {
-                setListRoom(res.docs);
-                setRoomPageRouter(res.paginator);
-                setLoadingListRoom(false);
+                if (res) {
+                    setListRoom(res.docs);
+                    setRoomPageRouter(res.paginator);
+                    setLoadingListRoom(false);
+                }
             });
         }
-    }, []);
+    }, [listRoomId]);
 
     const isHost = useMemo(() => {
         return currentUser.userType == 'HOST';
@@ -237,13 +218,7 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                       listHome.map((item, index) => {
                           return (
                               <motion.div key={item._id}>
-                                  <HomeCard
-                                      {...item}
-                                      afterDelete={dataCallback}
-                                      onClick={() => {
-                                          router.push(`/home/${item._id}`);
-                                      }}
-                                  />
+                                  <HomeCard {...item} afterDelete={dataCallback} />
                               </motion.div>
                           );
                       })

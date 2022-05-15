@@ -1,8 +1,7 @@
-import { Skeleton, useMediaQuery } from '@chakra-ui/react';
+import { Skeleton } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import useResize from '../../lib/use-resize';
-import useClassName from '../../lib/useClassName';
-import NextImage from '../nextimage/image';
+import useResize from '@lib/use-resize';
+import NextImage from '@components/nextimage/image';
 
 interface GalleryProps {
     images: string[];

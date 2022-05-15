@@ -238,12 +238,25 @@
     }
 
     &-map {
-        height: 400px;
+        min-height: 400px;
 
-        & > h2 {
+        &__title {
             font-weight: 600;
             font-size: calc(var(--home-page__title--fontsize) - 2px);
+        }
+
+        &__placename {
+            font-weight: 600;
+            font-size: calc(var(--home-page__title--fontsize) - 4px);
             margin-bottom: 20px;
+        }
+
+        & > div:not(&__placename) {
+            height: 400px;
+
+            @media screen and (max-width: 500px) {
+                height: 300px;
+            }
         }
 
         & > hr {
@@ -338,7 +351,7 @@
 }
 
 .homezooms {
-    &-add {
+    &__add {
         position: relative;
         display: flex;
         justify-content: flex-end;
@@ -351,7 +364,7 @@
         }
     }
 
-    &-list {
+    &__list {
         --gap: 30px;
         display: grid;
         z-index: 10;
@@ -364,7 +377,7 @@
         }
     }
 
-    &-listlabel {
+    &__listlabel {
         margin: 10px 0;
         font-weight: 600;
         font-size: calc(var(--home-page__title--fontsize) - 2px);

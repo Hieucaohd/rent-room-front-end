@@ -1,13 +1,11 @@
 import { gql } from '@apollo/client';
 import {
     Avatar,
-    Box,
     Button,
     Input,
     InputGroup,
     InputLeftElement,
     InputRightElement,
-    Tooltip,
     useToast,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
@@ -16,9 +14,9 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import headerStyle from '../../chakra';
-import client from '../../lib/apollo/apollo-client';
-import { User } from '../../lib/withAuth';
+import client from '@lib/apollo/apollo-client';
+import { User } from '@lib/withAuth';
+import { ErrorAction, ForgotForm } from '@lib/interface';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     let { token } = query;
@@ -100,16 +98,6 @@ interface ForgotProps {
     token: string;
     user: User;
 }
-
-type ForgotForm = {
-    password: string;
-    passwordConfirm: string | undefined;
-};
-
-type ErrorAction = {
-    password: boolean;
-    passwordConfirm: boolean;
-};
 
 export default function ForgotPassword({ token, user }: ForgotProps) {
     const { register, handleSubmit } = useForm<ForgotForm>();

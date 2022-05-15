@@ -1,7 +1,6 @@
 import { Select, Tooltip } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
-import { getListExitPosition } from '../../lib/getPosition';
 
 interface DefaultLocation {
     province?: number;

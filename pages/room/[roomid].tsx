@@ -17,10 +17,10 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { signUpBtnStyle } from '../../chakra';
-import AppAbout from '../../components/app-about';
-import EmptyData from '../../components/emptydata';
-import Gallery from '../../components/gallery';
+import { signUpBtnStyle } from '@chakra';
+import AppAbout from '@components/app-about';
+import EmptyData from '@components/emptydata';
+import Gallery from '@components/gallery';
 import {
     EditRoomAmenity,
     EditRoomDescription,
@@ -42,8 +42,6 @@ import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
 import useResize from '../../lib/use-resize';
 import getSecurityCookie from '../../security';
 import useStore from '../../store/useStore';
-
-export interface ZoomData {}
 
 export interface RoomPageProps {
     roomSSRData: RoomData;
@@ -88,6 +86,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             const { data: data2 } = await client.query({
                 query: getSSRRoomById.command,
                 variables: getSSRRoomById.variables(roomId.toString()),
+                fetchPolicy: 'no-cache',
             });
             const roomData = getRoomDataFromQuery(data2);
             if (roomData) {
@@ -117,7 +116,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
 };
 
 function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
-    const router = useRouter()
+    const router = useRouter();
     const [getRoomData, { data }] = useLazyQuery(getSSRRoomById.command, {
         variables: getSSRRoomById.variables(roomId),
         onCompleted: (data) => {
@@ -324,12 +323,12 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                     onClick={() => {
                                         if (user) {
                                             createPopup(
+                                                //@ts-ignore
                                                 <EditRoomTitle
-                                                    roomId={roomData._id}
+                                                    {...roomData}
                                                     closeForm={closePopup}
                                                     callback={refetchRoomData}
                                                     userId={user._id}
-                                                    images={roomData.images}
                                                 />
                                             );
                                         }
@@ -376,7 +375,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                                     'Bạn phải đăng nhập để thực hiện thao tác này!'
                                                 )
                                             ) {
-                                                router.push('/signin')
+                                                router.push('/signin');
                                             }
                                         }
                                     }}
@@ -680,9 +679,9 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         try {
                                             await deleteAllFile(listPath);
                                         } catch (error) {
-                                            console.log(error)
+                                            console.log(error);
                                         }
-                                        window.location.href = `/home/${homeData._id}`;
+                                        window.location.replace(`/home/${homeData._id}`);
                                     });
                                 }}
                                 ml={3}

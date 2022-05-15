@@ -12,10 +12,10 @@ import {
     Text,
     Textarea,
 } from '@chakra-ui/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import useClassName from '../../../lib/useClassName';
-import { getSSRRoomById, RoomData, updateRoomDescription } from '../../../lib/apollo/home/room';
+import useClassName from '@lib/useClassName';
+import { getSSRRoomById, RoomData, updateRoomDescription } from '@lib/apollo/home/room';
 
 interface FormProps {
     closeForm: () => void;
@@ -28,21 +28,22 @@ interface FormProps {
 }
 
 export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: FormProps) => {
-    const mount = useRef(false);
     const [updateRoom] = useMutation(updateRoomDescription.command, {
         update(cache, { data: { updateRoom } }) {
             const data = cache.readQuery<{ getRoomById: RoomData }>({
                 query: getSSRRoomById.command,
                 variables: getSSRRoomById.variables(roomId),
             });
-            const newData = data ? { ...data.getRoomById, ...updateRoom } : { ...updateRoom };
-            cache.writeQuery({
-                query: getSSRRoomById.command,
-                variables: getSSRRoomById.variables(roomId),
-                data: {
-                    getRoomById: newData,
-                },
-            });
+            if (data) {
+                const newData = { ...data.getRoomById, ...updateRoom };
+                cache.writeQuery({
+                    query: getSSRRoomById.command,
+                    variables: getSSRRoomById.variables(roomId),
+                    data: {
+                        getRoomById: newData,
+                    },
+                });
+            }
         },
         onCompleted: () => {
             callback && callback();
@@ -77,7 +78,40 @@ export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: 
             return (
                 <div key={index} {...className('homeform-description__property')}>
                     <h1>{item.key}</h1>
-                    <p>{item.des}</p>
+                    <p
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => {
+                            const text = e.target.innerText;
+                            let list = listProperty.slice();
+                            console.log(text, text.length);
+                            if (text.length != 0) {
+                                list[index].des = text;
+                            } else {
+                                list.splice(index, 1);
+                            }
+                            console.log(list);
+                            setListProperty(list);
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.which == 13) {
+                                e.preventDefault();
+                                //@ts-ignore
+                                const text = e.target.innerText;
+                                let list = listProperty.slice();
+                                if (text) {
+                                    list[index].des = text;
+                                } else {
+                                    list = list.filter((item) => item.key != index.toString());
+                                }
+                                setListProperty(list);
+                                //@ts-ignore
+                                e.target.blur();
+                            }
+                        }}
+                    >
+                        {item.des}
+                    </p>
                 </div>
             );
         });
@@ -108,13 +142,17 @@ export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: 
             <ModalOverlay overflowY="scroll" />
             <ModalContent maxWidth="600px">
                 <ModalHeader>Tiện ích</ModalHeader>
-                <ModalCloseButton />
+                <ModalCloseButton tabIndex={-1} />
                 <ModalBody>
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            const newData = newDes(key, description);
-                            const index = listProperty.findIndex((item) => item.key == key);
+                            let k = key;
+                            if (k == 'Mô tả chung') {
+                                k = '';
+                            }
+                            const newData = newDes(k, description);
+                            const index = listProperty.findIndex((item) => item.key == k);
                             if (index != -1) {
                                 let list = listProperty.slice();
                                 if (description && description != '') {
@@ -141,7 +179,14 @@ export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: 
                             marginTop="10px"
                             placeholder="key"
                             value={key}
-                            onChange={(e) => setKey(e.target.value)}
+                            onChange={(e) => {
+                                const k = e.target.value;
+                                setKey(e.target.value);
+                                const index = listProperty.find((item) => item.key == k);
+                                if (index) {
+                                    setDescription(index.des);
+                                }
+                            }}
                         />
                         <Textarea
                             size="md"

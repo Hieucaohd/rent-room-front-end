@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
-import client from './apollo/apollo-client';
-import { PROFILE } from './apollo/auth';
+import client from '@lib/apollo/apollo-client';
+import { PROFILE } from '@lib/apollo/auth';
 
 export interface User {
     _id: string;

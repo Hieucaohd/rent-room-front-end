@@ -10,19 +10,15 @@ import {
     ModalOverlay,
     Text,
     Tooltip,
-    Avatar,
-    AvatarBadge,
 } from '@chakra-ui/react';
 import { Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import useClassName from '../../lib/useClassName';
 import { useForm } from 'react-hook-form';
-import { updateProfile, UpdateProfile, useSubmitProfile } from '../../lib/apollo/profile';
-import { User } from '../../lib/withAuth';
-import FormLocation from '../location';
-import { getListExitPosition } from '../../lib/getPosition';
-import { getUserHomes } from '../../lib/apollo/home';
-import AvatarUpload from '../avatar/AvatarUpload';
+import { updateProfile, UpdateProfile, useSubmitProfile } from '@lib/apollo/profile';
+import { User } from '@lib/withAuth';
+import FormLocation from '@components/location';
+import { getListExitPosition } from '@lib/getPosition';
+import AvatarUpload from '@components/avatar/AvatarUpload';
 
 const container: Variants = {
     show: {

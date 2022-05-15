@@ -1,9 +1,7 @@
 import {
     Button,
     ButtonGroup,
-    FormControl,
     Tooltip,
-    FormLabel,
     Input,
     Popover,
     PopoverArrow,
@@ -17,7 +15,7 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { useCallback, useRef, useState } from 'react';
-import useResize from '../../lib/use-resize';
+import useResize from '@lib/use-resize';
 
 function validateEmail(email: string) {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {

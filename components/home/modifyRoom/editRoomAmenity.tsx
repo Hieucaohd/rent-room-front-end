@@ -10,38 +10,14 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
-    Select,
-    Text,
-    Textarea,
-    useDisclosure,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import useClassName from '../../../lib/useClassName';
-import { getSSRRoomById, RoomData } from '../../../lib/apollo/home/room';
-import { Amenity, updateRoomAmenity } from '../../../lib/apollo/home/room';
-import listAmenityIcon from '../../../lib/amenities';
-import EmptyData from '../../emptydata';
-
-const container: Variants = {
-    show: {
-        opacity: 1,
-    },
-    hidden: {
-        opacity: 0,
-    },
-};
-
-const formAnimate: Variants = {
-    show: {
-        opacity: 1,
-        y: 0,
-    },
-    hidden: {
-        opacity: 0,
-        y: -100,
-    },
-};
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useClassName from '@lib/useClassName';
+import { getSSRRoomById, RoomData } from '@lib/apollo/home/room';
+import { Amenity, updateRoomAmenity } from '@lib/apollo/home/room';
+import listAmenityIcon from '@lib/amenities';
+import EmptyData from '@components/emptydata';
 
 interface RoomAmenityProps {
     closeForm: () => void;

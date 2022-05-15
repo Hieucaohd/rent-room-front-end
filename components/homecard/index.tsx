@@ -16,10 +16,11 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { deleteHome } from '../../lib/apollo/home';
-import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
+import { deleteHome } from '@lib/apollo/home';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import { motion } from 'framer-motion';
-import Slider from '../Slider';
+import Slider from '@components/Slider';
+import Link from 'next/link';
 
 export interface HomeCardProps {
     _id: string;
@@ -37,7 +38,6 @@ export interface HomeCardProps {
     title: string;
     __typename?: any;
     afterDelete?: () => any;
-    onClick?: () => any;
     removeAble?: boolean;
 }
 
@@ -87,18 +87,20 @@ export default function HomeCard(props: HomeCardProps) {
         <>
             <motion.div className={`homecard`}>
                 <div className="homecard__imgslider">
-                    <Slider images={props.images} width="100%" height="280px" />
+                    <Slider
+                        href={`/home/${props._id}`}
+                        images={props.images}
+                        width="100%"
+                        height="280px"
+                    />
                 </div>
                 <div className="homecard-main">
                     <Text className="homecard-main__label">{homeTitle}</Text>
                     <Text>Tiền điện: {props.electricityPrice} VNĐ</Text>
                     <Text>Tiền nước: {props.waterPrice} VNĐ</Text>
-                    <a
-                        className="homecard-main__setprev"
-                        onClick={() => {
-                            props.onClick && props.onClick();
-                        }}
-                    ></a>
+                    <Link href={`/home/${props._id}`}>
+                        <a className="homecard-main__setprev"></a>
+                    </Link>
                     {removeAble && (
                         <div className="homecard-main__action">
                             <Menu placement="bottom-end">

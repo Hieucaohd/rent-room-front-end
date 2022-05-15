@@ -1,13 +1,13 @@
 import { useMediaQuery } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
-import { Paginator, Room } from '../../../lib/interface';
+import { Paginator, RoomData } from '@lib/interface';
 import Pagination from './Pagination';
 import SearchRoom from './SearchRoom';
 import styles from './styles.module.scss';
 
 export interface ISearchListProps {
-    roomList: Room[];
+    roomList: RoomData[];
     paginator: Paginator;
     address: string;
     onShowSelect: Function;
@@ -43,7 +43,7 @@ export default function SearchList({
                 </strong>
             </p>
             {roomList.map((room, index) => (
-                <SearchRoom room={room} key={index} index={index} isSearchPage={true}/>
+                <SearchRoom room={room} key={index} index={index} isSearchPage={true} />
             ))}
             <Pagination onChangePage={changePage} paginator={paginator} />
         </ul>

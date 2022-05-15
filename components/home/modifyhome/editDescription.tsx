@@ -14,10 +14,10 @@ import {
 } from '@chakra-ui/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import useClassName from '../../../lib/useClassName';
-import { updateHomeDescription } from '../../../lib/apollo/home/update';
-import { getHomeById } from '../../../lib/apollo/home/gethomebyid';
-import { HomeData } from '../../../pages/home/[homeid]';
+import useClassName from '@lib/useClassName';
+import { updateHomeDescription } from '@lib/apollo/home/update';
+import { getHomeById } from '@lib/apollo/home/gethomebyid';
+import { HomeData } from '@pages/home/[homeid]';
 
 interface FormProps {
     closeForm: () => void;

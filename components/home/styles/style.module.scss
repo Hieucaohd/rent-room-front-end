@@ -26,8 +26,19 @@
     &-description {
         &__property {
             & > h1 {
-                margin: 20px 0 10px 0;
                 font-weight: 600;
+            }
+            & > p {
+                padding: 7px;
+                border: 3px solid transparent;
+                border-radius: 5px;
+                &:focus {
+                    outline: none;
+                    /* padding: 10px;
+                    outline-width: 5px;
+                    outline-color: var(--app-btn-bgcolor); */
+                    border: 3px solid #80befc;
+                }
             }
         }
     }

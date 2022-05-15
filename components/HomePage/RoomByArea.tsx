@@ -1,12 +1,12 @@
 import dynamic from 'next/dynamic';
-import { Room } from '../../lib/interface';
+import { RoomData } from '@lib/interface';
 import styles from './styles.module.scss';
 
-const Slider = dynamic(() => import('../Slider'), { ssr: false });
+const Slider = dynamic(() => import('@components/Slider'), { ssr: false });
 
 export interface IRoomByAreaProps {
     label: string;
-    roomList: Room[];
+    roomList: RoomData[];
 }
 
 export default function RoomByArea({ label, roomList }: IRoomByAreaProps) {
