@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
-import { HomeData } from '@pages/home/[homeid]';
 import client from '@lib/apollo/apollo-client';
 import { Amenity } from '@lib/apollo/home/room/update';
+import { HomeData } from '@lib/interface';
 
 export interface RoomData {
     _id: string;

@@ -17,7 +17,8 @@ import client from '@lib/apollo/apollo-client';
 import { EditProfile } from '@components/profile/editprofile';
 import { getRoomSaved } from '@lib/apollo/profile';
 import { getListRoomByIds } from '@lib/apollo/home/room';
-import { RoomData, RoomSaveCard } from '@components/homecard/roomcard';
+import { RoomSaveCard } from '@components/homecard/roomcard';
+import { Paginator, RoomData } from '@lib/interface';
 
 function getSaveRooms(userId: string, SSR: boolean) {
     if (!SSR && userId) {
@@ -40,20 +41,6 @@ function getData(data: any) {
 
 function getUser(data: any) {
     return data.profile.user;
-}
-
-/*  */
-
-interface PageData {
-    limit: number;
-    page: number;
-    nextPage: number;
-    prevPage: number;
-    totalPages: number;
-    pagingCounter: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    totalDocs: number;
 }
 
 function getPages(data: any) {
@@ -130,12 +117,12 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
     }));
 
     const listHome: HomeCardProps[] = getData(data || homeData);
-    const pageRouter: PageData = getPages(data || homeData);
+    const pageRouter: Paginator = getPages(data || homeData);
 
     const listRoomId = getSaveRooms(currentUser._id, SSR);
     const [listRoom, setListRoom] = useState<RoomData[] | null>(null);
     const [loadingListRoom, setLoadingListRoom] = useState(true);
-    const [roomPageRouter, setRoomPageRouter] = useState<PageData | null>(null);
+    const [roomPageRouter, setRoomPageRouter] = useState<Paginator | null>(null);
 
     const router = useRouter();
     const { page, userid } = router.query;
@@ -231,13 +218,7 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                       listHome.map((item, index) => {
                           return (
                               <motion.div key={item._id}>
-                                  <HomeCard
-                                      {...item}
-                                      afterDelete={dataCallback}
-                                      onClick={() => {
-                                          router.push(`/home/${item._id}`);
-                                      }}
-                                  />
+                                  <HomeCard {...item} afterDelete={dataCallback} />
                               </motion.div>
                           );
                       })

@@ -6,13 +6,13 @@ import { useEffect, useRef, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { formatPrice } from '@lib/formatPrice';
 import { getPosition } from '@lib/getPosition';
-import { Room } from '@lib/interface';
+import { RoomData } from '@lib/interface';
 import useSearchStore from '@store/searchStore';
 import Slider from '@components/Slider';
 import styles from './styles.module.scss';
 
 export interface ISearchMapProps {
-    roomList: Room[];
+    roomList: RoomData[];
     address: {
         name: string;
         province: string;
@@ -22,7 +22,7 @@ export interface ISearchMapProps {
     onShowSelect: Function;
 }
 
-const handleDuplicatePosition = (roomList: Room[]) => {
+const handleDuplicatePosition = (roomList: RoomData[]) => {
     const positionList: any = {};
     roomList.forEach(({ home }, index) => {
         let { lat, lng } = home.position;

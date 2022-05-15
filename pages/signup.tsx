@@ -16,33 +16,9 @@ import { useMutation } from '@apollo/client';
 import { SIGNUP } from '@lib/apollo/auth';
 import useStore from '@store/useStore';
 import { useRouter } from 'next/router';
+import { FormSignUpError, FormSignUp } from '@lib/interface';
 
-export interface ISignUpProps {}
-
-interface FormSignUp {
-    email: string;
-    password: string;
-    passwordConfirm: string;
-    userType: 'TENANT' | 'HOST';
-    fullname: string;
-    callNumber: string;
-    province: string | undefined;
-    district: string | undefined;
-    ward: string | undefined;
-}
-
-interface FormError {
-    email?: boolean;
-    password?: boolean;
-    passwordConfirm?: boolean;
-    fullname?: boolean;
-    callNumber?: boolean;
-    province?: boolean;
-    district?: boolean;
-    ward?: boolean;
-}
-
-const formError: FormError = {
+const formError: FormSignUpError = {
     email: false,
     password: false,
     passwordConfirm: false,
@@ -53,7 +29,7 @@ const formError: FormError = {
     ward: false,
 };
 
-const errorReducer = (state: FormError, data: FormError) => {
+const errorReducer = (state: FormSignUpError, data: FormSignUpError) => {
     if (data) {
         return { ...state, ...data };
     }
@@ -136,7 +112,7 @@ const containerMore = {
     },
 };
 
-export default function SignUp(props: ISignUpProps) {
+export default function SignUp() {
     const [signUpHandle] = useMutation(SIGNUP);
     const { user } = useStore();
     const router = useRouter();
@@ -323,10 +299,14 @@ export default function SignUp(props: ISignUpProps) {
     }, []);
 
     useEffect(() => {
-        if (user.info) {
+        if (user?.info) {
             location.href = '/';
         }
     }, [user]);
+
+    if (user?.info) {
+        return <></>;
+    }
 
     return (
         <motion.div className="signup">

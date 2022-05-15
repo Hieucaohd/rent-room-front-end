@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '@chakra';
 import AddZoom from '@components/home/addhome/addzoom';
 import Gallery, { GallerySkeleton } from '@components/gallery';
-import RoomCard, { RoomData } from '@components/homecard/roomcard';
+import RoomCard from '@components/homecard/roomcard';
 import { getHomeById } from '@lib/apollo/home/gethomebyid';
 import useStore from '@store/useStore';
 import ModifyHomePrices from '@components/home/modifyhome';
@@ -21,52 +21,7 @@ import getSecurityCookie from '@security';
 import client from '@lib/apollo/apollo-client';
 import AppAbout from '@components/app-about';
 import Link from 'next/link';
-
-export interface ListZoomData {
-    docs: RoomData[];
-    paginator: {
-        limit: number;
-        page: number;
-        nextPage: number;
-        prevPage: number;
-        totalPages: number;
-        pagingCounter: number;
-        hasPrevPage: boolean;
-        hasNextPage: boolean;
-        totalDocs: number;
-    };
-}
-
-export interface HomeData {
-    _id: string;
-    owner: {
-        _id: string;
-        fullname: string;
-        avatar: string;
-        numberPhone: string;
-    };
-    provinceName: string;
-    districtName: string;
-    wardName: string;
-    province: number;
-    district: number;
-    ward: number;
-    liveWithOwner: boolean;
-    electricityPrice: number;
-    waterPrice: number;
-    images: string[];
-    totalRooms: number;
-    internetPrice: number;
-    cleaningPrice: number;
-    description: string;
-    position: {
-        lng: number;
-        lat: number;
-    };
-    listRooms: ListZoomData;
-    title?: string;
-    detailAddress?: string;
-}
+import { HomeData, ListZoomData, Paginator } from '@lib/interface';
 
 const getData = (data: any) => {
     const dt = data?.getHomeById;
@@ -87,18 +42,6 @@ interface HomePageProps {
     homeSSRData: HomeData;
     isOwner: string;
     page: number;
-}
-
-interface PageData {
-    limit: number;
-    page: number;
-    nextPage: number;
-    prevPage: number;
-    totalPages: number;
-    pagingCounter: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    totalDocs: number;
 }
 
 function getPages(data: any) {
@@ -145,6 +88,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             const { data: data2 } = await client.query({
                 query: getHomeById.command,
                 variables: getHomeById.variables(homeId.toString(), page, 10),
+                fetchPolicy: 'no-cache',
             });
             const homeData = getData(data2);
             return {
@@ -195,7 +139,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
         return getData(data);
     }, [data]);
     console.log(homeData);
-    const pageRouter: PageData = getPages(homeData.listRooms);
+    const pageRouter: Paginator = getPages(homeData.listRooms);
     const [homeDescription, setHomeDescription] = useState<
         {
             key: string;
@@ -216,14 +160,12 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
     const [modifyPrice, setModifyPrice] = useState(false);
 
     const refreshData = useCallback(() => {
-        if (homeId) {
-            getHomeData({
-                variables: getHomeById.variables(homeId),
-            }).catch((error: Error) => {
-                console.log(error.message);
-            });
-        }
-    }, [homeId]);
+        return getHomeData({
+            variables: getHomeById.variables(homeId),
+        }).catch((error: Error) => {
+            console.log(error.message);
+        });
+    }, []);
 
     useEffect(() => {
         if (modifyPrice) {
@@ -519,7 +461,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                     <div className="homerooms">
                                         {/* show zoom */}
                                         {user && isOwner && (
-                                            <div className="homezooms-add">
+                                            <div className="homezooms__add">
                                                 {/*@ts-ignore */}
                                                 <AddZoom
                                                     homeId={homeId}
@@ -528,11 +470,11 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                                 />
                                             </div>
                                         )}
-                                        <div className="homezooms-listlabel">Danh sách phòng</div>
+                                        <div className="homezooms__listlabel">Danh sách phòng</div>
 
                                         {listZoom?.docs && listZoom.docs.length > 0 ? (
                                             <>
-                                                <div className="homezooms-list">
+                                                <div className="homezooms__list">
                                                     {listZoom.docs.map((item, index) => (
                                                         <RoomCard
                                                             data={item}
@@ -634,7 +576,8 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
 
                                     <div className="homepage-map">
                                         <hr></hr>
-                                        <h2>Vị trí trọ</h2>
+                                        <h2 className="homepage-map__title">Vị trí trọ</h2>
+                                        <div className="homepage-map__placename">{placeName}</div>
                                         {showMapBox &&
                                             (homeData?.position &&
                                             homeData.position.lat &&

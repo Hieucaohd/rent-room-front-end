@@ -45,13 +45,29 @@ interface ErrorAction {
 
 interface FormProps {
     closeForm: () => void;
-    roomId: string;
-    callback?: () => void;
-    images?: string[];
     userId: string;
+    callback?: () => void;
+    _id: string;
+    images?: string[];
+    roomNumber?: number;
+    price?: number;
+    square?: number;
+    isRented?: boolean;
+    floor?: number;
 }
 
-export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: FormProps) => {
+export const EditRoomTitle = ({
+    closeForm,
+    _id: roomId,
+    callback,
+    images = [],
+    userId,
+    roomNumber,
+    price,
+    square,
+    isRented = false,
+    floor,
+}: FormProps) => {
     const mount = useRef(false);
     const [updateRoom, { data }] = useMutation(updateRoomTitle.command, {
         update(cache, { data: { updateRoom } }) {
@@ -96,6 +112,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
     const [activeFloor, setActiveFloor] = useState(true);
     const [activeUploadImage, setActiveUploadImage] = useState(true);
 
+    const [listDefaultImage, setListDefaultImage] = useState<Array<string>>(images);
     const [listImage, setListImage] = useState<Image[]>([]);
 
     const [className] = useClassName(styles);
@@ -176,10 +193,6 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
             if (!activeRented) {
                 e.isRented = undefined;
             }
-            if (activeUploadImage && listImage.length < 2) {
-                errorHandleForm.square = true;
-                errorSubmit = true;
-            }
             console.log(e);
             //#endregion
             if (errorSubmit) {
@@ -189,7 +202,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                 if (activeUploadImage) {
                     upLoadAllFile(listImage, userId)
                         .then((res) => {
-                            e.images = images ? [...images, ...res] : res;
+                            e.images = images ? [...listDefaultImage, ...res] : res;
                             updateRoom({
                                 variables: updateRoomTitle.variables(e, roomId),
                             })
@@ -229,8 +242,39 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                 }
             }
         },
-        [activeRoomNumber, activePrice, activeFloor, activeRented, activeSquare, listImage]
+        [
+            activeRoomNumber,
+            activePrice,
+            activeFloor,
+            activeRented,
+            activeSquare,
+            activeUploadImage,
+            listImage,
+            listDefaultImage,
+        ]
     );
+
+    const renderListDefaultImage = useMemo(() => {
+        return listDefaultImage.map((item, index) => {
+            return (
+                <div key={index} className="image-preview__item">
+                    <img src={item} alt="" />
+                    <div className="image-preview__item-action">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const cloneList = listDefaultImage.filter((i) => i != item);
+                                window.URL.revokeObjectURL(item);
+                                setListDefaultImage(cloneList);
+                            }}
+                        >
+                            <i className="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            );
+        });
+    }, [listDefaultImage]);
 
     const renderListImage = useMemo(() => {
         return listImage.map((item, index) => {
@@ -324,6 +368,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                                         setErrorAction({ ...errorAction, roomNumber: false });
                                         register('roomNumber', { valueAsNumber: true }).onChange(e);
                                     }}
+                                    defaultValue={roomNumber}
                                     placeholder="eg: 2004"
                                     type="number"
                                 />
@@ -375,6 +420,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                                         setErrorAction({ ...errorAction, price: false });
                                         register('price', { valueAsNumber: true }).onChange(e);
                                     }}
+                                    defaultValue={price}
                                     placeholder="VNĐ"
                                     type="number"
                                 />
@@ -410,15 +456,8 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                             outline: 'none',
                             borderColor: '#80befc',
                         }}
-                        {...register('isRented', {
-                            setValueAs: (value: string) => {
-                                if (value == 'true') {
-                                    return true;
-                                }
-                                return false;
-                            },
-                        })}
-                        defaultValue="false"
+                        {...register('isRented')}
+                        defaultValue={isRented == true ? 'true' : 'false'}
                         isDisabled={!activeRented}
                     >
                         <option value="true">Đã được cho thuê</option>
@@ -472,6 +511,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                                         setErrorAction({ ...errorAction, floor: false });
                                         register('floor', { valueAsNumber: true }).onChange(e);
                                     }}
+                                    defaultValue={floor}
                                     placeholder="eg: 3"
                                     type="number"
                                 />
@@ -523,6 +563,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                                         setErrorAction({ ...errorAction, square: false });
                                         register('square', { valueAsNumber: true }).onChange(e);
                                     }}
+                                    defaultValue={square}
                                     placeholder="m2"
                                     type="number"
                                 />
@@ -552,6 +593,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                     </Box>
                     <div className="addhome-form__upload">
                         <div className="image-preview">
+                            {renderListDefaultImage}
                             {activeUploadImage && renderListImage}
                             <Tooltip
                                 label="Cần tải lên ít nhất 2 ảnh của phòng"
@@ -574,7 +616,7 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                                     borderRadius="1px"
                                     className="image-preview__btn"
                                     style={{
-                                        ...(listImage.length > 5
+                                        ...(listDefaultImage.length + listImage.length > 5
                                             ? {
                                                   display: 'none',
                                               }
@@ -611,7 +653,10 @@ export const EditRoomTitle = ({ closeForm, roomId, callback, images, userId }: F
                                     console.log(listImage, e.target.files);
                                     for (let i = 0; i < e.target.files.length; i++) {
                                         const image = e.target.files[i];
-                                        if (!image || listImg.length > 5) {
+                                        if (
+                                            !image ||
+                                            listDefaultImage.length + listImg.length > 5
+                                        ) {
                                             break;
                                         }
                                         const isHasImage = !!listImage.find(

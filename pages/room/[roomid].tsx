@@ -43,8 +43,6 @@ import useResize from '../../lib/use-resize';
 import getSecurityCookie from '../../security';
 import useStore from '../../store/useStore';
 
-export interface ZoomData {}
-
 export interface RoomPageProps {
     roomSSRData: RoomData;
     roomId: string;
@@ -88,6 +86,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             const { data: data2 } = await client.query({
                 query: getSSRRoomById.command,
                 variables: getSSRRoomById.variables(roomId.toString()),
+                fetchPolicy: 'no-cache',
             });
             const roomData = getRoomDataFromQuery(data2);
             if (roomData) {
@@ -324,12 +323,12 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                     onClick={() => {
                                         if (user) {
                                             createPopup(
+                                                //@ts-ignore
                                                 <EditRoomTitle
-                                                    roomId={roomData._id}
+                                                    {...roomData}
                                                     closeForm={closePopup}
                                                     callback={refetchRoomData}
                                                     userId={user._id}
-                                                    images={roomData.images}
                                                 />
                                             );
                                         }
@@ -682,7 +681,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         } catch (error) {
                                             console.log(error);
                                         }
-                                        window.location.href = `/home/${homeData._id}`;
+                                        window.location.replace(`/home/${homeData._id}`);
                                     });
                                 }}
                                 ml={3}

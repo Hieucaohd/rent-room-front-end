@@ -13,21 +13,12 @@ import React, { useCallback, useState } from 'react';
 import { getRoomSaved, updateRoom as updateRoomSaved } from '@lib/apollo/profile';
 import useStore from '@store/useStore';
 import Slider from '@components/Slider';
+import { RoomData } from '@lib/interface';
 
 interface RoomCardProps {
     width?: any;
     height?: any;
     data: RoomData;
-}
-
-export interface RoomData {
-    _id: string;
-    price: number;
-    square: number;
-    isRented: boolean;
-    floor: number;
-    images: string[];
-    roomNumber: number;
 }
 
 export default function RoomCard(props: RoomCardProps) {
@@ -38,6 +29,7 @@ export default function RoomCard(props: RoomCardProps) {
                 images={data?.images}
                 {...(props.width ? { width: props.width } : {})}
                 {...(props.height ? { height: props.height } : {})}
+                href={`/room/${data._id}`}
             />
             <Link href={`/room/${data._id}`}>
                 <a>
@@ -140,6 +132,7 @@ export function RoomSaveCard(
                 <i className="fa-solid fa-trash-can"></i>
             </Button>
             <Slider
+                href={`/room/${data._id}`}
                 images={data?.images}
                 {...(props.width ? { width: props.width } : {})}
                 {...(props.height ? { height: props.height } : {})}

@@ -11,6 +11,7 @@ import { User } from '@lib/withAuth';
 import { GetServerSideProps } from 'next';
 import client from '@lib/apollo/apollo-client';
 import { getUserById } from '@lib/apollo/profile';
+import { Paginator } from '@lib/interface';
 
 function getData(data: any) {
     const dt = data?.getUserById;
@@ -26,18 +27,6 @@ function getUser(data: any) {
 
 /*  */
 
-interface PageData {
-    limit: number;
-    page: number;
-    nextPage: number;
-    prevPage: number;
-    totalPages: number;
-    pagingCounter: number;
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    totalDocs: number;
-}
-
 function getPages(data: any) {
     return data?.getUserById?.listHomes?.paginator;
 }
@@ -48,7 +37,7 @@ interface ProfileProps {
     page: number;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     try {
         const { _id, page } = query;
         if (_id) {
@@ -117,7 +106,7 @@ export default function Profile({ data: homeData, userId, page }: ProfileProps) 
     const currentUser: User = getUser(data || homeData);
 
     const listHome: HomeCardProps[] = getData(data || homeData);
-    const pageRouter: PageData = getPages(data || homeData);
+    const pageRouter: Paginator = getPages(data || homeData);
 
     const toast = useToast();
     const mount = useRef<boolean>(false);

@@ -17,20 +17,7 @@ import { useForm } from 'react-hook-form';
 import { ConnectWithBtnStyle, InputStyle } from '@chakra';
 import useStore from '@store/useStore';
 import { ForgotPopup } from '@components/forgot';
-
-export interface ISignInProps {
-    user: User;
-}
-
-interface LoginForm {
-    email: string;
-    password: string;
-}
-
-interface ErrorLog {
-    type: 'user' | 'password' | 'all';
-    message: string | string[] | null;
-}
+import { ErrorLog, LoginForm } from '@lib/interface';
 
 const addError = (message: string | string[], type?: 'user' | 'password' | 'all'): ErrorLog => {
     if (type) {

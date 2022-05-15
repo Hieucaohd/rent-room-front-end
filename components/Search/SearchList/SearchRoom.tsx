@@ -4,14 +4,14 @@ import Link from 'next/link';
 import { timeAgo } from '@lib/date';
 import { formatPrice } from '@lib/formatPrice';
 import { formatAddressName } from '@lib/getPosition';
-import { Room } from '@lib/interface';
+import { RoomData } from '@lib/interface';
 import useSearchStore from '@store/searchStore';
 import styles from './styles.module.scss';
 
 const Slider = dynamic(() => import('../../Slider'), { ssr: false });
 
 export interface ISearchRoomProps {
-    room: Room;
+    room: RoomData;
     index: number;
     isSearchPage?: boolean;
 }

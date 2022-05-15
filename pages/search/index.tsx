@@ -7,13 +7,13 @@ import SearchList from '@components/Search/SearchList';
 import SelectProvince from '@components/Search/SelectProvince';
 import { getFilterRoom } from '@lib/apollo/search';
 import { getSearchPlaceName } from '@lib/getPosition';
-import { Paginator, Room } from '@lib/interface';
+import { Paginator, RoomData } from '@lib/interface';
 import { useMediaQuery } from '@chakra-ui/react';
 
 const SearchMap = dynamic(() => import('@components/Search/SearchMap'), { ssr: false });
 
 export interface ISearchProps {
-    roomList: [Room];
+    roomList: [RoomData];
     address: {
         name: string;
         province: string;
@@ -167,6 +167,6 @@ const searchQuery = (query: any) => {
     };
 };
 
-const getMapRoomList = (roomList: Room[]) => {
+const getMapRoomList = (roomList: RoomData[]) => {
     return roomList.filter((room) => room.home.position !== null);
 };
