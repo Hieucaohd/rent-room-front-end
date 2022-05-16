@@ -7,7 +7,7 @@ import { useMutation } from '@apollo/client';
 import useClassName from '@lib/useClassName';
 import { HomePrices, updateHomePrices } from '@lib/apollo/home/update';
 import { getHomeById } from '@lib/apollo/home/gethomebyid';
-import { HomeData } from '@pages/home/[homeid]';
+import { HomeData } from '@lib/interface';
 import { Checkbox } from '@chakra-ui/checkbox';
 import useScrollController from '@lib/useScrollController';
 

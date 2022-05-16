@@ -21,7 +21,7 @@ import { updateHomeImages } from '@lib/apollo/home/update';
 import { deleteFile, getMetaDataFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import useResize from '@lib/use-resize';
 import useClassName from '@lib/useClassName';
-import { HomeData } from '@pages/home/[homeid]';
+import { HomeData } from '@lib/interface';
 import useStore from '@store/useStore';
 import NextImage from '@components/nextimage/image';
 import styles from './style.module.scss';

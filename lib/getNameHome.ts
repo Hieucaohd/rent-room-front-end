@@ -1,4 +1,4 @@
-import { HomeData } from '@pages/home/[homeid]';
+import { HomeData } from '@lib/interface';
 
 export default function getTitleHome(homeData: HomeData) {
     if (homeData.title) {
