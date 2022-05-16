@@ -40,12 +40,23 @@ interface ErrorAction {
 
 interface FormProps {
     closeForm: () => void;
-    homeId: string;
     callback?: () => void;
+    _id: string;
+    electricityPrice?: number;
+    waterPrice?: number;
+    internetPrice?: number;
+    cleaningPrice?: number;
 }
 
-const ModifyHomePrices = ({ closeForm, homeId, callback }: FormProps) => {
-    const mount = useRef(false);
+const ModifyHomePrices = ({
+    closeForm,
+    _id: homeId,
+    electricityPrice,
+    waterPrice,
+    internetPrice,
+    cleaningPrice,
+    callback,
+}: FormProps) => {
     const [updateHome, { data }] = useMutation(updateHomePrices.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
@@ -210,6 +221,7 @@ const ModifyHomePrices = ({ closeForm, homeId, callback }: FormProps) => {
                                 setErrorAction({ ...errorAction, electricityPrice: false });
                                 register('electricityPrice', { valueAsNumber: true }).onChange(e);
                             }}
+                            defaultValue={electricityPrice}
                             placeholder="VNĐ"
                             type="number"
                         />
@@ -256,6 +268,7 @@ const ModifyHomePrices = ({ closeForm, homeId, callback }: FormProps) => {
                                 setErrorAction({ ...errorAction, waterPrice: false });
                                 register('waterPrice', { valueAsNumber: true }).onChange(e);
                             }}
+                            defaultValue={waterPrice}
                             placeholder="VNĐ"
                             type="number"
                         />
@@ -302,6 +315,7 @@ const ModifyHomePrices = ({ closeForm, homeId, callback }: FormProps) => {
                                 setErrorAction({ ...errorAction, internetPrice: false });
                                 register('internetPrice').onChange(e);
                             }}
+                            defaultValue={internetPrice}
                             placeholder="VNĐ"
                             type="number"
                         />
@@ -348,6 +362,7 @@ const ModifyHomePrices = ({ closeForm, homeId, callback }: FormProps) => {
                                 setErrorAction({ ...errorAction, cleaningPrice: false });
                                 register('cleaningPrice').onChange(e);
                             }}
+                            defaultValue={cleaningPrice}
                             placeholder="VNĐ"
                             type="number"
                         />
@@ -380,5 +395,8 @@ const ModifyHomePrices = ({ closeForm, homeId, callback }: FormProps) => {
         </motion.div>
     );
 };
+
+export * from './editDescription';
+export * from './editLocation';
 
 export default ModifyHomePrices;

@@ -21,27 +21,23 @@ import { signUpBtnStyle } from '@chakra';
 import AppAbout from '@components/app-about';
 import EmptyData from '@components/emptydata';
 import Gallery from '@components/gallery';
-import {
-    EditRoomAmenity,
-    EditRoomDescription,
-    EditRoomTitle,
-} from '../../components/home/modifyRoom';
-import { RoomImagePreivew } from '../../components/image-preview';
-import MapBox from '../../components/mapbox';
-import listAmenityIcon from '../../lib/amenities';
-import client from '../../lib/apollo/apollo-client';
-import { Amenity, deleteRoomById } from '../../lib/apollo/home/room';
-import { getSSRRoomById, RoomData } from '../../lib/apollo/home/room/getroombyid';
+import { EditRoomAmenity, EditRoomDescription, EditRoomTitle } from '@components/home/modifyRoom';
+import { RoomImagePreivew } from '@components/image-preview';
+import MapBox from '@components/mapbox';
+import listAmenityIcon from '@lib/amenities';
+import client from '@lib/apollo/apollo-client';
+import { Amenity, deleteRoomById } from '@lib/apollo/home/room';
+import { getSSRRoomById, RoomData } from '@lib/apollo/home/room/getroombyid';
 import {
     getRoomSaved as getRoomSaved,
     saveRoom,
     updateRoom as updateRoomSaved,
-} from '../../lib/apollo/profile';
-import getTitleHome from '../../lib/getNameHome';
-import { deleteAllFile, getPathFileFromLink } from '../../lib/upLoadAllFile';
-import useResize from '../../lib/use-resize';
-import getSecurityCookie from '../../security';
-import useStore from '../../store/useStore';
+} from '@lib/apollo/profile';
+import getTitleHome from '@lib/getNameHome';
+import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
+import useResize from '@lib/use-resize';
+import getSecurityCookie from '@security';
+import useStore from '@store/useStore';
 
 export interface RoomPageProps {
     roomSSRData: RoomData;

@@ -3,14 +3,12 @@ import { Avatar, Button, Skeleton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '@chakra';
-import AddZoom from '@components/home/addhome/addzoom';
+import AddZoom from '@components/home/addhome/addroom';
 import Gallery, { GallerySkeleton } from '@components/gallery';
 import RoomCard from '@components/homecard/roomcard';
 import { getHomeById } from '@lib/apollo/home/gethomebyid';
 import useStore from '@store/useStore';
-import ModifyHomePrices from '@components/home/modifyhome';
-import EditHomeLocation from '@components/home/modifyhome/editLocation';
-import EditDescription from '@components/home/modifyhome/editDescription';
+import ModifyHomePrices, { EditDescription, EditHomeLocation } from '@components/home/modifyhome';
 import { AnimatePresence, motion } from 'framer-motion';
 import HomeImagePreivew from '@components/image-preview';
 import EmptyData from '@components/emptydata';
@@ -175,8 +173,8 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                         setModifyPrice(false);
                         removePopup();
                     }}
-                    homeId={homeData._id}
                     callback={refreshData}
+                    {...homeData}
                 />
             );
         }
@@ -311,9 +309,8 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                                             }, 400);
                                                         }}
                                                         user={user!}
-                                                        homeId={homeData._id}
                                                         callback={refreshData}
-                                                        images={homeData.images}
+                                                        {...homeData}
                                                     />
                                                 );
                                             }}
