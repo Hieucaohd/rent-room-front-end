@@ -16,7 +16,6 @@ import { useMutation } from '@apollo/client';
 import useClassName from '@lib/useClassName';
 import { HomeLocation, updateHomeLocation } from '@lib/apollo/home/update';
 import { getHomeById } from '@lib/apollo/home/gethomebyid';
-import { HomeData } from '@pages/home/[homeid]';
 import { Checkbox } from '@chakra-ui/checkbox';
 import useScrollController from '@lib/useScrollController';
 import FormLocation from '../../location';
@@ -27,6 +26,7 @@ import { fStorage } from '@firebase';
 import randomkey, { getTypeFile } from '@lib/randomkey';
 import { User } from '@lib/withAuth';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
+import { HomeData } from '@lib/interface';
 
 const container: Variants = {
     show: {

@@ -128,9 +128,6 @@ export default function Profile({ data: homeData, userId, page }: ProfileProps) 
                               <HomeCard
                                   {...item}
                                   removeAble={false}
-                                  onClick={() => {
-                                      router.push(`/home/${item._id}`);
-                                  }}
                               />
                           </motion.div>
                       );
