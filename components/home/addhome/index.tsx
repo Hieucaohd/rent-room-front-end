@@ -213,10 +213,6 @@ export default function AddHome(props: AddHomeProps) {
             } else {
                 e.district = parseInt(e.district);
             }
-            if (listImage.length < 2) {
-                error.images = true;
-                hasError = true;
-            }
             if (e.province == '') {
                 error.province = true;
                 hasError = true;

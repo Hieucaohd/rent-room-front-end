@@ -7,6 +7,8 @@ interface GalleryProps {
     images: string[];
 }
 
+const defaultList = ['/images/default.png'];
+
 export function GallerySkeleton() {
     const [limit, setLimit] = useState(5);
     const [mode1] = useResize(1000);
@@ -43,6 +45,8 @@ export default function Gallery({ images }: GalleryProps) {
     let len = 1;
     if (images && images.length > 0) {
         len = images.length;
+    } else {
+        len = defaultList.length;
     }
     const [limit, setLimit] = useState(5);
     const [mode1] = useResize(1000);
@@ -66,13 +70,19 @@ export default function Gallery({ images }: GalleryProps) {
 
     return (
         <div className={`gallery gallery--${len < limit ? len : limit}`}>
-            {images &&
-                images.map((item, index) => {
-                    if (index >= limit) {
-                        return null;
-                    }
-                    return <NextImage src={item} key={index} />;
-                })}
+            {images && images.length > 0
+                ? images.map((item, index) => {
+                      if (index >= limit) {
+                          return null;
+                      }
+                      return <NextImage src={item} key={index} />;
+                  })
+                : defaultList.map((item, index) => {
+                      if (index >= limit) {
+                          return null;
+                      }
+                      return <NextImage src={item} key={index} />;
+                  })}
         </div>
     );
 }

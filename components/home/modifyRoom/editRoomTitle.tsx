@@ -1,5 +1,5 @@
 import styles from '../styles/style.module.scss';
-import { Box, Button, Input, Text, Tooltip, Select, Progress } from '@chakra-ui/react';
+import { Box, Button, Input, Text, Tooltip, Select, Progress, useToast } from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -68,7 +68,7 @@ export const EditRoomTitle = ({
     isRented = false,
     floor,
 }: FormProps) => {
-    const mount = useRef(false);
+    const toast = useToast();
     const [updateRoom, { data }] = useMutation(updateRoomTitle.command, {
         update(cache, { data: { updateRoom } }) {
             const data = cache.readQuery<{ getRoomById: RoomData }>({
@@ -190,8 +190,12 @@ export const EditRoomTitle = ({
             } else if (!activeSquare) {
                 e.square = undefined;
             }
-            if (!activeRented) {
-                e.isRented = undefined;
+            if (activeRented) {
+                //@ts-ignore
+                e.isRented = e.isRented == 'true';
+            }
+            if (!activeUploadImage) {
+                e.images = undefined;
             }
             console.log(e);
             //#endregion
@@ -207,6 +211,12 @@ export const EditRoomTitle = ({
                                 variables: updateRoomTitle.variables(e, roomId),
                             })
                                 .then(() => {
+                                    toast({
+                                        title: 'Cập nhật trọ thành công',
+                                        status: 'success',
+                                        position: 'bottom-left',
+                                        isClosable: true,
+                                    });
                                     callback && callback();
                                     closeForm && closeForm();
                                 })
@@ -218,7 +228,12 @@ export const EditRoomTitle = ({
                                         deleteAllFile(paths).catch((err) => {
                                             console.log(err);
                                         });
-                                        alert(error.message);
+                                        toast({
+                                            title: 'Đã có lỗi xảy ra',
+                                            status: 'error',
+                                            position: 'bottom-left',
+                                            isClosable: true,
+                                        });
                                         setUpLoading(false);
                                     }
                                 });

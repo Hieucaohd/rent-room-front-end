@@ -111,13 +111,8 @@ export function RoomSaveCard(
         const listSaved = getRoomSaved(props.userid);
         const newList = listSaved.filter((item) => item != data._id);
         updateRoomSaved(props.userid, newList);
-        props.callBack
-            ? props.callBack().then(() => {
-                  removePopup();
-              })
-            : (() => {
-                  removePopup();
-              })();
+        props.callBack && props.callBack();
+        removePopup();
     }, []);
 
     return (

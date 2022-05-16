@@ -20,7 +20,6 @@ export interface ISliderProps {
 
 export default function Slider({ images, width, height, href }: ISliderProps) {
     const router = useRouter();
-    const [index, setIndex] = useState<number>(0);
     const [mobilemode] = useResize();
 
     return (
@@ -40,8 +39,29 @@ export default function Slider({ images, width, height, href }: ISliderProps) {
                     href && router.push(href);
                 }}
             >
-                {images.map((url, index) => (
-                    <SwiperSlide key={index} className={styles.slideshow__content}>
+                {images && images.length > 0 ? (
+                    images.map((url, index) => (
+                        <SwiperSlide key={index} className={styles.slideshow__content}>
+                            <NextImage
+                                style={
+                                    href
+                                        ? {
+                                              userSelect: 'none',
+                                              cursor: 'pointer',
+                                          }
+                                        : {
+                                              userSelect: 'none',
+                                          }
+                                }
+                                src={url}
+                                alt={`image-${index}`}
+                                width={width}
+                                height={height}
+                            />
+                        </SwiperSlide>
+                    ))
+                ) : (
+                    <SwiperSlide key={'image-${0}'} className={styles.slideshow__content}>
                         <NextImage
                             style={
                                 href
@@ -53,13 +73,13 @@ export default function Slider({ images, width, height, href }: ISliderProps) {
                                           userSelect: 'none',
                                       }
                             }
-                            src={url}
-                            alt={`image-${index}`}
+                            src={'/images/default.png'}
+                            alt={`image-${0}`}
                             width={width}
                             height={height}
                         />
                     </SwiperSlide>
-                ))}
+                )}
             </Swiper>
         </div>
     );

@@ -160,10 +160,6 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
                 errorHandleForm.zoomnumber = true;
                 errorSubmit = true;
             }
-            if (listImage.length < 2) {
-                errorHandleForm.images = true;
-                errorSubmit = true;
-            }
             if (errorSubmit) {
                 setErrorAction(errorHandleForm);
             } else {

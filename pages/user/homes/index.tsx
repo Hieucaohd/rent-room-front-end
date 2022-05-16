@@ -235,7 +235,12 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                           return (
                               <motion.div key={item._id}>
                                   <RoomSaveCard
-                                      callBack={roomCallBack}
+                                      callBack={async () => {
+                                          const newList = listRoom
+                                              .slice()
+                                              .filter((val) => val._id != item._id);
+                                          setListRoom(newList);
+                                      }}
                                       data={item}
                                       userid={currentUser._id}
                                       height="300px"
