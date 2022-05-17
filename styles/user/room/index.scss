@@ -256,6 +256,13 @@
         flex-flow: column;
         gap: 20px;
 
+        &--empty {
+            & > div:nth-of-type(2) {
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
         & > hr {
             display: none;
             @media screen and (max-width: 900px) {

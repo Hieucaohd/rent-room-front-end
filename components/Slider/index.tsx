@@ -8,6 +8,7 @@ import { Pagination, Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import useResize from '@lib/use-resize';
 import { useRouter } from 'next/router';
+import useClassName from '@lib/useClassName';
 
 export interface ISliderProps {
     images: string[];
@@ -21,11 +22,20 @@ export interface ISliderProps {
 export default function Slider({ images, width, height, href }: ISliderProps) {
     const router = useRouter();
     const [mobilemode] = useResize();
+    const [className] = useClassName(styles);
 
     return (
         <div
-            className={styles.slideshow}
-            style={{ ...(width ? { width } : {}), ...(height ? { height } : {}) }}
+            {...className('slideshow')}
+            style={{
+                ...(width ? { width } : {}),
+                ...(height ? { height } : {}),
+                ...(!images || images.length == 0
+                    ? {
+                          border: '3px solid rgba(0, 0, 0, 0.3)',
+                      }
+                    : {}),
+            }}
         >
             <Swiper
                 pagination={{
@@ -41,7 +51,7 @@ export default function Slider({ images, width, height, href }: ISliderProps) {
             >
                 {images && images.length > 0 ? (
                     images.map((url, index) => (
-                        <SwiperSlide key={index} className={styles.slideshow__content}>
+                        <SwiperSlide key={index} {...className('slideshow__content')}>
                             <NextImage
                                 style={
                                     href
@@ -61,7 +71,10 @@ export default function Slider({ images, width, height, href }: ISliderProps) {
                         </SwiperSlide>
                     ))
                 ) : (
-                    <SwiperSlide key={'image-${0}'} className={styles.slideshow__content}>
+                    <SwiperSlide
+                        key={'image-${0}'}
+                        {...className('slideshow__content slideshow__content--empty')}
+                    >
                         <NextImage
                             style={
                                 href

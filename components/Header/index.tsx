@@ -24,6 +24,8 @@ import headerStyle from '@chakra';
 import { LOGOUT } from '@lib/apollo/auth';
 import useResize from '@lib/use-resize';
 import { User } from '@lib/withAuth';
+import useStore from '@store/useStore';
+import { BecomeHost } from '@components/profile';
 
 export interface IHeaderProps {
     user: User | null;
@@ -44,6 +46,7 @@ export default function Header({ user }: IHeaderProps) {
     const [menuShowing, openMenu] = useCycle(false, true);
     const [logOut] = useMutation(LOGOUT);
     const [mobilemode] = useResize();
+    const { createPopup, removePopup } = useStore();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const cancelRef = useRef(null);
@@ -204,11 +207,20 @@ export default function Header({ user }: IHeaderProps) {
                                     }}
                                     icon={<i className="fa-solid fa-user"></i>}
                                 >
-                                    Hồ sơ
+                                    Trang cá nhân
                                 </MenuItem>
-                                <MenuItem icon={<i className="fa-solid fa-circle-question"></i>}>
-                                    Giúp đỡ
-                                </MenuItem>
+                                {user.userType == 'TENANT' && (
+                                    <MenuItem
+                                        onClick={() => {
+                                            createPopup(
+                                                <BecomeHost closeForm={removePopup} user={user} />
+                                            );
+                                        }}
+                                        icon={<i className="fa-solid fa-circle-question"></i>}
+                                    >
+                                        Trở thành chủ nhà
+                                    </MenuItem>
+                                )}
                                 <MenuItem
                                     icon={<i className="fa-solid fa-arrow-right-from-bracket"></i>}
                                     onClick={onOpen}

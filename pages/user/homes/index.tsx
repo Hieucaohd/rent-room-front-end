@@ -14,7 +14,7 @@ import EmptyData from '@components/emptydata';
 import { User } from '@lib/withAuth';
 import { GetServerSideProps } from 'next';
 import client from '@lib/apollo/apollo-client';
-import { EditProfile } from '@components/profile/editprofile';
+import { EditProfile } from '@components/profile';
 import { getRoomSaved } from '@lib/apollo/profile';
 import { getListRoomByIds } from '@lib/apollo/home/room';
 import { RoomSaveCard } from '@components/homecard/roomcard';

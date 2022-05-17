@@ -266,3 +266,4 @@ export const getUserById = {
 };
 
 export * from './saveRoom';
+export * from './updateUserType';

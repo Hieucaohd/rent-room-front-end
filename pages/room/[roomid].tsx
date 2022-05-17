@@ -598,7 +598,11 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 )}
                                 <hr />
                             </div>
-                            <div className="roompage-amenities">
+                            <div
+                                className={`roompage-amenities${
+                                    renderAmenities.length == 0 ? ' roompage-amenities--empty' : ''
+                                }`}
+                            >
                                 <div className="roompage-amenities__title">
                                     <h2>Tiện ích phòng</h2>
                                     {isOwner && (
