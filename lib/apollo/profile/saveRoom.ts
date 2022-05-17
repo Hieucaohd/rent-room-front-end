@@ -28,3 +28,9 @@ export const updateRoom = (userId: string, data: string[]) => {
         localStorage.setItem(userId, JSON.stringify(data));
     }
 };
+
+export const removeAllRoomSaved = (userId: string) => {
+    if (process.browser) {
+        localStorage.removeItem(userId);
+    }
+};

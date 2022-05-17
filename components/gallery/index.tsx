@@ -7,8 +7,6 @@ interface GalleryProps {
     images: string[];
 }
 
-const defaultList = ['/images/default.png'];
-
 export function GallerySkeleton() {
     const [limit, setLimit] = useState(5);
     const [mode1] = useResize(1000);
@@ -46,7 +44,7 @@ export default function Gallery({ images }: GalleryProps) {
     if (images && images.length > 0) {
         len = images.length;
     } else {
-        len = defaultList.length;
+        len = 1;
     }
     const [limit, setLimit] = useState(5);
     const [mode1] = useResize(1000);
@@ -69,20 +67,26 @@ export default function Gallery({ images }: GalleryProps) {
     }, [mode1, mode2, mode3, mode4]);
 
     return (
-        <div className={`gallery gallery--${len < limit ? len : limit}`}>
-            {images && images.length > 0
-                ? images.map((item, index) => {
-                      if (index >= limit) {
-                          return null;
+        <div
+            className={`gallery gallery--${len < limit ? len : limit}`}
+            style={{
+                ...(!images || images.length == 0
+                    ? {
+                          border: '3px solid rgba(0, 0, 0, 0.3)',
                       }
-                      return <NextImage src={item} key={index} />;
-                  })
-                : defaultList.map((item, index) => {
-                      if (index >= limit) {
-                          return null;
-                      }
-                      return <NextImage src={item} key={index} />;
-                  })}
+                    : {}),
+            }}
+        >
+            {images && images.length > 0 ? (
+                images.map((item, index) => {
+                    if (index >= limit) {
+                        return null;
+                    }
+                    return <NextImage src={item} key={index} />;
+                })
+            ) : (
+                <NextImage src={'/images/default.png'} key={'default'} />
+            )}
         </div>
     );
 }

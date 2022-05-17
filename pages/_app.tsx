@@ -81,7 +81,6 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
                 <Head>
                     <title>Tìm phòng trọ</title>
                 </Head>
-
                 <AnimatePresence>
                     {withoutPage(router) && <Header user={user.info} />}
                 </AnimatePresence>
