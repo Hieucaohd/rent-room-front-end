@@ -1,5 +1,5 @@
 import styles from '../styles/style.module.scss';
-import { Box, Button, Input, Text, Tooltip } from '@chakra-ui/react';
+import { Box, Button, Input, Text, Tooltip, useToast } from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -57,6 +57,7 @@ const ModifyHomePrices = ({
     cleaningPrice,
     callback,
 }: FormProps) => {
+    const toast = useToast();
     const [updateHome, { data }] = useMutation(updateHomePrices.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
@@ -75,6 +76,12 @@ const ModifyHomePrices = ({
             }
         },
         onCompleted: () => {
+            toast({
+                title: `Cập nhật trọ thành công`,
+                position: 'bottom-left',
+                status: 'success',
+                isClosable: true,
+            });
             callback && callback();
             // setUpLoading(false);
             closeForm();
@@ -148,6 +155,13 @@ const ModifyHomePrices = ({
                     mutation: updateHomePrices.command,
                     variables: updateHomePrices.variables(e, homeId),
                 }).catch((error) => {
+                    toast({
+                        title: `Server timeout`,
+                        position: 'bottom-left',
+                        status: 'error',
+                        description: 'Có vấn đề với kết nối',
+                        isClosable: true,
+                    });
                     setUpLoading(false);
                     console.log(error);
                 });

@@ -10,6 +10,7 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
+    useToast,
 } from '@chakra-ui/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -27,6 +28,7 @@ interface RoomAmenityProps {
 }
 
 export const EditRoomAmenity = ({ closeForm, roomId, callback, amenities }: RoomAmenityProps) => {
+    const toast = useToast()
     const [listAmenity, setListAmenity] = useState<Amenity[]>(amenities ? amenities : []);
     const [updateRoom] = useMutation(updateRoomAmenity.command, {
         update(cache, { data: { updateRoom } }) {
@@ -44,6 +46,12 @@ export const EditRoomAmenity = ({ closeForm, roomId, callback, amenities }: Room
             });
         },
         onCompleted: () => {
+            toast({
+                title: `Cập nhật phòng thành công`,
+                position: 'bottom-left',
+                status: 'success',
+                isClosable: true,
+            });
             callback && callback();
             // setUpLoading(false);
             closeForm();
@@ -95,6 +103,13 @@ export const EditRoomAmenity = ({ closeForm, roomId, callback, amenities }: Room
         updateRoom({
             variables: updateRoomAmenity.variables(listAmenity, roomId),
         }).catch(() => {
+            toast({
+                title: `Server timeout`,
+                position: 'bottom-left',
+                status: 'error',
+                description: 'Có vấn đề với kết nối',
+                isClosable: true,
+            });
             setUpLoading(false);
         });
     }, [listAmenity]);

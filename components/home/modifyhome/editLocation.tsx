@@ -497,7 +497,6 @@ const EditHomeLocation = ({
                                 <Input
                                     height="50px"
                                     borderWidth="3px"
-                                    cursor="pointer"
                                     _focus={{
                                         outline: 'none',
                                         borderColor: '#80befc',

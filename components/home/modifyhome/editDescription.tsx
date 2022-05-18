@@ -11,6 +11,7 @@ import {
     ModalOverlay,
     Text,
     Textarea,
+    useToast,
 } from '@chakra-ui/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@apollo/client';
@@ -30,6 +31,7 @@ interface FormProps {
 }
 
 export const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) => {
+    const toast = useToast()
     const [updateHome] = useMutation(updateHomeDescription.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
@@ -48,6 +50,12 @@ export const EditDescription = ({ closeForm, homeId, callback, defautDes }: Form
             }
         },
         onCompleted: () => {
+            toast({
+                title: `Cập nhật trọ thành công`,
+                position: 'bottom-left',
+                status: 'success',
+                isClosable: true,
+            });
             callback && callback();
             // setUpLoading(false);
             closeForm();
@@ -135,6 +143,13 @@ export const EditDescription = ({ closeForm, homeId, callback, defautDes }: Form
         updateHome({
             variables: updateHomeDescription.variables(des, homeId),
         }).catch(() => {
+            toast({
+                title: `Server timeout`,
+                position: 'bottom-left',
+                status: 'error',
+                description: 'Có vấn đề với kết nối',
+                isClosable: true,
+            });
             setUpLoading(false);
         });
     }, [listProperty]);

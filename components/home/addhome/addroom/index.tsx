@@ -1,5 +1,5 @@
 import styles from './addzoom.module.scss';
-import { Button, Input, Progress, Text, Tooltip, useBoolean } from '@chakra-ui/react';
+import { Button, Input, Progress, Text, Tooltip, useBoolean, useToast } from '@chakra-ui/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from '..';
@@ -50,6 +50,7 @@ interface FormProps {
 
 const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
     const mount = useRef(false);
+    const toast = useToast()
     const [createNewZoom] = useMutation(createZoom.command);
     const { register, handleSubmit } = useForm<AddZoomForm>();
     const [listImage, setListImage] = useState<Image[]>([]);
@@ -172,6 +173,12 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
                         .then(() => {
                             callback && callback();
                             closeForm();
+                            toast({
+                                title: `Thêm phòng thành công`,
+                                position: 'bottom-left',
+                                status: 'success',
+                                isClosable: true,
+                            });
                         })
                         .catch((error) => {
                             const paths = e.images.map((item) => {
@@ -182,6 +189,12 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
                             });
                             setUpLoading(false);
                             console.log(error);
+                            toast({
+                                title: `Server timeout`,
+                                position: 'bottom-left',
+                                status: 'error',
+                                isClosable: true,
+                            });
                         });
                 });
             }

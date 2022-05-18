@@ -127,6 +127,7 @@ export default function SignUp() {
     const districtField = register('district');
     const wardField = register('ward');
 
+    const emailState = watch('email');
     const userType = watch('userType');
     //#endregion province
 
@@ -218,8 +219,15 @@ export default function SignUp() {
     const submitForm = useCallback(async (e: FormSignUp) => {
         let error = false;
         const errorSet: any = {};
+        if (e.email == '') {
+            errorSet.email = true;
+            error = true;
+        }
+        if (e.password == '') {
+            errorSet.password = true;
+            error = true;
+        }
         if (e.password !== e.passwordConfirm) {
-            console.log('error confirm password');
             errorSet.passwordConfirm = true;
             error = true;
         }
@@ -285,6 +293,13 @@ export default function SignUp() {
                     dispatch({
                         email: true,
                     });
+                    toast({
+                        title: `Đăng nhập`,
+                        status: 'error',
+                        position: 'bottom-left',
+                        description: 'Email đã tồn tại',
+                        isClosable: true,
+                    });
                 }
                 if (message.includes('position')) {
                     toast({
@@ -345,7 +360,11 @@ export default function SignUp() {
                     >
                         <motion.div variants={containerChild}>
                             <Tooltip
-                                label="tài khoản này đã tồn tại"
+                                label={
+                                    emailState == ''
+                                        ? 'Bạn chưa nhập tài khoản'
+                                        : 'tài khoản này đã tồn tại'
+                                }
                                 borderRadius="3px"
                                 isDisabled={!errorState.email}
                                 placement="bottom"
@@ -377,40 +396,53 @@ export default function SignUp() {
                             </Tooltip>
                         </motion.div>
                         <motion.div variants={containerChild}>
-                            <InputGroup className="signup-form__child">
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<i className="fa-solid fa-key"></i>}
-                                />
-                                <Input
-                                    {...InputStyle}
-                                    {...passwordField}
-                                    onChange={(e) => {
-                                        passwordField.onChange(e);
-                                    }}
-                                    placeholder="mật khẩu"
-                                    type={showPassword ? 'text' : 'password'}
-                                />
-                                <InputRightElement
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    cursor="pointer"
-                                    children={
-                                        <Button
-                                            tabIndex={-1}
-                                            backgroundColor="transparent"
-                                            _focus={{ outline: 'none' }}
-                                            _active={{ backgroundColor: 'transparent' }}
-                                            _hover={{ backgroundColor: 'transparent' }}
-                                        >
-                                            {showPassword ? (
-                                                <i className="fa-solid fa-eye"></i>
-                                            ) : (
-                                                <i className="fa-solid fa-eye-slash"></i>
-                                            )}
-                                        </Button>
-                                    }
-                                />
-                            </InputGroup>
+                            <Tooltip
+                                label="Bạn chưa nhập mật khẩu"
+                                borderRadius="3px"
+                                isDisabled={!errorState.password}
+                                placement="bottom"
+                                bg="red"
+                                hasArrow
+                            >
+                                <InputGroup className="signup-form__child">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fa-solid fa-key"></i>}
+                                    />
+                                    <Input
+                                        {...InputStyle}
+                                        {...passwordField}
+                                        onChange={(e) => {
+                                            passwordField.onChange(e);
+                                            dispatch({
+                                                password: false,
+                                            });
+                                        }}
+                                        {...(errorState.password ? { borderColor: 'red' } : {})}
+                                        placeholder="mật khẩu"
+                                        type={showPassword ? 'text' : 'password'}
+                                    />
+                                    <InputRightElement
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        cursor="pointer"
+                                        children={
+                                            <Button
+                                                tabIndex={-1}
+                                                backgroundColor="transparent"
+                                                _focus={{ outline: 'none' }}
+                                                _active={{ backgroundColor: 'transparent' }}
+                                                _hover={{ backgroundColor: 'transparent' }}
+                                            >
+                                                {showPassword ? (
+                                                    <i className="fa-solid fa-eye"></i>
+                                                ) : (
+                                                    <i className="fa-solid fa-eye-slash"></i>
+                                                )}
+                                            </Button>
+                                        }
+                                    />
+                                </InputGroup>
+                            </Tooltip>
                         </motion.div>
                         <motion.div variants={containerChild}>
                             <Tooltip
@@ -676,9 +708,8 @@ export default function SignUp() {
                         <motion.div
                             className="signup-form__submit"
                             variants={containerChild}
-                            {...(!loading
-                                ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } }
-                                : {})}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                         >
                             <Button isLoading={loading} width={'100%'} type="submit">
                                 Đăng Ký
