@@ -1,0 +1,4 @@
+{
+    "FE_URL": "http://localhost:3000",
+    "PROFILE": "http://localhost:3000/user/homes?page=1"
+}

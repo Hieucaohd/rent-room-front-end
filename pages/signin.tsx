@@ -329,9 +329,8 @@ export default function SignIn() {
                         </Box>
 
                         <motion.div
-                            {...(!loading
-                                ? { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 } }
-                                : {})}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                         >
                             <Button isLoading={loading} type="submit">
                                 Đăng Nhập
