@@ -5,14 +5,14 @@
 
     &__address {
         font-size: 16px;
-        
+
         & strong {
             margin: 0px 4px;
             font-size: 16px;
 
             & i {
-                display: inline-flex!important;
-                position: relative!important;
+                display: inline-flex !important;
+                position: relative !important;
 
                 &:before {
                     position: absolute;
@@ -23,7 +23,7 @@
         }
 
         & strong:last-child {
-            &:hover {   
+            &:hover {
                 cursor: pointer;
                 opacity: 0.8;
             }
@@ -49,11 +49,20 @@
     width: 100%;
     position: relative;
     margin-left: 24px;
+    --searchcard__title-fonsize: 16px;
+
+    @media screen and (max-width: 800px) {
+        --searchcard__title-fonsize: 15px;
+    }
+
+    @media screen and (max-width: 500px) {
+        --searchcard__title-fonsize: 14px;
+    }
 
     &__title {
         margin-top: 8px;
         & h4 {
-            font-size: 16px;
+            font-size: var(--searchcard__title-fonsize);
             font-weight: 600;
         }
         & i {
@@ -71,7 +80,7 @@
         position: absolute;
         bottom: 0px;
         right: 0px;
-        font-size: 20px;
+        font-size: calc(var(--searchcard__title-fonsize) + 2px);
         font-weight: 600;
     }
 

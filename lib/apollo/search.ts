@@ -49,6 +49,7 @@ export const getFilterRoom = async (conditions: any, page: number, limit: number
     const { data } = await client.query({
         query: SEARCH,
         variables: { conditions, page, limit },
+        fetchPolicy: 'no-cache',
     });
 
     return data;

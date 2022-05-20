@@ -2,23 +2,33 @@
     --mainpage__header-h1--fontsize: 30px;
     --mainpage__header--bdradius: 15px;
     --mainpage__header-search--width: 70%;
+    --mainpage__card-fontsize: 16px;
 
-    @media screen and (max-width: 100px) {
+    @media screen and (max-width: 1000px) {
         --mainpage__header-h1--fontsize: 26px;
         --mainpage__header--bdradius: 10px;
         --mainpage__header-search--width: 80%;
+        --mainpage__card-fontsize: 15px;
     }
 
     @media screen and (max-width: 800px) {
         --mainpage__header-h1--fontsize: 20px;
         --mainpage__header--bdradius: 10px;
         --mainpage__header-search--width: 90%;
+        --mainpage__card-fontsize: 14px;
     }
 
     @media screen and (max-width: 600px) {
         --mainpage__header-h1--fontsize: 18px;
         --mainpage__header--bdradius: 5px;
         --mainpage__header-search--width: 86%;
+    }
+
+    @media screen and (max-width: 400px) {
+        --mainpage__header-h1--fontsize: 15px;
+        --mainpage__header--bdradius: 5px;
+        --mainpage__header-search--width: 86%;
+        --mainpage__card-fontsize: 13px;
     }
 }
 
@@ -44,7 +54,7 @@
         position: absolute;
         left: 0;
         top: 0;
-        
+
         width: 100%;
         height: 100%;
 
@@ -85,7 +95,7 @@
 
         & h5 {
             text-align: center;
-            font-size: 16px;
+            font-size: var(--mainpage__card-fontsize);
             font-weight: 800;
             padding: 8px;
         }
@@ -119,7 +129,7 @@
     background-color: white;
 
     & > h4 {
-        font-size: 20px;
+        font-size: calc(var(--mainpage__card-fontsize) + 4px);
         font-weight: 700;
         text-align: center;
         margin: 12px;
@@ -193,6 +203,9 @@
     .homepage-address {
         flex-direction: column;
     }
+}
+
+@media only screen and (max-width: 1000px) {
     .homepage-topic {
         flex-direction: column;
     }
