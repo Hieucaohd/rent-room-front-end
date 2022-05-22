@@ -100,7 +100,7 @@ const listSkeleton: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 export default function Profile({ data: homeData, userId, page }: ProfileProps) {
     const router = useRouter();
-    const { data, refetch, loading } = useQuery(getUserById.command, {
+    const { data } = useQuery(getUserById.command, {
         variables: getUserById.variables(userId, page),
     });
     const currentUser: User = getUser(data || homeData);

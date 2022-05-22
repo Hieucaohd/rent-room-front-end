@@ -63,7 +63,7 @@ export default function DeleteHome({ closeForm, homeData }: Props) {
                                                     status: 'success',
                                                     isClosable: true,
                                                 });
-                                                location.replace('/user/yourprofile?page=1');
+                                                location.replace('/profile?page=1');
                                             });
                                         })
                                         .catch((e) => {

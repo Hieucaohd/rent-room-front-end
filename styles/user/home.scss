@@ -398,6 +398,7 @@
 .homeicon {
     position: relative;
     padding-bottom: 5px;
+    width: min-content;
 
     & > div {
         width: max-content;

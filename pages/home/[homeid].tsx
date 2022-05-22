@@ -444,7 +444,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                             <h1>
                                                 {'Khu trọ được cho thuê bởi chủ nhà '}
                                                 <span>
-                                                    <Link href={`/user/${homeData.owner._id}`}>
+                                                    <Link href={`/profile/${homeData.owner._id}`}>
                                                         <a>{homeData.owner.fullname}</a>
                                                     </Link>
                                                 </span>
@@ -549,7 +549,6 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                             </div>
                                         )}
                                         <div className="homezooms__listlabel">Danh sách phòng</div>
-
                                         {listZoom?.docs && listZoom.docs.length > 0 ? (
                                             <>
                                                 <div className="homezooms__list">
@@ -663,7 +662,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                                 <MapBox
                                                     key={JSON.stringify(homeData.position)}
                                                     choosePlace={false}
-                                                    // markerIcon={homeIcon}
+                                                    markerIcon={homeIcon}
                                                     center={[
                                                         homeData.position.lng,
                                                         homeData.position.lat,

@@ -28,11 +28,7 @@ import listAmenityIcon from '@lib/amenities';
 import client from '@lib/apollo/apollo-client';
 import { Amenity, deleteRoomById } from '@lib/apollo/home/room';
 import { getSSRRoomById, RoomData } from '@lib/apollo/home/room/getroombyid';
-import {
-    getRoomSaved as getRoomSaved,
-    saveRoom,
-    updateRoom as updateRoomSaved,
-} from '@lib/apollo/profile';
+import { getRoomSaved, saveRoom, updateRoom as updateRoomSaved } from '@lib/apollo/profile';
 import getTitleHome from '@lib/getNameHome';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import useResize from '@lib/use-resize';
@@ -472,7 +468,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 <div>
                                     <h2>
                                         Phòng được cho thuê bởi chủ nhà{' '}
-                                        <Link href={`/user/${homeData.owner._id}`}>
+                                        <Link href={`/profile/${homeData.owner._id}`}>
                                             <a>{homeData.owner.fullname}</a>
                                         </Link>
                                     </h2>
