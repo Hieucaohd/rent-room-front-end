@@ -19,6 +19,7 @@ import { getSSRRoomById, RoomData } from '@lib/apollo/home/room';
 import { Amenity, updateRoomAmenity } from '@lib/apollo/home/room';
 import listAmenityIcon from '@lib/amenities';
 import EmptyData from '@components/emptydata';
+import useResize from '@lib/use-resize';
 
 interface RoomAmenityProps {
     closeForm: () => void;
@@ -28,7 +29,8 @@ interface RoomAmenityProps {
 }
 
 export const EditRoomAmenity = ({ closeForm, roomId, callback, amenities }: RoomAmenityProps) => {
-    const toast = useToast()
+    const toast = useToast();
+    const [mobilemode] = useResize();
     const [listAmenity, setListAmenity] = useState<Amenity[]>(amenities ? amenities : []);
     const [updateRoom] = useMutation(updateRoomAmenity.command, {
         update(cache, { data: { updateRoom } }) {
@@ -165,9 +167,14 @@ export const EditRoomAmenity = ({ closeForm, roomId, callback, amenities }: Room
 
     return (
         <>
-            <Modal onClose={closeForm} isOpen={true} scrollBehavior="outside">
+            <Modal
+                onClose={closeForm}
+                isOpen={true}
+                scrollBehavior="outside"
+                {...(mobilemode ? { size: 'full' } : {})}
+            >
                 <ModalOverlay overflowY="scroll" />
-                <ModalContent>
+                <ModalContent {...(mobilemode ? { borderRadius: 0 } : {})}>
                     <ModalHeader>Tiện ích</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>

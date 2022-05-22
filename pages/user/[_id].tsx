@@ -125,7 +125,7 @@ export default function Profile({ data: homeData, userId, page }: ProfileProps) 
                   listHome.map((item, index) => {
                       return (
                           <motion.div key={item._id}>
-                              <HomeCard {...item} removeAble={false} />
+                              <HomeCard {...item} />
                           </motion.div>
                       );
                   })

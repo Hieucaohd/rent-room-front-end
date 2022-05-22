@@ -1,7 +1,7 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import { Avatar, Button, Skeleton } from '@chakra-ui/react';
+import { Avatar, Box, Button, Skeleton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '@chakra';
 import AddZoom from '@components/home/addhome/addroom';
 import Gallery, { GallerySkeleton } from '@components/gallery';
@@ -20,6 +20,8 @@ import client from '@lib/apollo/apollo-client';
 import AppAbout from '@components/app-about';
 import Link from 'next/link';
 import { HomeData, ListZoomData, Paginator } from '@lib/interface';
+import useResize from '@lib/use-resize';
+import DeleteHome from '@components/home/modifyhome/deleteHome';
 
 const getData = (data: any) => {
     const dt = data?.getHomeById;
@@ -136,7 +138,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
         }
         return getData(data);
     }, [data]);
-    console.log(homeData);
+
     const pageRouter: Paginator = getPages(homeData.listRooms);
     const [homeDescription, setHomeDescription] = useState<
         {
@@ -152,6 +154,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
         return getListZoom(data);
     }, [data]);
 
+    const [showprice] = useResize(750);
     const [showMapBox, setShowMapBox] = useState(true);
 
     //state form
@@ -248,6 +251,82 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
         }
     }, [loading, homeId, isServerSide]);
 
+    const priceTag = useMemo(() => {
+        return (
+            <div className="homepage-sprice">
+                <div className="homepage-sprice__info">
+                    <h2>Đơn giá tháng</h2>
+
+                    <div>
+                        <span>{'Tiền phòng: '}</span>
+                        <br />
+                        &nbsp;&nbsp;
+                        {' ● Tối thiểu: ' +
+                            (homeData.minPrice ? homeData.minPrice + ' VNĐ' : 'chưa có dữ liệu')}
+                        <br />
+                        &nbsp;&nbsp;
+                        {' ● Tối đa: ' +
+                            (homeData.maxPrice ? homeData.maxPrice + ' VNĐ' : 'chưa có dữ liệu')}
+                    </div>
+                    <div>
+                        <span>{'Tiền điện: '}</span>
+                        {homeData.electricityPrice}
+                        {' VNĐ'}
+                    </div>
+                    <div>
+                        <span>{'Tiền nước: '}</span>
+                        {homeData.waterPrice}
+                        {' VNĐ'}
+                    </div>
+                    <div>
+                        <span>{'Tiền vệ sinh: '}</span>
+                        {homeData.cleaningPrice
+                            ? homeData.cleaningPrice + ' VNĐ'
+                            : 'chưa có thông tin'}
+                    </div>
+                    <div>
+                        <span>{'Tiền mạng: '}</span>
+                        {homeData.internetPrice
+                            ? homeData.internetPrice + ' VNĐ'
+                            : 'chưa có thông tin'}
+                    </div>
+                </div>
+                {isOwner ? (
+                    <div className="homepage-sprice__action">
+                        <Button
+                            {...signUpBtnStyle}
+                            backgroundColor="var(--app-btn-bgcolor)"
+                            height="35px"
+                            fontWeight="bold"
+                            onClick={() => setModifyPrice(true)}
+                        >
+                            Chỉnh sửa
+                        </Button>
+                        <Button
+                            colorScheme="red"
+                            height="35px"
+                            className="homepage__delete"
+                            onClick={() => {
+                                createPopup(
+                                    <DeleteHome closeForm={removePopup} homeData={homeData} />
+                                );
+                            }}
+                        >
+                            Xóa Trọ
+                        </Button>
+                    </div>
+                ) : (
+                    <Button {...signUpBtnStyle}>
+                        <a href={`tel:${homeData.owner.numberPhone}`}>
+                            <i className="fa-solid fa-phone-flip"></i>
+                            {homeData.owner.numberPhone}
+                        </a>
+                    </Button>
+                )}
+            </div>
+        );
+    }, [homeData]);
+
     const renderListPage = useMemo(() => {
         if (pageRouter) {
             const limit = pageRouter.totalPages;
@@ -325,6 +404,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                         ? 'Sống cùng chủ nhà'
                                         : 'Không sống với chủ nhà'}
                                 </h3>
+                                {/*  */}
                             </div>
                             <div className="homepage-images">
                                 <Gallery images={homeData.images} />
@@ -383,6 +463,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                             />
                                         </div>
                                     </div>
+                                    {showprice && priceTag}
                                     <div className="homepage-description">
                                         <hr />
                                         <h1>
@@ -609,53 +690,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                             ))}
                                     </div>
                                 </div>
-                                <div className="homepage-sprice">
-                                    <div className="homepage-sprice__info">
-                                        <h2>Đơn giá tháng</h2>
-
-                                        <div>
-                                            <span>{'Tiền phòng: '}</span>
-                                            <br />
-                                            &nbsp;&nbsp;{' ● Tối thiểu: ' + 2000000}
-                                            {' VNĐ'}
-                                            <br />
-                                            &nbsp;&nbsp;{' ● Tối đa: ' + 4000000}
-                                            {' VNĐ'}
-                                        </div>
-                                        <div>
-                                            <span>{'Tiền điện: '}</span>
-                                            {homeData.electricityPrice}
-                                            {' VNĐ'}
-                                        </div>
-                                        <div>
-                                            <span>{'Tiền nước: '}</span>
-                                            {homeData.waterPrice}
-                                            {' VNĐ'}
-                                        </div>
-                                        <div>
-                                            <span>{'Tiền vệ sinh: '}</span>
-                                            {homeData.cleaningPrice
-                                                ? homeData.cleaningPrice + ' VNĐ'
-                                                : 'chưa có thông tin'}
-                                        </div>
-                                        <div>
-                                            <span>{'Tiền mạng: '}</span>
-                                            {homeData.internetPrice
-                                                ? homeData.internetPrice + ' VNĐ'
-                                                : 'chưa có thông tin'}
-                                        </div>
-                                    </div>
-                                    {isOwner ? (
-                                        <Button
-                                            {...signUpBtnStyle}
-                                            onClick={() => setModifyPrice(true)}
-                                        >
-                                            Chỉnh sửa
-                                        </Button>
-                                    ) : (
-                                        <Button {...signUpBtnStyle}>Thuê ngay</Button>
-                                    )}
-                                </div>
+                                {!showprice && priceTag}
                             </div>
                         </>
                     ) : (
@@ -711,4 +746,4 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
     );
 };
 
-export default Home;
+export default memo(Home);

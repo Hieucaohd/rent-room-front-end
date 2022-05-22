@@ -1,41 +1,40 @@
 import { useMutation } from '@apollo/client';
 import {
+    Box,
     Button,
     Input,
     InputGroup,
     InputRightElement,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
     Progress,
     Select,
     Text,
     Tooltip,
     useToast,
 } from '@chakra-ui/react';
-import { getDownloadURL, list, ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
+import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storage';
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { fStorage } from '@firebase';
 import { createNewHome, NewHome } from '@lib/apollo/home';
-import useScrollController from '@lib/useScrollController';
 import randomkey, { getTypeFile } from '@lib/randomkey';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import useStore from '@store/useStore';
 import FormLocation from '../../location';
 import MapBox, { MapField } from '../../mapbox';
+import useResize from '@lib/use-resize';
 
 interface AddHomeProps {
-    onClose?: () => any;
+    onClose: () => any;
     afterUpload?: () => any;
 }
-
-const container: Variants = {
-    show: {
-        opacity: 1,
-    },
-    hidden: {
-        opacity: 0,
-    },
-};
 
 const hideFormAnimate: Variants = {
     showForm: {
@@ -43,17 +42,6 @@ const hideFormAnimate: Variants = {
     },
     hiddenForm: {
         x: '-120%',
-    },
-};
-
-const formAnimate: Variants = {
-    show: {
-        opacity: 1,
-        y: 0,
-    },
-    hidden: {
-        opacity: 0,
-        y: -100,
     },
 };
 
@@ -77,8 +65,14 @@ export interface Image {
 
 export default function AddHome(props: AddHomeProps) {
     const mount = useRef(false);
-    const scroll = useScrollController();
-    const { register, handleSubmit, watch } = useForm<NewHome>();
+    const [mobilemode] = useResize(515);
+    const { register, handleSubmit, watch, getValues } = useForm<NewHome>({
+        defaultValues: {
+            ward: '',
+            district: '',
+            province: '',
+        },
+    });
     const { info: user } = useStore((state) => state.user);
     const [upLoading, setUpLoading] = useState(false);
     const [createHome] = useMutation(createNewHome.command);
@@ -145,16 +139,6 @@ export default function AddHome(props: AddHomeProps) {
             );
         });
     }, [listImage, upLoading]);
-
-    useEffect(() => {
-        mount.current = true;
-        scroll.disableScroll();
-
-        return () => {
-            mount.current = false;
-            scroll.enableScroll();
-        };
-    }, []);
 
     useEffect(() => {
         return () => {
@@ -310,244 +294,263 @@ export default function AddHome(props: AddHomeProps) {
 
     return (
         <>
-            <motion.div
-                className="addhome"
-                variants={container}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
+            <Modal
+                onClose={props.onClose}
+                isOpen={true}
+                scrollBehavior="outside"
+                {...(mobilemode ? { size: 'full' } : {})}
             >
-                <motion.div className="addhome__bg"></motion.div>
-                <motion.div
-                    variants={formAnimate}
-                    initial="hidden"
-                    animate="show"
-                    exit="hidden"
-                    className="addhome-form"
-                >
-                    <motion.form
-                        variants={hideFormAnimate}
-                        animate={showMap ? 'hiddenForm' : 'showForm'}
-                        transition={{
-                            duration: 0.5,
-                        }}
-                        onSubmit={handleSubmit(submitForm)}
-                    >
-                        <Text className="addhome-form__label">
-                            Địa chỉ trọ<span> *</span>
-                        </Text>
-                        <div className="addhome-form__location">
-                            <FormLocation
-                                provinceField={register('province')}
-                                districtField={register('district')}
-                                wardField={register('ward')}
-                                errorEvent={errorAction}
-                            />
-                        </div>
-                        <Tooltip
-                            label="Vui lòng chọn địa điểm trên bản đồ"
-                            borderRadius="3px"
-                            isDisabled={!errorAction.position}
-                            placement="bottom"
-                            bg="red"
-                            hasArrow
-                        >
-                            <InputGroup className="addhome-form__map">
-                                <Input
+                <ModalOverlay overflowY="scroll" />
+                <ModalContent maxWidth="515px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                    <ModalHeader>Tiện ích</ModalHeader>
+                    <ModalCloseButton tabIndex={-1} />
+                    <ModalBody>
+                        <Box className="addhome-form">
+                            <motion.form
+                                variants={hideFormAnimate}
+                                animate={showMap ? 'hiddenForm' : 'showForm'}
+                                transition={{
+                                    duration: 0.5,
+                                }}
+                                onSubmit={handleSubmit(submitForm)}
+                            >
+                                <Text className="addhome-form__label">
+                                    Địa chỉ trọ<span> *</span>
+                                </Text>
+                                <div className="addhome-form__location">
+                                    <FormLocation
+                                        provinceField={register('province')}
+                                        districtField={register('district')}
+                                        wardField={register('ward')}
+                                        errorEvent={errorAction}
+                                    />
+                                </div>
+                                <Tooltip
+                                    label="Vui lòng chọn địa điểm trên bản đồ"
+                                    borderRadius="3px"
+                                    isDisabled={!errorAction.position}
+                                    placement="bottom"
+                                    bg="red"
+                                    hasArrow
+                                >
+                                    <InputGroup className="addhome-form__map">
+                                        <Input
+                                            height="50px"
+                                            borderWidth="3px"
+                                            readOnly
+                                            placeholder="Vị trí cụ thể"
+                                            cursor="pointer"
+                                            onClick={() => setShowMap(true)}
+                                            {...(errorAction.position
+                                                ? { borderColor: 'red' }
+                                                : {})}
+                                            _focus={{
+                                                outline: 'none',
+                                                borderColor: '#80befc',
+                                            }}
+                                            value={mapData ? mapData.place_name : ''}
+                                        />
+                                        <InputRightElement>
+                                            <a onClick={() => setShowMap(true)}>{'>'}</a>
+                                        </InputRightElement>
+                                    </InputGroup>
+                                </Tooltip>
+
+                                <Select
                                     height="50px"
                                     borderWidth="3px"
-                                    readOnly
-                                    placeholder="Vị trí cụ thể"
                                     cursor="pointer"
-                                    onClick={() => setShowMap(true)}
-                                    {...(errorAction.position ? { borderColor: 'red' } : {})}
                                     _focus={{
                                         outline: 'none',
                                         borderColor: '#80befc',
                                     }}
-                                    value={mapData ? mapData.place_name : ''}
-                                />
-                                <InputRightElement>
-                                    <a onClick={() => setShowMap(true)}>{'>'}</a>
-                                </InputRightElement>
-                            </InputGroup>
-                        </Tooltip>
-
-                        <Select
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            {...register('liveWithOwner')}
-                            defaultValue="false"
-                        >
-                            <option value="true">Sống với chủ trọ</option>
-                            <option value="false">Không sống với chủ trọ</option>
-                        </Select>
-                        <Text className="addhome-form__label">
-                            Tiền điện (VNĐ)<span> *</span>
-                        </Text>
-                        <Tooltip
-                            label="Bạn chưa nhập giá tiền điện"
-                            borderRadius="3px"
-                            placement="bottom"
-                            isDisabled={!errorAction.electricityPrice}
-                            bg="red"
-                            hasArrow
-                        >
-                            <Input
-                                height="50px"
-                                borderWidth="3px"
-                                cursor="pointer"
-                                _focus={{
-                                    outline: 'none',
-                                    borderColor: '#80befc',
-                                }}
-                                borderColor={errorAction.electricityPrice ? 'red' : 'inherit'}
-                                {...register('electricityPrice')}
-                                onChange={(e) => {
-                                    setErrorAction({ ...errorAction, electricityPrice: false });
-                                    register('electricityPrice').onChange(e);
-                                }}
-                                placeholder="electricity price"
-                                type="number"
-                            />
-                        </Tooltip>
-                        <Text className="addhome-form__label">
-                            Tiền nước (VNĐ)<span> *</span>
-                        </Text>
-                        <Tooltip
-                            label="Bạn chưa nhập giá tiền nước"
-                            borderRadius="3px"
-                            placement="bottom"
-                            isDisabled={!errorAction.waterPrice}
-                            bg="red"
-                            hasArrow
-                        >
-                            <Input
-                                height="50px"
-                                borderWidth="3px"
-                                cursor="pointer"
-                                _focus={{
-                                    outline: 'none',
-                                    borderColor: '#80befc',
-                                }}
-                                borderColor={errorAction.waterPrice ? 'red' : 'inherit'}
-                                {...register('waterPrice')}
-                                onChange={(e) => {
-                                    setErrorAction({ ...errorAction, waterPrice: false });
-                                    register('waterPrice').onChange(e);
-                                }}
-                                placeholder="water price"
-                                type="number"
-                            />
-                        </Tooltip>
-                        <Text className="addhome-form__label">
-                            Ảnh trọ (tối đa 6)<span> *</span>
-                        </Text>
-                        <div className="addhome-form__upload">
-                            <div className="image-preview">
-                                {renderListImage}
+                                    {...register('liveWithOwner')}
+                                    defaultValue="false"
+                                >
+                                    <option value="true">Sống với chủ trọ</option>
+                                    <option value="false">Không sống với chủ trọ</option>
+                                </Select>
+                                <Text className="addhome-form__label">
+                                    Tiền điện (VNĐ)<span> *</span>
+                                </Text>
                                 <Tooltip
-                                    label="Cần tải lên ít nhất 2 ảnh của trọ"
+                                    label="Bạn chưa nhập giá tiền điện"
                                     borderRadius="3px"
                                     placement="bottom"
-                                    isDisabled={!errorAction.images}
+                                    isDisabled={!errorAction.electricityPrice}
                                     bg="red"
                                     hasArrow
                                 >
-                                    <motion.div
-                                        className="image-preview__btn"
-                                        style={{
-                                            ...(listImage.length > 5
-                                                ? {
-                                                      display: 'none',
-                                                  }
-                                                : {}),
-                                            ...(errorAction.images ? { borderColor: 'red' } : {}),
+                                    <Input
+                                        height="50px"
+                                        borderWidth="3px"
+                                        cursor="pointer"
+                                        _focus={{
+                                            outline: 'none',
+                                            borderColor: '#80befc',
                                         }}
-                                        onClick={() => {
-                                            const input = document.getElementById('upload');
-                                            if (input) {
-                                                input.click();
-                                            }
-                                        }}
-                                    >
-                                        <i className="fa-solid fa-plus"></i>
-                                        Tải lên
-                                    </motion.div>
-                                </Tooltip>
-                            </div>
-
-                            <input
-                                type="file"
-                                id="upload"
-                                style={{
-                                    display: 'none',
-                                }}
-                                multiple
-                                onChange={(e) => {
-                                    setErrorAction({ ...errorAction, images: false });
-                                    if (e.target.files?.length && e.target.files[0]) {
-                                        const listImg = listImage.slice();
-                                        console.log(listImage, e.target.files);
-                                        for (let i = 0; i < e.target.files.length; i++) {
-                                            const image = e.target.files[i];
-                                            if (!image || listImg.length > 5) {
-                                                break;
-                                            }
-                                            const isHasImage = !!listImage.find(
-                                                (value) => value.file.name === image.name
-                                            );
-                                            if (!isHasImage) {
-                                                const url = window.URL.createObjectURL(image);
-                                                listImg.push({
-                                                    file: image,
-                                                    link: url,
-                                                    uploading: 0,
-                                                });
-                                            }
+                                        borderColor={
+                                            errorAction.electricityPrice ? 'red' : 'inherit'
                                         }
-                                        setListImage(listImg);
-                                        e.target.value = '';
-                                    }
-                                }}
-                                accept="image/*"
-                            />
-                        </div>
+                                        {...register('electricityPrice')}
+                                        onChange={(e) => {
+                                            setErrorAction({
+                                                ...errorAction,
+                                                electricityPrice: false,
+                                            });
+                                            register('electricityPrice').onChange(e);
+                                        }}
+                                        placeholder="electricity price"
+                                        type="number"
+                                    />
+                                </Tooltip>
+                                <Text className="addhome-form__label">
+                                    Tiền nước (VNĐ)<span> *</span>
+                                </Text>
+                                <Tooltip
+                                    label="Bạn chưa nhập giá tiền nước"
+                                    borderRadius="3px"
+                                    placement="bottom"
+                                    isDisabled={!errorAction.waterPrice}
+                                    bg="red"
+                                    hasArrow
+                                >
+                                    <Input
+                                        height="50px"
+                                        borderWidth="3px"
+                                        cursor="pointer"
+                                        _focus={{
+                                            outline: 'none',
+                                            borderColor: '#80befc',
+                                        }}
+                                        borderColor={errorAction.waterPrice ? 'red' : 'inherit'}
+                                        {...register('waterPrice')}
+                                        onChange={(e) => {
+                                            setErrorAction({ ...errorAction, waterPrice: false });
+                                            register('waterPrice').onChange(e);
+                                        }}
+                                        placeholder="water price"
+                                        type="number"
+                                    />
+                                </Tooltip>
+                                <Text className="addhome-form__label">
+                                    Ảnh trọ (tối đa 6)<span> *</span>
+                                </Text>
+                                <div className="addhome-form__upload">
+                                    <div className="image-preview">
+                                        {renderListImage}
+                                        <Tooltip
+                                            label="Cần tải lên ít nhất 2 ảnh của trọ"
+                                            borderRadius="3px"
+                                            placement="bottom"
+                                            isDisabled={!errorAction.images}
+                                            bg="red"
+                                            hasArrow
+                                        >
+                                            <motion.div
+                                                className="image-preview__btn"
+                                                style={{
+                                                    ...(listImage.length > 5
+                                                        ? {
+                                                              display: 'none',
+                                                          }
+                                                        : {}),
+                                                    ...(errorAction.images
+                                                        ? { borderColor: 'red' }
+                                                        : {}),
+                                                }}
+                                                onClick={() => {
+                                                    const input = document.getElementById('upload');
+                                                    if (input) {
+                                                        input.click();
+                                                    }
+                                                }}
+                                            >
+                                                <i className="fa-solid fa-plus"></i>
+                                                Tải lên
+                                            </motion.div>
+                                        </Tooltip>
+                                    </div>
 
-                        <div className="addhome-form__submit">
-                            <Button onClick={() => (props.onClose ? props.onClose() : null)}>
-                                Hủy
-                            </Button>
-                            <Button isLoading={upLoading} type="submit" colorScheme="red">
-                                Thêm
-                            </Button>
-                        </div>
-                    </motion.form>
-                    {showMap && (
-                        <motion.div
-                            initial={{
-                                x: '120%',
-                            }}
-                            animate={{
-                                x: '0',
-                            }}
-                            transition={{
-                                duration: 0.5,
-                            }}
-                            className="addhome-form__mapbox"
-                        >
-                            <MapBox
-                                delay={1000}
-                                district={0}
-                                onChange={setMapData}
-                                {...mapSetProvince}
-                            />
-                            <div>
+                                    <input
+                                        type="file"
+                                        id="upload"
+                                        style={{
+                                            display: 'none',
+                                        }}
+                                        multiple
+                                        onChange={(e) => {
+                                            setErrorAction({ ...errorAction, images: false });
+                                            if (e.target.files?.length && e.target.files[0]) {
+                                                const listImg = listImage.slice();
+                                                for (let i = 0; i < e.target.files.length; i++) {
+                                                    const image = e.target.files[i];
+                                                    if (!image || listImg.length > 5) {
+                                                        break;
+                                                    }
+                                                    const isHasImage = !!listImage.find(
+                                                        (value) => value.file.name === image.name
+                                                    );
+                                                    if (!isHasImage) {
+                                                        const url =
+                                                            window.URL.createObjectURL(image);
+                                                        listImg.push({
+                                                            file: image,
+                                                            link: url,
+                                                            uploading: 0,
+                                                        });
+                                                    }
+                                                }
+                                                setListImage(listImg);
+                                                e.target.value = '';
+                                            }
+                                        }}
+                                        accept="image/*"
+                                    />
+                                </div>
+                            </motion.form>
+                            {showMap && (
+                                <motion.div
+                                    initial={{
+                                        x: '120%',
+                                    }}
+                                    animate={{
+                                        x: '0',
+                                    }}
+                                    transition={{
+                                        duration: 0.5,
+                                    }}
+                                    className="addhome-form__mapbox"
+                                >
+                                    <MapBox
+                                        delay={1000}
+                                        district={0}
+                                        onChange={setMapData}
+                                        {...mapSetProvince}
+                                    />
+                                </motion.div>
+                            )}
+                        </Box>
+                    </ModalBody>
+                    <ModalFooter>
+                        {!showMap ? (
+                            <div className="addhome-form__submit">
+                                <Button onClick={() => (props.onClose ? props.onClose() : null)}>
+                                    Hủy
+                                </Button>
+                                <Button
+                                    isLoading={upLoading}
+                                    onClick={() => {
+                                        const data = getValues();
+                                        submitForm(data);
+                                    }}
+                                    colorScheme="red"
+                                >
+                                    Thêm
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="addhome-form__submit">
                                 <Button
                                     onClick={() => {
                                         setShowMap(false);
@@ -566,10 +569,10 @@ export default function AddHome(props: AddHomeProps) {
                                     Tiếp tục
                                 </Button>
                             </div>
-                        </motion.div>
-                    )}
-                </motion.div>
-            </motion.div>
+                        )}
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </>
     );
 }

@@ -13,12 +13,13 @@ import {
     Textarea,
     useToast,
 } from '@chakra-ui/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import useClassName from '@lib/useClassName';
 import { updateHomeDescription } from '@lib/apollo/home/update';
 import { getHomeById } from '@lib/apollo/home/gethomebyid';
 import { HomeData } from '@lib/interface';
+import useResize from '@lib/use-resize';
 
 interface FormProps {
     closeForm: () => void;
@@ -31,7 +32,8 @@ interface FormProps {
 }
 
 export const EditDescription = ({ closeForm, homeId, callback, defautDes }: FormProps) => {
-    const toast = useToast()
+    const toast = useToast();
+    const [mobilemode] = useResize();
     const [updateHome] = useMutation(updateHomeDescription.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
@@ -155,10 +157,15 @@ export const EditDescription = ({ closeForm, homeId, callback, defautDes }: Form
     }, [listProperty]);
 
     return (
-        <Modal onClose={closeForm} isOpen={true} scrollBehavior="outside">
+        <Modal
+            onClose={closeForm}
+            isOpen={true}
+            scrollBehavior="outside"
+            {...(mobilemode ? { size: 'full' } : {})}
+        >
             <ModalOverlay overflowY="scroll" />
-            <ModalContent maxWidth="600px">
-                <ModalHeader>Tiện ích</ModalHeader>
+            <ModalContent maxWidth="500px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                <ModalHeader>Mô tả</ModalHeader>
                 <ModalCloseButton tabIndex={-1} />
                 <ModalBody>
                     <form

@@ -17,6 +17,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import useClassName from '@lib/useClassName';
 import { getSSRRoomById, RoomData, updateRoomDescription } from '@lib/apollo/home/room';
+import useResize from '@lib/use-resize';
 
 interface FormProps {
     closeForm: () => void;
@@ -29,7 +30,8 @@ interface FormProps {
 }
 
 export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: FormProps) => {
-    const toast = useToast()
+    const toast = useToast();
+    const [mobilemode] = useResize();
     const [updateRoom] = useMutation(updateRoomDescription.command, {
         update(cache, { data: { updateRoom } }) {
             const data = cache.readQuery<{ getRoomById: RoomData }>({
@@ -153,10 +155,15 @@ export const EditRoomDescription = ({ closeForm, roomId, callback, defautDes }: 
     }, [listProperty]);
 
     return (
-        <Modal onClose={closeForm} isOpen={true} scrollBehavior="outside">
+        <Modal
+            onClose={closeForm}
+            isOpen={true}
+            scrollBehavior="outside"
+            {...(mobilemode ? { size: 'full' } : {})}
+        >
             <ModalOverlay overflowY="scroll" />
-            <ModalContent maxWidth="600px">
-                <ModalHeader>Tiện ích</ModalHeader>
+            <ModalContent maxWidth="500px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                <ModalHeader>Mô tả</ModalHeader>
                 <ModalCloseButton tabIndex={-1} />
                 <ModalBody>
                     <form

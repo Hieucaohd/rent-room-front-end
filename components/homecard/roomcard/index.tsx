@@ -24,31 +24,29 @@ interface RoomCardProps {
 export default function RoomCard(props: RoomCardProps) {
     const data = props.data;
     return (
-        <div className="zoomcard">
-            <Slider
-                images={data?.images}
-                {...(props.width ? { width: props.width } : {})}
-                {...(props.height ? { height: props.height } : {})}
-                href={`/room/${data._id}`}
-            />
-            <Link href={`/room/${data._id}`}>
-                <a>
-                    <div className="zoomcard__name">
-                        <div>Phòng số {data?.roomNumber}</div>
-                        <div>{data?.price}&nbsp;VNĐ/tháng</div>
-                    </div>
-                    <div className="zoomcard__moreinfo">
+        <Link href={`/room/${data._id}`}>
+            <a className="zoomcard">
+                <Slider
+                    images={data?.images}
+                    {...(props.width ? { width: props.width } : {})}
+                    {...(props.height ? { height: props.height } : {})}
+                />
+
+                <div className="zoomcard__name">
+                    <div>Phòng số {data?.roomNumber}</div>
+                    <div>{data?.price}&nbsp;VNĐ/tháng</div>
+                </div>
+                <div className="zoomcard__moreinfo">
+                    <div>
+                        Diện tích {data?.square}
                         <div>
-                            Diện tích {data?.square}
-                            <div>
-                                &nbsp;m<span>2</span>
-                            </div>
+                            &nbsp;m<span>2</span>
                         </div>
-                        <div>{data?.isRented ? 'đã được cho thuê' : 'chưa được cho thuê'}</div>
                     </div>
-                </a>
-            </Link>
-        </div>
+                    <div>{data?.isRented ? 'đã được cho thuê' : 'chưa được cho thuê'}</div>
+                </div>
+            </a>
+        </Link>
     );
 }
 
@@ -116,39 +114,39 @@ export function RoomSaveCard(
     }, []);
 
     return (
-        <div className="zoomcard">
-            <Button
-                onClick={() => {
-                    createPopup(
-                        <PopUp removePopup={removePopup} removeCurrentRoom={removeCurrentRoom} />
-                    );
-                }}
-            >
-                <i className="fa-solid fa-trash-can"></i>
-            </Button>
-            <Slider
-                href={`/room/${data._id}`}
-                images={data?.images}
-                {...(props.width ? { width: props.width } : {})}
-                {...(props.height ? { height: props.height } : {})}
-            />
-            <Link href={`/room/${data._id}`}>
-                <a>
-                    <div className="zoomcard__name">
-                        <div>Phòng số {data?.roomNumber}</div>
-                        <div>{data?.price}&nbsp;VNĐ/tháng</div>
-                    </div>
-                    <div className="zoomcard__moreinfo">
+        <Link href={`/room/${data._id}`}>
+            <a className="zoomcard">
+                <Button
+                    onClick={() => {
+                        createPopup(
+                            <PopUp
+                                removePopup={removePopup}
+                                removeCurrentRoom={removeCurrentRoom}
+                            />
+                        );
+                    }}
+                >
+                    <i className="fa-solid fa-trash-can"></i>
+                </Button>
+                <Slider
+                    images={data?.images}
+                    {...(props.width ? { width: props.width } : {})}
+                    {...(props.height ? { height: props.height } : {})}
+                />
+                <div className="zoomcard__name">
+                    <div>Phòng số {data?.roomNumber}</div>
+                    <div>{data?.price}&nbsp;VNĐ/tháng</div>
+                </div>
+                <div className="zoomcard__moreinfo">
+                    <div>
+                        Diện tích {data?.square}
                         <div>
-                            Diện tích {data?.square}
-                            <div>
-                                &nbsp;m<span>2</span>
-                            </div>
+                            &nbsp;m<span>2</span>
                         </div>
-                        <div>{data?.isRented ? 'đã được cho thuê' : 'chưa được cho thuê'}</div>
                     </div>
-                </a>
-            </Link>
-        </div>
+                    <div>{data?.isRented ? 'đã được cho thuê' : 'chưa được cho thuê'}</div>
+                </div>
+            </a>
+        </Link>
     );
 }
