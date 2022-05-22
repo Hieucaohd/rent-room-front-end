@@ -1,7 +1,20 @@
 import styles from '../styles/style.module.scss';
-import { Box, Button, Input, Text, Tooltip, useToast } from '@chakra-ui/react';
-import { motion, Variants } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    Box,
+    Button,
+    Input,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text,
+    Tooltip,
+    useToast,
+} from '@chakra-ui/react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
 import useClassName from '@lib/useClassName';
@@ -10,26 +23,7 @@ import { getHomeById } from '@lib/apollo/home/gethomebyid';
 import { HomeData } from '@lib/interface';
 import { Checkbox } from '@chakra-ui/checkbox';
 import useScrollController from '@lib/useScrollController';
-
-const container: Variants = {
-    show: {
-        opacity: 1,
-    },
-    hidden: {
-        opacity: 0,
-    },
-};
-
-const formAnimate: Variants = {
-    show: {
-        opacity: 1,
-        y: 0,
-    },
-    hidden: {
-        opacity: 0,
-        y: -100,
-    },
-};
+import useResize from '@lib/use-resize';
 
 interface ErrorAction {
     electricityPrice: boolean;
@@ -58,6 +52,7 @@ const ModifyHomePrices = ({
     callback,
 }: FormProps) => {
     const toast = useToast();
+    const [mobilemode] = useResize(500);
     const [updateHome, { data }] = useMutation(updateHomePrices.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
@@ -88,7 +83,7 @@ const ModifyHomePrices = ({
             // console.log(client)
         },
     });
-    const { register, handleSubmit } = useForm<HomePrices>();
+    const { register, handleSubmit, getValues } = useForm<HomePrices>();
     const [upLoading, setUpLoading] = useState(false);
     const [errorAction, setErrorAction] = useState<ErrorAction>({
         electricityPrice: false,
@@ -171,216 +166,226 @@ const ModifyHomePrices = ({
     );
 
     return (
-        <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            exit="hidden"
-            {...className('homeform')}
+        <Modal
+            onClose={closeForm}
+            isOpen={true}
+            scrollBehavior="outside"
+            {...(mobilemode ? { size: 'full' } : {})}
         >
-            <div {...className('homeform__bg')}></div>
-            <motion.div
-                {...className('homeform-form')}
-                variants={formAnimate}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-            >
-                <form onSubmit={handleSubmit(submitForm)}>
-                    <Text {...className('homeform-form__h1')}>Thêm phòng</Text>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap="5px"
-                        {...className('homeform-form__label')}
-                    >
-                        <Checkbox
-                            isChecked={activeElectricityPrice}
-                            onChange={(e) => {
-                                setActiveElectricityPrice((prev) => !prev);
-                            }}
-                            _focus={{
-                                boxShadow: 'none',
-                            }}
-                            height="100%"
-                            colorScheme="cyan"
-                        >
-                            Tiền điện
-                        </Checkbox>
+            <ModalOverlay overflowY="scroll" />
+            <ModalContent maxWidth="500px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                <ModalHeader>Thông tin phòng</ModalHeader>
+                <ModalCloseButton tabIndex={-1} />
+                <ModalBody>
+                    <Box className="addhome-form">
+                        <form onSubmit={handleSubmit(submitForm)}>
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                gap="5px"
+                                {...className('homeform-form__label')}
+                            >
+                                <Checkbox
+                                    isChecked={activeElectricityPrice}
+                                    onChange={(e) => {
+                                        setActiveElectricityPrice((prev) => !prev);
+                                    }}
+                                    _focus={{
+                                        boxShadow: 'none',
+                                    }}
+                                    height="100%"
+                                    colorScheme="cyan"
+                                >
+                                    Tiền điện
+                                </Checkbox>
+                            </Box>
+                            <Tooltip
+                                label="số tiền điện không hợp lệ"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={
+                                    !errorAction.electricityPrice || !activeElectricityPrice
+                                }
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    isDisabled={!activeElectricityPrice}
+                                    borderColor={
+                                        errorAction.electricityPrice && activeElectricityPrice
+                                            ? 'red'
+                                            : 'inherit'
+                                    }
+                                    {...register('electricityPrice', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, electricityPrice: false });
+                                        register('electricityPrice', {
+                                            valueAsNumber: true,
+                                        }).onChange(e);
+                                    }}
+                                    defaultValue={electricityPrice}
+                                    placeholder="VNĐ"
+                                    type="number"
+                                />
+                            </Tooltip>
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                gap="5px"
+                                {...className('homeform-form__label')}
+                            >
+                                <Checkbox
+                                    isChecked={activeWaterPrice}
+                                    onChange={(e) => {
+                                        setActiveWaterPrice((prev) => !prev);
+                                    }}
+                                    height="100%"
+                                    colorScheme="cyan"
+                                >
+                                    Tiền nước
+                                </Checkbox>
+                            </Box>
+                            <Tooltip
+                                label="bạn chưa nhập giá tiền nước"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={!errorAction.waterPrice || !activeWaterPrice}
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    isDisabled={!activeWaterPrice}
+                                    borderColor={
+                                        errorAction.waterPrice && activeWaterPrice
+                                            ? 'red'
+                                            : 'inherit'
+                                    }
+                                    {...register('waterPrice', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, waterPrice: false });
+                                        register('waterPrice', { valueAsNumber: true }).onChange(e);
+                                    }}
+                                    defaultValue={waterPrice}
+                                    placeholder="VNĐ"
+                                    type="number"
+                                />
+                            </Tooltip>
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                gap="5px"
+                                {...className('homeform-form__label')}
+                            >
+                                <Checkbox
+                                    isChecked={activeInternetPrice}
+                                    onChange={(e) => {
+                                        setActiveInternetPrice((prev) => !prev);
+                                    }}
+                                    height="100%"
+                                    colorScheme="cyan"
+                                >
+                                    Tiền mạng
+                                </Checkbox>
+                            </Box>
+                            <Tooltip
+                                label="Bạn chưa nhập tiền mạng"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={!errorAction.internetPrice || !activeInternetPrice}
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    isDisabled={!activeInternetPrice}
+                                    borderColor={
+                                        errorAction.internetPrice && activeInternetPrice
+                                            ? 'red'
+                                            : 'inherit'
+                                    }
+                                    {...register('internetPrice', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, internetPrice: false });
+                                        register('internetPrice').onChange(e);
+                                    }}
+                                    defaultValue={internetPrice}
+                                    placeholder="VNĐ"
+                                    type="number"
+                                />
+                            </Tooltip>
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                gap="5px"
+                                {...className('homeform-form__label')}
+                            >
+                                <Checkbox
+                                    isChecked={activeCleaningPrice}
+                                    onChange={(e) => {
+                                        setActiveCleaningPrice((prev) => !prev);
+                                    }}
+                                    height="100%"
+                                    colorScheme="cyan"
+                                >
+                                    Tiền dọn dẹp
+                                </Checkbox>
+                            </Box>
+                            <Tooltip
+                                label="Bạn chưa nhập giá tiền dọn dẹp"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={!errorAction.cleaningPrice || !activeCleaningPrice}
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    isDisabled={!activeCleaningPrice}
+                                    borderColor={
+                                        errorAction.cleaningPrice && activeCleaningPrice
+                                            ? 'red'
+                                            : 'inherit'
+                                    }
+                                    {...register('cleaningPrice', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, cleaningPrice: false });
+                                        register('cleaningPrice').onChange(e);
+                                    }}
+                                    defaultValue={cleaningPrice}
+                                    placeholder="VNĐ"
+                                    type="number"
+                                />
+                            </Tooltip>
+                        </form>
                     </Box>
-                    <Tooltip
-                        label="số tiền điện không hợp lệ"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.electricityPrice || !activeElectricityPrice}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            isDisabled={!activeElectricityPrice}
-                            borderColor={
-                                errorAction.electricityPrice && activeElectricityPrice
-                                    ? 'red'
-                                    : 'inherit'
-                            }
-                            {...register('electricityPrice', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, electricityPrice: false });
-                                register('electricityPrice', { valueAsNumber: true }).onChange(e);
-                            }}
-                            defaultValue={electricityPrice}
-                            placeholder="VNĐ"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap="5px"
-                        {...className('homeform-form__label')}
-                    >
-                        <Checkbox
-                            isChecked={activeWaterPrice}
-                            onChange={(e) => {
-                                setActiveWaterPrice((prev) => !prev);
-                            }}
-                            height="100%"
-                            colorScheme="cyan"
-                        >
-                            Tiền nước
-                        </Checkbox>
-                    </Box>
-                    <Tooltip
-                        label="bạn chưa nhập giá tiền nước"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.waterPrice || !activeWaterPrice}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            isDisabled={!activeWaterPrice}
-                            borderColor={
-                                errorAction.waterPrice && activeWaterPrice ? 'red' : 'inherit'
-                            }
-                            {...register('waterPrice', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, waterPrice: false });
-                                register('waterPrice', { valueAsNumber: true }).onChange(e);
-                            }}
-                            defaultValue={waterPrice}
-                            placeholder="VNĐ"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap="5px"
-                        {...className('homeform-form__label')}
-                    >
-                        <Checkbox
-                            isChecked={activeInternetPrice}
-                            onChange={(e) => {
-                                setActiveInternetPrice((prev) => !prev);
-                            }}
-                            height="100%"
-                            colorScheme="cyan"
-                        >
-                            Tiền mạng
-                        </Checkbox>
-                    </Box>
-                    <Tooltip
-                        label="Bạn chưa nhập tiền mạng"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.internetPrice || !activeInternetPrice}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            isDisabled={!activeInternetPrice}
-                            borderColor={
-                                errorAction.internetPrice && activeInternetPrice ? 'red' : 'inherit'
-                            }
-                            {...register('internetPrice', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, internetPrice: false });
-                                register('internetPrice').onChange(e);
-                            }}
-                            defaultValue={internetPrice}
-                            placeholder="VNĐ"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap="5px"
-                        {...className('homeform-form__label')}
-                    >
-                        <Checkbox
-                            isChecked={activeCleaningPrice}
-                            onChange={(e) => {
-                                setActiveCleaningPrice((prev) => !prev);
-                            }}
-                            height="100%"
-                            colorScheme="cyan"
-                        >
-                            Tiền dọn dẹp
-                        </Checkbox>
-                    </Box>
-                    <Tooltip
-                        label="Bạn chưa nhập giá tiền dọn dẹp"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.cleaningPrice || !activeCleaningPrice}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            isDisabled={!activeCleaningPrice}
-                            borderColor={
-                                errorAction.cleaningPrice && activeCleaningPrice ? 'red' : 'inherit'
-                            }
-                            {...register('cleaningPrice', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, cleaningPrice: false });
-                                register('cleaningPrice').onChange(e);
-                            }}
-                            defaultValue={cleaningPrice}
-                            placeholder="VNĐ"
-                            type="number"
-                        />
-                    </Tooltip>
+                </ModalBody>
+                <ModalFooter>
                     <div className="addhome-form__submit">
                         <Button
                             onClick={() => {
@@ -397,6 +402,10 @@ const ModifyHomePrices = ({
                                 !activeInternetPrice &&
                                 !activeCleaningPrice
                             }
+                            onClick={() => {
+                                const data = getValues();
+                                submitForm(data);
+                            }}
                             isLoading={upLoading}
                             type="submit"
                             colorScheme="red"
@@ -404,9 +413,9 @@ const ModifyHomePrices = ({
                             Cập nhật
                         </Button>
                     </div>
-                </form>
-            </motion.div>
-        </motion.div>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
 };
 

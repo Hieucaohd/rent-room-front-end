@@ -29,6 +29,8 @@ export interface HomeData {
     listRooms: ListZoomData;
     title?: string;
     detailAddress?: string;
+    minPrice: number;
+    maxPrice: number;
 }
 
 export * from './room';

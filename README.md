@@ -1,6 +1,7 @@
 <a href="https://timphongtro.vercel.app/">DEMO</a>
 
 ## First, run the development server:
+
 ```bash
 npm run dev
 # or
@@ -9,13 +10,15 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Công nghệ sử dụng: 
+## Công nghệ sử dụng:
+
     Framework: NextJs
     State Management: Zustand
     Style: Chakra UI, Framer Motion, Sass
     Data Fetching: Apollo Client
 
 ## Tổ chức thư mục:
+
     ├─ pages: chứa các page của web
         └─ index.tsx: trang chủ
         └─ signin.tsx: đăng nhập

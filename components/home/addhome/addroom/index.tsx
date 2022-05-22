@@ -1,5 +1,22 @@
 import styles from './addzoom.module.scss';
-import { Button, Input, Progress, Text, Tooltip, useBoolean, useToast } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Input,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Progress,
+    Select,
+    Text,
+    Tooltip,
+    useBoolean,
+    useToast,
+} from '@chakra-ui/react';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from '..';
@@ -12,6 +29,7 @@ import { useMutation } from '@apollo/client';
 import { User } from '@lib/withAuth';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import useClassName from '@lib/useClassName';
+import useResize from '@lib/use-resize';
 
 const container: Variants = {
     show: {
@@ -50,9 +68,10 @@ interface FormProps {
 
 const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
     const mount = useRef(false);
-    const toast = useToast()
+    const toast = useToast();
+    const [mobilemode] = useResize();
     const [createNewZoom] = useMutation(createZoom.command);
-    const { register, handleSubmit } = useForm<AddZoomForm>();
+    const { register, handleSubmit, getValues } = useForm<AddZoomForm>();
     const [listImage, setListImage] = useState<Image[]>([]);
     const [upLoading, setUpLoading] = useState(false);
     const [errorAction, setErrorAction] = useState<ErrorAction>({
@@ -203,212 +222,215 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
     );
 
     return (
-        <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            exit="hidden"
-            {...className('addzoom')}
+        <Modal
+            onClose={closeForm}
+            isOpen={true}
+            scrollBehavior="outside"
+            {...(mobilemode ? { size: 'full' } : {})}
         >
-            <div {...className('addzoom__bg')}></div>
-            <motion.div
-                {...className('addzoom-form')}
-                variants={formAnimate}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-            >
-                <form onSubmit={handleSubmit(submitForm)}>
-                    <Text {...className('addzoom-form__h1')}>Thêm phòng</Text>
-                    <Text {...className('addzoom-form__label')}>
-                        Phòng số <span>*</span>
-                    </Text>
-                    <Tooltip
-                        label="mã số phòng không hợp lệ"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.zoomnumber}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            borderColor={errorAction.zoomnumber ? 'red' : 'inherit'}
-                            {...register('zoomnumber', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, zoomnumber: false });
-                                register('zoomnumber', { valueAsNumber: true }).onChange(e);
-                            }}
-                            placeholder="eg: 2104"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Text {...className('addzoom-form__label')}>
-                        Tiền phòng <span>*</span>
-                    </Text>
-                    <Tooltip
-                        label="bạn chưa nhập giá tiền phòng"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.price}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            borderColor={errorAction.price ? 'red' : 'inherit'}
-                            {...register('price', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, price: false });
-                                register('price', { valueAsNumber: true }).onChange(e);
-                            }}
-                            placeholder="VNĐ"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Text {...className('addzoom-form__label')}>
-                        Diện tích <span>*</span>
-                    </Text>
-                    <Tooltip
-                        label="Bạn chưa nhập diện tích phòng"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.square}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            borderColor={errorAction.square ? 'red' : 'inherit'}
-                            {...register('square', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, square: false });
-                                register('square').onChange(e);
-                            }}
-                            placeholder="m2"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Text {...className('addzoom-form__label')}>
-                        Tầng số <span>*</span>
-                    </Text>
-                    <Tooltip
-                        label="Bạn chưa nhập vị trí phòng"
-                        borderRadius="3px"
-                        placement="bottom"
-                        isDisabled={!errorAction.floor}
-                        bg="red"
-                        hasArrow
-                    >
-                        <Input
-                            height="50px"
-                            borderWidth="3px"
-                            cursor="pointer"
-                            _focus={{
-                                outline: 'none',
-                                borderColor: '#80befc',
-                            }}
-                            borderColor={errorAction.floor ? 'red' : 'inherit'}
-                            {...register('floor', { valueAsNumber: true })}
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, floor: false });
-                                register('floor').onChange(e);
-                            }}
-                            placeholder="floor"
-                            type="number"
-                        />
-                    </Tooltip>
-                    <Text {...className('addzoom-form__label')}>
-                        Ảnh phòng (tối đa 6)<span> *</span>
-                    </Text>
-                    <div className="addhome-form__upload">
-                        <div className="image-preview">
-                            {renderListImage}
+            <ModalOverlay overflowY="scroll" />
+            <ModalContent maxWidth="500px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                <ModalHeader>Thông tin phòng</ModalHeader>
+                <ModalCloseButton tabIndex={-1} />
+                <ModalBody>
+                    <Box className="addhome-form">
+                        <form onSubmit={handleSubmit(submitForm)}>
+                            <Text {...className('addzoom-form__h1')}>Thêm phòng</Text>
+                            <Text {...className('addzoom-form__label')}>
+                                Phòng số <span>*</span>
+                            </Text>
                             <Tooltip
-                                label="Cần tải lên ít nhất 2 ảnh của phòng"
+                                label="mã số phòng không hợp lệ"
                                 borderRadius="3px"
                                 placement="bottom"
-                                isDisabled={!errorAction.images}
+                                isDisabled={!errorAction.zoomnumber}
                                 bg="red"
                                 hasArrow
                             >
-                                <motion.div
-                                    className="image-preview__btn"
-                                    style={{
-                                        ...(listImage.length > 5
-                                            ? {
-                                                  display: 'none',
-                                              }
-                                            : {}),
-                                        ...(errorAction.images ? { borderColor: 'red' } : {}),
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
                                     }}
-                                    onClick={() => {
-                                        const input = document.getElementById('upload');
-                                        if (input) {
-                                            input.click();
-                                        }
+                                    borderColor={errorAction.zoomnumber ? 'red' : 'inherit'}
+                                    {...register('zoomnumber', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, zoomnumber: false });
+                                        register('zoomnumber', { valueAsNumber: true }).onChange(e);
                                     }}
-                                >
-                                    <i className="fa-solid fa-plus"></i>
-                                    Tải lên
-                                </motion.div>
+                                    placeholder="eg: 2104"
+                                    type="number"
+                                />
                             </Tooltip>
-                        </div>
+                            <Text {...className('addzoom-form__label')}>
+                                Tiền phòng <span>*</span>
+                            </Text>
+                            <Tooltip
+                                label="bạn chưa nhập giá tiền phòng"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={!errorAction.price}
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    borderColor={errorAction.price ? 'red' : 'inherit'}
+                                    {...register('price', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, price: false });
+                                        register('price', { valueAsNumber: true }).onChange(e);
+                                    }}
+                                    placeholder="VNĐ"
+                                    type="number"
+                                />
+                            </Tooltip>
+                            <Text {...className('addzoom-form__label')}>
+                                Diện tích <span>*</span>
+                            </Text>
+                            <Tooltip
+                                label="Bạn chưa nhập diện tích phòng"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={!errorAction.square}
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    borderColor={errorAction.square ? 'red' : 'inherit'}
+                                    {...register('square', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, square: false });
+                                        register('square').onChange(e);
+                                    }}
+                                    placeholder="m2"
+                                    type="number"
+                                />
+                            </Tooltip>
+                            <Text {...className('addzoom-form__label')}>
+                                Tầng số <span>*</span>
+                            </Text>
+                            <Tooltip
+                                label="Bạn chưa nhập vị trí phòng"
+                                borderRadius="3px"
+                                placement="bottom"
+                                isDisabled={!errorAction.floor}
+                                bg="red"
+                                hasArrow
+                            >
+                                <Input
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    borderColor={errorAction.floor ? 'red' : 'inherit'}
+                                    {...register('floor', { valueAsNumber: true })}
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, floor: false });
+                                        register('floor').onChange(e);
+                                    }}
+                                    placeholder="floor"
+                                    type="number"
+                                />
+                            </Tooltip>
+                            <Text {...className('addzoom-form__label')}>
+                                Ảnh phòng (tối đa 6)<span> *</span>
+                            </Text>
+                            <div className="addhome-form__upload">
+                                <div className="image-preview">
+                                    {renderListImage}
+                                    <Tooltip
+                                        label="Cần tải lên ít nhất 2 ảnh của phòng"
+                                        borderRadius="3px"
+                                        placement="bottom"
+                                        isDisabled={!errorAction.images}
+                                        bg="red"
+                                        hasArrow
+                                    >
+                                        <motion.div
+                                            className="image-preview__btn"
+                                            style={{
+                                                ...(listImage.length > 5
+                                                    ? {
+                                                          display: 'none',
+                                                      }
+                                                    : {}),
+                                                ...(errorAction.images
+                                                    ? { borderColor: 'red' }
+                                                    : {}),
+                                            }}
+                                            onClick={() => {
+                                                const input = document.getElementById('upload');
+                                                if (input) {
+                                                    input.click();
+                                                }
+                                            }}
+                                        >
+                                            <i className="fa-solid fa-plus"></i>
+                                            Tải lên
+                                        </motion.div>
+                                    </Tooltip>
+                                </div>
 
-                        <input
-                            type="file"
-                            id="upload"
-                            style={{
-                                display: 'none',
-                            }}
-                            multiple
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, images: false });
-                                if (e.target.files?.length && e.target.files[0]) {
-                                    const listImg = listImage.slice();
-                                    console.log(listImage, e.target.files);
-                                    for (let i = 0; i < e.target.files.length; i++) {
-                                        const image = e.target.files[i];
-                                        if (!image || listImg.length > 5) {
-                                            break;
+                                <input
+                                    type="file"
+                                    id="upload"
+                                    style={{
+                                        display: 'none',
+                                    }}
+                                    multiple
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, images: false });
+                                        if (e.target.files?.length && e.target.files[0]) {
+                                            const listImg = listImage.slice();
+                                            console.log(listImage, e.target.files);
+                                            for (let i = 0; i < e.target.files.length; i++) {
+                                                const image = e.target.files[i];
+                                                if (!image || listImg.length > 5) {
+                                                    break;
+                                                }
+                                                const isHasImage = !!listImage.find(
+                                                    (value) => value.file.name === image.name
+                                                );
+                                                if (!isHasImage) {
+                                                    const url = window.URL.createObjectURL(image);
+                                                    listImg.push({
+                                                        file: image,
+                                                        link: url,
+                                                        uploading: 0,
+                                                    });
+                                                }
+                                            }
+                                            setListImage(listImg);
+                                            e.target.value = '';
                                         }
-                                        const isHasImage = !!listImage.find(
-                                            (value) => value.file.name === image.name
-                                        );
-                                        if (!isHasImage) {
-                                            const url = window.URL.createObjectURL(image);
-                                            listImg.push({
-                                                file: image,
-                                                link: url,
-                                                uploading: 0,
-                                            });
-                                        }
-                                    }
-                                    setListImage(listImg);
-                                    e.target.value = '';
-                                }
-                            }}
-                            accept="image/*"
-                        />
-                    </div>
+                                    }}
+                                    accept="image/*"
+                                />
+                            </div>
+                        </form>
+                    </Box>
+                </ModalBody>
+                <ModalFooter>
                     <div className="addhome-form__submit">
                         <Button
                             onClick={() => {
@@ -418,13 +440,20 @@ const Form = ({ closeForm, homeId, user, callback }: FormProps) => {
                         >
                             Hủy
                         </Button>
-                        <Button isLoading={upLoading} type="submit" colorScheme="red">
+                        <Button
+                            isLoading={upLoading}
+                            onClick={() => {
+                                const data = getValues();
+                                submitForm(data);
+                            }}
+                            colorScheme="red"
+                        >
                             Thêm
                         </Button>
                     </div>
-                </form>
-            </motion.div>
-        </motion.div>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
 };
 

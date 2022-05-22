@@ -1,5 +1,21 @@
 import styles from '../styles/style.module.scss';
-import { Box, Button, Input, Text, Tooltip, Select, Progress, useToast } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Input,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Progress,
+    Select,
+    Text,
+    Tooltip,
+    useToast,
+} from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,6 +29,7 @@ import { getDownloadURL, list, ref, uploadBytesResumable } from 'firebase/storag
 import randomkey, { getTypeFile } from '@lib/randomkey';
 import { fStorage } from '@firebase';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
+import useResize from '@lib/use-resize';
 
 const container: Variants = {
     show: {
@@ -69,6 +86,7 @@ export const EditRoomTitle = ({
     floor,
 }: FormProps) => {
     const toast = useToast();
+    const [mobilemode] = useResize();
     const [updateRoom, { data }] = useMutation(updateRoomTitle.command, {
         update(cache, { data: { updateRoom } }) {
             const data = cache.readQuery<{ getRoomById: RoomData }>({
@@ -94,7 +112,7 @@ export const EditRoomTitle = ({
             // console.log(client)
         },
     });
-    const { register, handleSubmit } = useForm<UpdateRoomTitle>();
+    const { register, handleSubmit, getValues } = useForm<UpdateRoomTitle>();
     const [upLoading, setUpLoading] = useState(false);
     const [errorAction, setErrorAction] = useState<ErrorAction>({
         roomNumber: false,
@@ -317,170 +335,136 @@ export const EditRoomTitle = ({
     }, [listImage, upLoading]);
 
     return (
-        <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            exit="hidden"
-            {...className('homeform')}
+        <Modal
+            onClose={closeForm}
+            isOpen={true}
+            scrollBehavior="outside"
+            {...(mobilemode ? { size: 'full' } : {})}
         >
-            <div {...className('homeform__bg')}></div>
-            <motion.div
-                {...className('homeform-form')}
-                variants={formAnimate}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-            >
-                <form onSubmit={handleSubmit(submitForm)}>
-                    <Text {...className('homeform-form__h1')}>Sửa phòng</Text>
-                    <div {...className('homeform-form__group')}>
-                        <div>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap="5px"
-                                {...className('homeform-form__label')}
-                            >
-                                <Checkbox
-                                    isChecked={activeRoomNumber}
-                                    onChange={(e) => {
-                                        setActiveRoomNumber(!activeRoomNumber);
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    height="100%"
-                                    colorScheme="cyan"
-                                >
-                                    Mã số phòng
-                                </Checkbox>
-                            </Box>
-                            <Tooltip
-                                label="mã số phòng không hợp lệ"
-                                borderRadius="3px"
-                                placement="bottom"
-                                isDisabled={!errorAction.roomNumber || !activeRoomNumber}
-                                bg="red"
-                                hasArrow
-                            >
-                                <Input
-                                    height="50px"
-                                    borderWidth="3px"
-                                    cursor="pointer"
-                                    _focus={{
-                                        outline: 'none',
-                                        borderColor: '#80befc',
-                                    }}
-                                    isDisabled={!activeRoomNumber}
-                                    borderColor={
-                                        errorAction.roomNumber && activeRoomNumber
-                                            ? 'red'
-                                            : 'inherit'
-                                    }
-                                    {...register('roomNumber', { valueAsNumber: true })}
-                                    onChange={(e) => {
-                                        setErrorAction({ ...errorAction, roomNumber: false });
-                                        register('roomNumber', { valueAsNumber: true }).onChange(e);
-                                    }}
-                                    defaultValue={roomNumber}
-                                    placeholder="eg: 2004"
-                                    type="number"
-                                />
-                            </Tooltip>
-                        </div>
-                        <div>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap="5px"
-                                {...className('homeform-form__label')}
-                            >
-                                <Checkbox
-                                    isChecked={activePrice}
-                                    onChange={(e) => {
-                                        setActivePrice(!activePrice);
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    height="100%"
-                                    colorScheme="cyan"
-                                >
-                                    Tiền phòng
-                                </Checkbox>
-                            </Box>
-                            <Tooltip
-                                label="tiền phòng không hợp lệ"
-                                borderRadius="3px"
-                                placement="bottom"
-                                isDisabled={!errorAction.price || !activePrice}
-                                bg="red"
-                                hasArrow
-                            >
-                                <Input
-                                    height="50px"
-                                    borderWidth="3px"
-                                    cursor="pointer"
-                                    _focus={{
-                                        outline: 'none',
-                                        borderColor: '#80befc',
-                                    }}
-                                    isDisabled={!activePrice}
-                                    borderColor={
-                                        errorAction.price && activePrice ? 'red' : 'inherit'
-                                    }
-                                    {...register('price', { valueAsNumber: true })}
-                                    onChange={(e) => {
-                                        setErrorAction({ ...errorAction, price: false });
-                                        register('price', { valueAsNumber: true }).onChange(e);
-                                    }}
-                                    defaultValue={price}
-                                    placeholder="VNĐ"
-                                    type="number"
-                                />
-                            </Tooltip>
-                        </div>
-                    </div>
+            <ModalOverlay overflowY="scroll" />
+            <ModalContent maxWidth="500px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                <ModalHeader>Thông tin phòng</ModalHeader>
+                <ModalCloseButton tabIndex={-1} />
+                <ModalBody>
+                    <Box className="addhome-form">
+                        <form onSubmit={handleSubmit(submitForm)}>
+                            <Text {...className('homeform-form__h1')}>Sửa phòng</Text>
+                            <div {...className('homeform-form__group')}>
+                                <div>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap="5px"
+                                        {...className('homeform-form__label')}
+                                    >
+                                        <Checkbox
+                                            isChecked={activeRoomNumber}
+                                            onChange={(e) => {
+                                                setActiveRoomNumber(!activeRoomNumber);
+                                            }}
+                                            _focus={{
+                                                boxShadow: 'none',
+                                            }}
+                                            height="100%"
+                                            colorScheme="cyan"
+                                        >
+                                            Mã số phòng
+                                        </Checkbox>
+                                    </Box>
+                                    <Tooltip
+                                        label="mã số phòng không hợp lệ"
+                                        borderRadius="3px"
+                                        placement="bottom"
+                                        isDisabled={!errorAction.roomNumber || !activeRoomNumber}
+                                        bg="red"
+                                        hasArrow
+                                    >
+                                        <Input
+                                            height="50px"
+                                            borderWidth="3px"
+                                            cursor="pointer"
+                                            _focus={{
+                                                outline: 'none',
+                                                borderColor: '#80befc',
+                                            }}
+                                            isDisabled={!activeRoomNumber}
+                                            borderColor={
+                                                errorAction.roomNumber && activeRoomNumber
+                                                    ? 'red'
+                                                    : 'inherit'
+                                            }
+                                            {...register('roomNumber', { valueAsNumber: true })}
+                                            onChange={(e) => {
+                                                setErrorAction({
+                                                    ...errorAction,
+                                                    roomNumber: false,
+                                                });
+                                                register('roomNumber', {
+                                                    valueAsNumber: true,
+                                                }).onChange(e);
+                                            }}
+                                            defaultValue={roomNumber}
+                                            placeholder="eg: 2004"
+                                            type="number"
+                                        />
+                                    </Tooltip>
+                                </div>
+                                <div>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap="5px"
+                                        {...className('homeform-form__label')}
+                                    >
+                                        <Checkbox
+                                            isChecked={activePrice}
+                                            onChange={(e) => {
+                                                setActivePrice(!activePrice);
+                                            }}
+                                            _focus={{
+                                                boxShadow: 'none',
+                                            }}
+                                            height="100%"
+                                            colorScheme="cyan"
+                                        >
+                                            Tiền phòng
+                                        </Checkbox>
+                                    </Box>
+                                    <Tooltip
+                                        label="tiền phòng không hợp lệ"
+                                        borderRadius="3px"
+                                        placement="bottom"
+                                        isDisabled={!errorAction.price || !activePrice}
+                                        bg="red"
+                                        hasArrow
+                                    >
+                                        <Input
+                                            height="50px"
+                                            borderWidth="3px"
+                                            cursor="pointer"
+                                            _focus={{
+                                                outline: 'none',
+                                                borderColor: '#80befc',
+                                            }}
+                                            isDisabled={!activePrice}
+                                            borderColor={
+                                                errorAction.price && activePrice ? 'red' : 'inherit'
+                                            }
+                                            {...register('price', { valueAsNumber: true })}
+                                            onChange={(e) => {
+                                                setErrorAction({ ...errorAction, price: false });
+                                                register('price', { valueAsNumber: true }).onChange(
+                                                    e
+                                                );
+                                            }}
+                                            defaultValue={price}
+                                            placeholder="VNĐ"
+                                            type="number"
+                                        />
+                                    </Tooltip>
+                                </div>
+                            </div>
 
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap="5px"
-                        {...className('homeform-form__label')}
-                    >
-                        <Checkbox
-                            isChecked={activeRented}
-                            onChange={(e) => {
-                                setActiveRented(!activeRented);
-                            }}
-                            _focus={{
-                                boxShadow: 'none',
-                            }}
-                            height="100%"
-                            colorScheme="cyan"
-                        >
-                            Trạng thái phòng
-                        </Checkbox>
-                    </Box>
-                    <Select
-                        height="50px"
-                        borderWidth="3px"
-                        cursor="pointer"
-                        _focus={{
-                            outline: 'none',
-                            borderColor: '#80befc',
-                        }}
-                        {...register('isRented')}
-                        defaultValue={isRented == true ? 'true' : 'false'}
-                        isDisabled={!activeRented}
-                    >
-                        <option value="true">Đã được cho thuê</option>
-                        <option value="false">Chưa được cho thuê</option>
-                    </Select>
-
-                    <div {...className('homeform-form__group')}>
-                        <div>
                             <Box
                                 display="flex"
                                 alignItems="center"
@@ -488,9 +472,9 @@ export const EditRoomTitle = ({
                                 {...className('homeform-form__label')}
                             >
                                 <Checkbox
-                                    isChecked={activeFloor}
+                                    isChecked={activeRented}
                                     onChange={(e) => {
-                                        setActiveFloor(!activeFloor);
+                                        setActiveRented(!activeRented);
                                     }}
                                     _focus={{
                                         boxShadow: 'none',
@@ -498,41 +482,138 @@ export const EditRoomTitle = ({
                                     height="100%"
                                     colorScheme="cyan"
                                 >
-                                    Tầng số
+                                    Trạng thái phòng
                                 </Checkbox>
                             </Box>
-                            <Tooltip
-                                label="số tầng không hợp lệ"
-                                borderRadius="3px"
-                                placement="bottom"
-                                isDisabled={!errorAction.floor || !activeFloor}
-                                bg="red"
-                                hasArrow
+                            <Select
+                                height="50px"
+                                borderWidth="3px"
+                                cursor="pointer"
+                                _focus={{
+                                    outline: 'none',
+                                    borderColor: '#80befc',
+                                }}
+                                {...register('isRented')}
+                                defaultValue={isRented == true ? 'true' : 'false'}
+                                isDisabled={!activeRented}
                             >
-                                <Input
-                                    height="50px"
-                                    borderWidth="3px"
-                                    cursor="pointer"
-                                    _focus={{
-                                        outline: 'none',
-                                        borderColor: '#80befc',
-                                    }}
-                                    isDisabled={!activeFloor}
-                                    borderColor={
-                                        errorAction.floor && activeFloor ? 'red' : 'inherit'
-                                    }
-                                    {...register('floor', { valueAsNumber: true })}
-                                    onChange={(e) => {
-                                        setErrorAction({ ...errorAction, floor: false });
-                                        register('floor', { valueAsNumber: true }).onChange(e);
-                                    }}
-                                    defaultValue={floor}
-                                    placeholder="eg: 3"
-                                    type="number"
-                                />
-                            </Tooltip>
-                        </div>
-                        <div>
+                                <option value="true">Đã được cho thuê</option>
+                                <option value="false">Chưa được cho thuê</option>
+                            </Select>
+
+                            <div {...className('homeform-form__group')}>
+                                <div>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap="5px"
+                                        {...className('homeform-form__label')}
+                                    >
+                                        <Checkbox
+                                            isChecked={activeFloor}
+                                            onChange={(e) => {
+                                                setActiveFloor(!activeFloor);
+                                            }}
+                                            _focus={{
+                                                boxShadow: 'none',
+                                            }}
+                                            height="100%"
+                                            colorScheme="cyan"
+                                        >
+                                            Tầng số
+                                        </Checkbox>
+                                    </Box>
+                                    <Tooltip
+                                        label="số tầng không hợp lệ"
+                                        borderRadius="3px"
+                                        placement="bottom"
+                                        isDisabled={!errorAction.floor || !activeFloor}
+                                        bg="red"
+                                        hasArrow
+                                    >
+                                        <Input
+                                            height="50px"
+                                            borderWidth="3px"
+                                            cursor="pointer"
+                                            _focus={{
+                                                outline: 'none',
+                                                borderColor: '#80befc',
+                                            }}
+                                            isDisabled={!activeFloor}
+                                            borderColor={
+                                                errorAction.floor && activeFloor ? 'red' : 'inherit'
+                                            }
+                                            {...register('floor', { valueAsNumber: true })}
+                                            onChange={(e) => {
+                                                setErrorAction({ ...errorAction, floor: false });
+                                                register('floor', { valueAsNumber: true }).onChange(
+                                                    e
+                                                );
+                                            }}
+                                            defaultValue={floor}
+                                            placeholder="eg: 3"
+                                            type="number"
+                                        />
+                                    </Tooltip>
+                                </div>
+                                <div>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap="5px"
+                                        {...className('homeform-form__label')}
+                                    >
+                                        <Checkbox
+                                            isChecked={activeSquare}
+                                            onChange={(e) => {
+                                                setActiveSquare(!activeSquare);
+                                            }}
+                                            _focus={{
+                                                boxShadow: 'none',
+                                            }}
+                                            height="100%"
+                                            colorScheme="cyan"
+                                        >
+                                            Diện tích phòng
+                                        </Checkbox>
+                                    </Box>
+                                    <Tooltip
+                                        label="diện tích phòng không hợp lệ"
+                                        borderRadius="3px"
+                                        placement="bottom"
+                                        isDisabled={!errorAction.square || !activeSquare}
+                                        bg="red"
+                                        hasArrow
+                                    >
+                                        <Input
+                                            height="50px"
+                                            borderWidth="3px"
+                                            cursor="pointer"
+                                            _focus={{
+                                                outline: 'none',
+                                                borderColor: '#80befc',
+                                            }}
+                                            isDisabled={!activeSquare}
+                                            borderColor={
+                                                errorAction.square && activeSquare
+                                                    ? 'red'
+                                                    : 'inherit'
+                                            }
+                                            {...register('square', { valueAsNumber: true })}
+                                            onChange={(e) => {
+                                                setErrorAction({ ...errorAction, square: false });
+                                                register('square', {
+                                                    valueAsNumber: true,
+                                                }).onChange(e);
+                                            }}
+                                            defaultValue={square}
+                                            placeholder="m2"
+                                            type="number"
+                                        />
+                                    </Tooltip>
+                                </div>
+                            </div>
+
                             <Box
                                 display="flex"
                                 alignItems="center"
@@ -540,9 +621,9 @@ export const EditRoomTitle = ({
                                 {...className('homeform-form__label')}
                             >
                                 <Checkbox
-                                    isChecked={activeSquare}
+                                    isChecked={activeUploadImage}
                                     onChange={(e) => {
-                                        setActiveSquare(!activeSquare);
+                                        setActiveUploadImage((prev) => !prev);
                                     }}
                                     _focus={{
                                         boxShadow: 'none',
@@ -550,149 +631,102 @@ export const EditRoomTitle = ({
                                     height="100%"
                                     colorScheme="cyan"
                                 >
-                                    Diện tích phòng
+                                    Ảnh phòng (tối đa 6)
                                 </Checkbox>
                             </Box>
-                            <Tooltip
-                                label="diện tích phòng không hợp lệ"
-                                borderRadius="3px"
-                                placement="bottom"
-                                isDisabled={!errorAction.square || !activeSquare}
-                                bg="red"
-                                hasArrow
-                            >
-                                <Input
-                                    height="50px"
-                                    borderWidth="3px"
-                                    cursor="pointer"
-                                    _focus={{
-                                        outline: 'none',
-                                        borderColor: '#80befc',
-                                    }}
-                                    isDisabled={!activeSquare}
-                                    borderColor={
-                                        errorAction.square && activeSquare ? 'red' : 'inherit'
-                                    }
-                                    {...register('square', { valueAsNumber: true })}
-                                    onChange={(e) => {
-                                        setErrorAction({ ...errorAction, square: false });
-                                        register('square', { valueAsNumber: true }).onChange(e);
-                                    }}
-                                    defaultValue={square}
-                                    placeholder="m2"
-                                    type="number"
-                                />
-                            </Tooltip>
-                        </div>
-                    </div>
+                            <div className="addhome-form__upload">
+                                <div className="image-preview">
+                                    {renderListDefaultImage}
+                                    {activeUploadImage && renderListImage}
+                                    <Tooltip
+                                        label="Cần tải lên ít nhất 2 ảnh của phòng"
+                                        borderRadius="3px"
+                                        placement="bottom"
+                                        isDisabled={!errorAction.images}
+                                        bg="red"
+                                        hasArrow
+                                    >
+                                        <Button
+                                            variant="link"
+                                            _hover={{
+                                                textDecoration: 'none',
+                                            }}
+                                            _focus={{
+                                                boxShadow: 'none',
+                                            }}
+                                            width="70px"
+                                            height="70px"
+                                            borderRadius="1px"
+                                            className="image-preview__btn"
+                                            style={{
+                                                ...(listDefaultImage.length + listImage.length > 5
+                                                    ? {
+                                                          display: 'none',
+                                                      }
+                                                    : {}),
+                                            }}
+                                            borderColor={
+                                                errorAction.images && activeUploadImage
+                                                    ? 'red'
+                                                    : 'inherit'
+                                            }
+                                            isDisabled={!activeUploadImage}
+                                            onClick={() => {
+                                                const input = document.getElementById('upload');
+                                                if (input) {
+                                                    input.click();
+                                                }
+                                            }}
+                                        >
+                                            <i className="fa-solid fa-plus"></i>
+                                            Tải lên
+                                        </Button>
+                                    </Tooltip>
+                                </div>
 
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        gap="5px"
-                        {...className('homeform-form__label')}
-                    >
-                        <Checkbox
-                            isChecked={activeUploadImage}
-                            onChange={(e) => {
-                                setActiveUploadImage((prev) => !prev);
-                            }}
-                            _focus={{
-                                boxShadow: 'none',
-                            }}
-                            height="100%"
-                            colorScheme="cyan"
-                        >
-                            Ảnh phòng (tối đa 6)
-                        </Checkbox>
-                    </Box>
-                    <div className="addhome-form__upload">
-                        <div className="image-preview">
-                            {renderListDefaultImage}
-                            {activeUploadImage && renderListImage}
-                            <Tooltip
-                                label="Cần tải lên ít nhất 2 ảnh của phòng"
-                                borderRadius="3px"
-                                placement="bottom"
-                                isDisabled={!errorAction.images}
-                                bg="red"
-                                hasArrow
-                            >
-                                <Button
-                                    variant="link"
-                                    _hover={{
-                                        textDecoration: 'none',
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    width="70px"
-                                    height="70px"
-                                    borderRadius="1px"
-                                    className="image-preview__btn"
+                                <input
+                                    type="file"
+                                    id="upload"
                                     style={{
-                                        ...(listDefaultImage.length + listImage.length > 5
-                                            ? {
-                                                  display: 'none',
-                                              }
-                                            : {}),
+                                        display: 'none',
                                     }}
-                                    borderColor={
-                                        errorAction.images && activeUploadImage ? 'red' : 'inherit'
-                                    }
-                                    isDisabled={!activeUploadImage}
-                                    onClick={() => {
-                                        const input = document.getElementById('upload');
-                                        if (input) {
-                                            input.click();
+                                    multiple
+                                    onChange={(e) => {
+                                        setErrorAction({ ...errorAction, images: false });
+                                        if (e.target.files?.length && e.target.files[0]) {
+                                            const listImg = listImage.slice();
+                                            console.log(listImage, e.target.files);
+                                            for (let i = 0; i < e.target.files.length; i++) {
+                                                const image = e.target.files[i];
+                                                if (
+                                                    !image ||
+                                                    listDefaultImage.length + listImg.length > 5
+                                                ) {
+                                                    break;
+                                                }
+                                                const isHasImage = !!listImage.find(
+                                                    (value) => value.file.name === image.name
+                                                );
+                                                if (!isHasImage) {
+                                                    const url = window.URL.createObjectURL(image);
+                                                    listImg.push({
+                                                        file: image,
+                                                        link: url,
+                                                        uploading: 0,
+                                                    });
+                                                }
+                                            }
+                                            setListImage(listImg);
+                                            e.target.value = '';
                                         }
                                     }}
-                                >
-                                    <i className="fa-solid fa-plus"></i>
-                                    Tải lên
-                                </Button>
-                            </Tooltip>
-                        </div>
-
-                        <input
-                            type="file"
-                            id="upload"
-                            style={{
-                                display: 'none',
-                            }}
-                            multiple
-                            onChange={(e) => {
-                                setErrorAction({ ...errorAction, images: false });
-                                if (e.target.files?.length && e.target.files[0]) {
-                                    const listImg = listImage.slice();
-                                    console.log(listImage, e.target.files);
-                                    for (let i = 0; i < e.target.files.length; i++) {
-                                        const image = e.target.files[i];
-                                        if (
-                                            !image ||
-                                            listDefaultImage.length + listImg.length > 5
-                                        ) {
-                                            break;
-                                        }
-                                        const isHasImage = !!listImage.find(
-                                            (value) => value.file.name === image.name
-                                        );
-                                        if (!isHasImage) {
-                                            const url = window.URL.createObjectURL(image);
-                                            listImg.push({
-                                                file: image,
-                                                link: url,
-                                                uploading: 0,
-                                            });
-                                        }
-                                    }
-                                    setListImage(listImg);
-                                    e.target.value = '';
-                                }
-                            }}
-                            accept="image/*"
-                        />
-                    </div>
+                                    accept="image/*"
+                                />
+                            </div>
+                        </form>
+                    </Box>
+                </ModalBody>
+                <ModalFooter>
                     <div className="addhome-form__submit">
                         <Button
                             onClick={() => {
@@ -703,26 +737,18 @@ export const EditRoomTitle = ({
                             Hủy
                         </Button>
                         <Button
-                            isDisabled={
-                                !activeRoomNumber &&
-                                !activePrice &&
-                                !activeRented &&
-                                !activeSquare &&
-                                !activeFloor &&
-                                !activeUploadImage
-                            }
-                            _focus={{
-                                boxShadow: 'none',
+                            onClick={() => {
+                                const data = getValues();
+                                submitForm(data);
                             }}
                             isLoading={upLoading}
-                            type="submit"
                             colorScheme="red"
                         >
                             Cập nhật
                         </Button>
                     </div>
-                </form>
-            </motion.div>
-        </motion.div>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
 };

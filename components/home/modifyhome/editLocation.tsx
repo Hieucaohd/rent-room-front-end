@@ -5,21 +5,26 @@ import {
     Input,
     InputGroup,
     InputRightElement,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
     Progress,
     Select,
     Tooltip,
-    useDisclosure,
     useToast,
 } from '@chakra-ui/react';
 import { motion, Variants } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@apollo/client';
 import useClassName from '@lib/useClassName';
 import { HomeLocation, updateHomeLocation } from '@lib/apollo/home/update';
 import { getHomeById } from '@lib/apollo/home/gethomebyid';
 import { Checkbox } from '@chakra-ui/checkbox';
-import useScrollController from '@lib/useScrollController';
 import FormLocation from '../../location';
 import MapBox, { MapField } from '../../mapbox';
 import { Image } from '../addhome';
@@ -30,26 +35,7 @@ import { User } from '@lib/withAuth';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import { HomeData } from '@lib/interface';
 import { getListExitPosition } from '@lib/getPosition';
-
-const container: Variants = {
-    show: {
-        opacity: 1,
-    },
-    hidden: {
-        opacity: 0,
-    },
-};
-
-const formAnimate: Variants = {
-    show: {
-        opacity: 1,
-        y: 0,
-    },
-    hidden: {
-        opacity: 0,
-        y: -100,
-    },
-};
+import useResize from '@lib/use-resize';
 
 const hideFormAnimate: Variants = {
     showForm: {
@@ -101,6 +87,7 @@ const EditHomeLocation = ({
     user,
 }: FormProps) => {
     const toast = useToast();
+    const [mobilemode] = useResize(500);
     const [updateHome] = useMutation(updateHomeLocation.command, {
         update(cache, { data: { updateHome } }) {
             const data = cache.readQuery<{ getHomeById: HomeData }>({
@@ -126,7 +113,7 @@ const EditHomeLocation = ({
         },
     });
     const [isOpen, setOpen] = useState(false);
-    const { register, handleSubmit, watch } = useForm<HomeLocation>();
+    const { register, handleSubmit, watch, getValues } = useForm<HomeLocation>();
     const [errorAction, setErrorAction] = useState<ErrorAction>({
         title: false,
         province: false,
@@ -204,15 +191,6 @@ const EditHomeLocation = ({
     const [listLocation, setListLocation] = useState<[any[], any[], any[]]>([[], [], []]);
 
     const [className] = useClassName(styles);
-    const scroll = useScrollController();
-
-    useEffect(() => {
-        scroll.disableScroll();
-
-        return () => {
-            scroll.enableScroll();
-        };
-    }, []);
 
     const renderListDefaultImage = useMemo(() => {
         return listDefaultImage.map((item, index) => {
@@ -439,300 +417,321 @@ const EditHomeLocation = ({
 
     return (
         <>
-            {isOpen && (
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                    exit="hidden"
-                    {...className('homeform')}
-                >
-                    <div {...className('homeform__bg')}></div>
-                    <motion.div
-                        {...className('homeform-form')}
-                        style={{
-                            overflowX: 'hidden',
-                        }}
-                        variants={formAnimate}
-                        initial="hidden"
-                        animate="show"
-                        exit="hidden"
-                    >
-                        <motion.form
-                            variants={hideFormAnimate}
-                            animate={showMap ? 'hiddenForm' : 'showForm'}
-                            transition={{
-                                duration: 0.5,
-                            }}
-                            onSubmit={handleSubmit(submitForm)}
-                        >
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap="5px"
-                                {...className('homeform-form__label')}
+            <Modal
+                onClose={closeForm}
+                isOpen={isOpen}
+                scrollBehavior="outside"
+                {...(mobilemode ? { size: 'full' } : {})}
+            >
+                <ModalOverlay overflowY="scroll" />
+                <ModalContent maxWidth="500px" {...(mobilemode ? { borderRadius: 0 } : {})}>
+                    <ModalHeader>Thông tin trọ</ModalHeader>
+                    <ModalCloseButton tabIndex={-1} />
+                    <ModalBody>
+                        <Box className="addhome-form">
+                            <motion.form
+                                variants={hideFormAnimate}
+                                animate={showMap ? 'hiddenForm' : 'showForm'}
+                                transition={{
+                                    duration: 0.5,
+                                }}
+                                onSubmit={handleSubmit(submitForm)}
                             >
-                                <Checkbox
-                                    isChecked={activeTitle}
-                                    onChange={(e) => {
-                                        setActiveTitle((prev) => !prev);
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    height="100%"
-                                    colorScheme="cyan"
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    gap="5px"
+                                    {...className('homeform-form__label')}
                                 >
-                                    Tên trọ
-                                </Checkbox>
-                            </Box>
-                            <Tooltip
-                                label="Bạn chưa nhập tên trọ mới"
-                                borderRadius="3px"
-                                placement="bottom"
-                                isDisabled={!errorAction.title || !activeTitle}
-                                bg="red"
-                                hasArrow
-                            >
-                                <Input
-                                    height="50px"
-                                    borderWidth="3px"
-                                    _focus={{
-                                        outline: 'none',
-                                        borderColor: '#80befc',
-                                    }}
-                                    isDisabled={!activeTitle}
-                                    borderColor={
-                                        errorAction.title && activeTitle ? 'red' : 'inherit'
-                                    }
-                                    {...register('title')}
-                                    onChange={(e) => {
-                                        setErrorAction({ ...errorAction, title: false });
-                                        register('title').onChange(e);
-                                    }}
-                                    defaultValue={title}
-                                    placeholder="name"
-                                    type="text"
-                                />
-                            </Tooltip>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap="5px"
-                                {...className('homeform-form__label')}
-                            >
-                                <Checkbox
-                                    isChecked={activeLocation}
-                                    onChange={(e) => {
-                                        setActiveLocation((prev) => !prev);
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    height="100%"
-                                    colorScheme="cyan"
+                                    <Checkbox
+                                        isChecked={activeTitle}
+                                        onChange={(e) => {
+                                            setActiveTitle((prev) => !prev);
+                                        }}
+                                        _focus={{
+                                            boxShadow: 'none',
+                                        }}
+                                        height="100%"
+                                        colorScheme="cyan"
+                                    >
+                                        Tên trọ
+                                    </Checkbox>
+                                </Box>
+                                <Tooltip
+                                    label="Bạn chưa nhập tên trọ mới"
+                                    borderRadius="3px"
+                                    placement="bottom"
+                                    isDisabled={!errorAction.title || !activeTitle}
+                                    bg="red"
+                                    hasArrow
                                 >
-                                    Địa chỉ
-                                </Checkbox>
-                            </Box>
-                            <div className="addhome-form__location">
-                                <FormLocation
-                                    provinceField={register('province')}
-                                    districtField={register('district')}
-                                    wardField={register('ward')}
-                                    errorEvent={errorAction}
-                                    disable={!activeLocation}
-                                    {...(isHaveLocation
-                                        ? {
-                                              defaultValue: {
-                                                  value: {
-                                                      province: province,
-                                                      district: district,
-                                                      ward: ward,
-                                                  },
-                                                  list: listLocation,
-                                              },
-                                          }
-                                        : {})}
-                                />
-                            </div>
-                            <Tooltip
-                                label="Vui lòng chọn địa điểm trên bản đồ"
-                                borderRadius="3px"
-                                isDisabled={!errorAction.position || !activeLocation}
-                                placement="bottom"
-                                bg="red"
-                                hasArrow
-                            >
-                                <InputGroup className="addhome-form__map">
                                     <Input
                                         height="50px"
                                         borderWidth="3px"
-                                        readOnly
-                                        placeholder="Vị trí cụ thể"
-                                        cursor="pointer"
-                                        onClick={() => setShowMap(true)}
-                                        isDisabled={!activeLocation}
-                                        borderColor={
-                                            errorAction.position && activeLocation
-                                                ? 'red'
-                                                : 'inherit'
-                                        }
                                         _focus={{
                                             outline: 'none',
                                             borderColor: '#80befc',
                                         }}
-                                        value={mapData ? mapData.place_name : ''}
+                                        isDisabled={!activeTitle}
+                                        borderColor={
+                                            errorAction.title && activeTitle ? 'red' : 'inherit'
+                                        }
+                                        {...register('title')}
+                                        onChange={(e) => {
+                                            setErrorAction({ ...errorAction, title: false });
+                                            register('title').onChange(e);
+                                        }}
+                                        defaultValue={title}
+                                        placeholder="name"
+                                        type="text"
                                     />
-                                    <InputRightElement>
-                                        <a onClick={() => setShowMap(true)}>{'>'}</a>
-                                    </InputRightElement>
-                                </InputGroup>
-                            </Tooltip>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap="5px"
-                                {...className('homeform-form__label')}
-                            >
-                                <Checkbox
-                                    isChecked={activeLiveWithOwner}
-                                    onChange={(e) => {
-                                        setActiveLiveWithOwner((prev) => !prev);
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    height="100%"
-                                    colorScheme="cyan"
+                                </Tooltip>
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    gap="5px"
+                                    {...className('homeform-form__label')}
                                 >
-                                    Hình thức sinh hoạt
-                                </Checkbox>
-                            </Box>
-                            <Select
-                                height="50px"
-                                borderWidth="3px"
-                                cursor="pointer"
-                                _focus={{
-                                    outline: 'none',
-                                    borderColor: '#80befc',
-                                }}
-                                {...register('liveWithOwner')}
-                                defaultValue={liveWithOwner == true ? 'true' : 'false'}
-                                isDisabled={!activeLiveWithOwner}
-                            >
-                                <option value="true">Sống với chủ trọ</option>
-                                <option value="false">Không sống với chủ trọ</option>
-                            </Select>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap="5px"
-                                {...className('homeform-form__label')}
-                            >
-                                <Checkbox
-                                    isChecked={activeUploadImage}
-                                    onChange={(e) => {
-                                        setActiveUploadImage((prev) => !prev);
-                                    }}
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    height="100%"
-                                    colorScheme="cyan"
-                                >
-                                    Ảnh phòng (tối đa 6)
-                                </Checkbox>
-                            </Box>
-                            <div className="addhome-form__upload">
-                                <div className="image-preview">
-                                    {renderListDefaultImage}
-                                    {activeUploadImage && renderListImage}
-                                    <Tooltip
-                                        label="Cần tải lên ít nhất 2 ảnh của phòng"
-                                        borderRadius="3px"
-                                        placement="bottom"
-                                        isDisabled={!errorAction.images}
-                                        bg="red"
-                                        hasArrow
+                                    <Checkbox
+                                        isChecked={activeLocation}
+                                        onChange={(e) => {
+                                            setActiveLocation((prev) => !prev);
+                                        }}
+                                        _focus={{
+                                            boxShadow: 'none',
+                                        }}
+                                        height="100%"
+                                        colorScheme="cyan"
                                     >
-                                        <Button
-                                            variant="link"
-                                            _hover={{
-                                                textDecoration: 'none',
-                                            }}
-                                            _focus={{
-                                                boxShadow: 'none',
-                                            }}
-                                            width="70px"
-                                            height="70px"
-                                            borderRadius="1px"
-                                            className="image-preview__btn"
-                                            style={{
-                                                ...(listDefaultImage.length + listImage.length > 5
-                                                    ? {
-                                                          display: 'none',
-                                                      }
-                                                    : {}),
-                                            }}
+                                        Địa chỉ
+                                    </Checkbox>
+                                </Box>
+                                <div className="addhome-form__location">
+                                    <FormLocation
+                                        provinceField={register('province')}
+                                        districtField={register('district')}
+                                        wardField={register('ward')}
+                                        errorEvent={errorAction}
+                                        disable={!activeLocation}
+                                        {...(isHaveLocation
+                                            ? {
+                                                  defaultValue: {
+                                                      value: {
+                                                          province: province,
+                                                          district: district,
+                                                          ward: ward,
+                                                      },
+                                                      list: listLocation,
+                                                  },
+                                              }
+                                            : {})}
+                                    />
+                                </div>
+                                <Tooltip
+                                    label="Vui lòng chọn địa điểm trên bản đồ"
+                                    borderRadius="3px"
+                                    isDisabled={!errorAction.position || !activeLocation}
+                                    placement="bottom"
+                                    bg="red"
+                                    hasArrow
+                                >
+                                    <InputGroup className="addhome-form__map">
+                                        <Input
+                                            height="50px"
+                                            borderWidth="3px"
+                                            readOnly
+                                            placeholder="Vị trí cụ thể"
+                                            cursor="pointer"
+                                            onClick={() => setShowMap(true)}
+                                            isDisabled={!activeLocation}
                                             borderColor={
-                                                errorAction.images && activeUploadImage
+                                                errorAction.position && activeLocation
                                                     ? 'red'
                                                     : 'inherit'
                                             }
-                                            isDisabled={!activeUploadImage}
-                                            onClick={() => {
-                                                const input = document.getElementById('upload');
-                                                if (input) {
-                                                    input.click();
-                                                }
+                                            _focus={{
+                                                outline: 'none',
+                                                borderColor: '#80befc',
                                             }}
+                                            value={mapData ? mapData.place_name : ''}
+                                        />
+                                        <InputRightElement>
+                                            <a onClick={() => setShowMap(true)}>{'>'}</a>
+                                        </InputRightElement>
+                                    </InputGroup>
+                                </Tooltip>
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    gap="5px"
+                                    {...className('homeform-form__label')}
+                                >
+                                    <Checkbox
+                                        isChecked={activeLiveWithOwner}
+                                        onChange={(e) => {
+                                            setActiveLiveWithOwner((prev) => !prev);
+                                        }}
+                                        _focus={{
+                                            boxShadow: 'none',
+                                        }}
+                                        height="100%"
+                                        colorScheme="cyan"
+                                    >
+                                        Hình thức sinh hoạt
+                                    </Checkbox>
+                                </Box>
+                                <Select
+                                    height="50px"
+                                    borderWidth="3px"
+                                    cursor="pointer"
+                                    _focus={{
+                                        outline: 'none',
+                                        borderColor: '#80befc',
+                                    }}
+                                    {...register('liveWithOwner')}
+                                    defaultValue={liveWithOwner == true ? 'true' : 'false'}
+                                    isDisabled={!activeLiveWithOwner}
+                                >
+                                    <option value="true">Sống với chủ trọ</option>
+                                    <option value="false">Không sống với chủ trọ</option>
+                                </Select>
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    gap="5px"
+                                    {...className('homeform-form__label')}
+                                >
+                                    <Checkbox
+                                        isChecked={activeUploadImage}
+                                        onChange={(e) => {
+                                            setActiveUploadImage((prev) => !prev);
+                                        }}
+                                        _focus={{
+                                            boxShadow: 'none',
+                                        }}
+                                        height="100%"
+                                        colorScheme="cyan"
+                                    >
+                                        Ảnh phòng (tối đa 6)
+                                    </Checkbox>
+                                </Box>
+                                <div className="addhome-form__upload">
+                                    <div className="image-preview">
+                                        {renderListDefaultImage}
+                                        {activeUploadImage && renderListImage}
+                                        <Tooltip
+                                            label="Cần tải lên ít nhất 2 ảnh của phòng"
+                                            borderRadius="3px"
+                                            placement="bottom"
+                                            isDisabled={!errorAction.images}
+                                            bg="red"
+                                            hasArrow
                                         >
-                                            <i className="fa-solid fa-plus"></i>
-                                            Tải lên
-                                        </Button>
-                                    </Tooltip>
-                                </div>
+                                            <Button
+                                                variant="link"
+                                                _hover={{
+                                                    textDecoration: 'none',
+                                                }}
+                                                _focus={{
+                                                    boxShadow: 'none',
+                                                }}
+                                                width="70px"
+                                                height="70px"
+                                                borderRadius="1px"
+                                                className="image-preview__btn"
+                                                style={{
+                                                    ...(listDefaultImage.length + listImage.length >
+                                                    5
+                                                        ? {
+                                                              display: 'none',
+                                                          }
+                                                        : {}),
+                                                }}
+                                                borderColor={
+                                                    errorAction.images && activeUploadImage
+                                                        ? 'red'
+                                                        : 'inherit'
+                                                }
+                                                isDisabled={!activeUploadImage}
+                                                onClick={() => {
+                                                    const input = document.getElementById('upload');
+                                                    if (input) {
+                                                        input.click();
+                                                    }
+                                                }}
+                                            >
+                                                <i className="fa-solid fa-plus"></i>
+                                                Tải lên
+                                            </Button>
+                                        </Tooltip>
+                                    </div>
 
-                                <input
-                                    type="file"
-                                    id="upload"
-                                    style={{
-                                        display: 'none',
-                                    }}
-                                    multiple
-                                    onChange={(e) => {
-                                        setErrorAction({ ...errorAction, images: false });
-                                        if (e.target.files?.length && e.target.files[0]) {
-                                            const listImg = listImage.slice();
-                                            console.log(listImage, e.target.files);
-                                            for (let i = 0; i < e.target.files.length; i++) {
-                                                const image = e.target.files[i];
-                                                if (
-                                                    !image ||
-                                                    listDefaultImage.length + listImg.length > 5
-                                                ) {
-                                                    break;
+                                    <input
+                                        type="file"
+                                        id="upload"
+                                        style={{
+                                            display: 'none',
+                                        }}
+                                        multiple
+                                        onChange={(e) => {
+                                            setErrorAction({ ...errorAction, images: false });
+                                            if (e.target.files?.length && e.target.files[0]) {
+                                                const listImg = listImage.slice();
+                                                console.log(listImage, e.target.files);
+                                                for (let i = 0; i < e.target.files.length; i++) {
+                                                    const image = e.target.files[i];
+                                                    if (
+                                                        !image ||
+                                                        listDefaultImage.length + listImg.length > 5
+                                                    ) {
+                                                        break;
+                                                    }
+                                                    const isHasImage = !!listImage.find(
+                                                        (value) => value.file.name === image.name
+                                                    );
+                                                    if (!isHasImage) {
+                                                        const url =
+                                                            window.URL.createObjectURL(image);
+                                                        listImg.push({
+                                                            file: image,
+                                                            link: url,
+                                                            uploading: 0,
+                                                        });
+                                                    }
                                                 }
-                                                const isHasImage = !!listImage.find(
-                                                    (value) => value.file.name === image.name
-                                                );
-                                                if (!isHasImage) {
-                                                    const url = window.URL.createObjectURL(image);
-                                                    listImg.push({
-                                                        file: image,
-                                                        link: url,
-                                                        uploading: 0,
-                                                    });
-                                                }
+                                                setListImage(listImg);
+                                                e.target.value = '';
                                             }
-                                            setListImage(listImg);
-                                            e.target.value = '';
-                                        }
+                                        }}
+                                        accept="image/*"
+                                    />
+                                </div>
+                            </motion.form>
+                            {showMap && (
+                                <motion.div
+                                    initial={{
+                                        x: '120%',
                                     }}
-                                    accept="image/*"
-                                />
-                            </div>
+                                    animate={{
+                                        x: '0',
+                                    }}
+                                    transition={{
+                                        duration: 0.5,
+                                    }}
+                                    className="addhome-form__mapbox"
+                                >
+                                    <MapBox
+                                        delay={1000}
+                                        district={0}
+                                        onChange={setMapData}
+                                        {...mapSetProvince}
+                                    />
+                                </motion.div>
+                            )}
+                        </Box>
+                    </ModalBody>
+                    <ModalFooter>
+                        {!showMap ? (
                             <div className="addhome-form__submit">
                                 <Button
                                     onClick={() => {
@@ -743,18 +742,16 @@ const EditHomeLocation = ({
                                     Hủy
                                 </Button>
                                 <Button
-                                    /* isDisabled={
-                                !activeElectricityPrice &&
-                                !activeWaterPrice &&
-                                !activeInternetPrice &&
-                                !activeCleaningPrice
-                            } */
                                     isDisabled={
                                         !activeTitle &&
                                         !activeLocation &&
                                         !activeLiveWithOwner &&
                                         !activeUploadImage
                                     }
+                                    onClick={() => {
+                                        const data = getValues();
+                                        submitForm(data);
+                                    }}
                                     isLoading={upLoading}
                                     type="submit"
                                     colorScheme="red"
@@ -765,50 +762,30 @@ const EditHomeLocation = ({
                                     Cập nhật
                                 </Button>
                             </div>
-                        </motion.form>
-                        {showMap && (
-                            <motion.div
-                                initial={{
-                                    x: '120%',
-                                }}
-                                animate={{
-                                    x: '0',
-                                }}
-                                transition={{
-                                    duration: 0.5,
-                                }}
-                                className="addhome-form__mapbox"
-                            >
-                                <MapBox
-                                    delay={1000}
-                                    district={0}
-                                    onChange={setMapData}
-                                    {...mapSetProvince}
-                                />
-                                <div>
-                                    <Button
-                                        onClick={() => {
-                                            setShowMap(false);
-                                            setMapData(prevMapData);
-                                        }}
-                                    >
-                                        Hủy
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setShowMap(false);
-                                            setPrevMapData(mapData);
-                                        }}
-                                        colorScheme="red"
-                                    >
-                                        Tiếp tục
-                                    </Button>
-                                </div>
-                            </motion.div>
+                        ) : (
+                            <div className="addhome-form__submit">
+                                <Button
+                                    onClick={() => {
+                                        setShowMap(false);
+                                        setMapData(prevMapData);
+                                    }}
+                                >
+                                    Hủy
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setShowMap(false);
+                                        setPrevMapData(mapData);
+                                    }}
+                                    colorScheme="red"
+                                >
+                                    Tiếp tục
+                                </Button>
+                            </div>
                         )}
-                    </motion.div>
-                </motion.div>
-            )}
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </>
     );
 };
