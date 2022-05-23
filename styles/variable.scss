@@ -28,4 +28,12 @@
         --app-navbar-authbtn-padding: 0 15px;
         --app-fontsize: 12px;
     }
+
+    @media screen and (max-width: 350px) {
+        --app-navbar-height: 40px;
+        --app-navbar-padding: 7px 20px;
+        --app-navbar-logo-fontsize: 18px;
+        --app-navbar-authbtn-padding: 0 10px;
+        --app-fontsize: 12px;
+    }
 }

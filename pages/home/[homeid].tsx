@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import { Avatar, Box, Button, Skeleton } from '@chakra-ui/react';
+import { Avatar, Button, Skeleton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '@chakra';
@@ -21,14 +21,10 @@ import AppAbout from '@components/app-about';
 import Link from 'next/link';
 import { HomeData, ListZoomData, Paginator } from '@lib/interface';
 import useResize from '@lib/use-resize';
-import DeleteHome from '@components/home/modifyhome/deleteHome';
+import { DeleteHome } from '@components/home/modifyhome';
 
 const getData = (data: any) => {
     const dt = data?.getHomeById;
-    /* const cloneData = {...dt}
-    if (dt && dt.description){
-        dt.description = JSON.parse(dt.description)
-    } */
     return dt;
 };
 
@@ -47,6 +43,8 @@ interface HomePageProps {
 function getPages(data: any) {
     return data?.paginator;
 }
+
+const payBtnStyle = { ...signUpBtnStyle, height: undefined, fontWeight: 700 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     const Cookie = getSecurityCookie(req);
@@ -295,8 +293,8 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                     <div className="homepage-sprice__action">
                         <Button
                             {...signUpBtnStyle}
+                            height={'unset'}
                             backgroundColor="var(--app-btn-bgcolor)"
-                            height="35px"
                             fontWeight="bold"
                             onClick={() => setModifyPrice(true)}
                         >
@@ -304,7 +302,6 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                         </Button>
                         <Button
                             colorScheme="red"
-                            height="35px"
                             className="homepage__delete"
                             onClick={() => {
                                 createPopup(
@@ -316,12 +313,14 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                         </Button>
                     </div>
                 ) : (
-                    <Button {...signUpBtnStyle}>
-                        <a href={`tel:${homeData.owner.numberPhone}`}>
-                            <i className="fa-solid fa-phone-flip"></i>
-                            {homeData.owner.numberPhone}
-                        </a>
-                    </Button>
+                    <div className="homepage-sprice__action homepage-sprice__action--guest">
+                        <Button {...payBtnStyle}>
+                            <a href={`tel:${homeData.owner.numberPhone}`}>
+                                <i className="fa-solid fa-phone-flip"></i>
+                                {homeData.owner.numberPhone}
+                            </a>
+                        </Button>
+                    </div>
                 )}
             </div>
         );
@@ -444,7 +443,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                             <h1>
                                                 {'Khu trọ được cho thuê bởi chủ nhà '}
                                                 <span>
-                                                    <Link href={`/user/${homeData.owner._id}`}>
+                                                    <Link href={`/profile/${homeData.owner._id}`}>
                                                         <a>{homeData.owner.fullname}</a>
                                                     </Link>
                                                 </span>
@@ -549,7 +548,6 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                             </div>
                                         )}
                                         <div className="homezooms__listlabel">Danh sách phòng</div>
-
                                         {listZoom?.docs && listZoom.docs.length > 0 ? (
                                             <>
                                                 <div className="homezooms__list">
@@ -663,7 +661,7 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                                                 <MapBox
                                                     key={JSON.stringify(homeData.position)}
                                                     choosePlace={false}
-                                                    // markerIcon={homeIcon}
+                                                    markerIcon={homeIcon}
                                                     center={[
                                                         homeData.position.lng,
                                                         homeData.position.lat,

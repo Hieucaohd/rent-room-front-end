@@ -104,9 +104,14 @@ const getSearchPlaceName = async (p: any, d: any, w: any) => {
     return formatAddressName(listAddress.filter((item) => item).join(', '));
 };
 
-const getProvinceList = async () => {
+const getProvinceList = async (all: boolean = true) => {
     try {
-        const response = await fetch('https://provinces.open-api.vn/api/');
+        let response = null;
+        if (all) {
+            response = await fetch('https://provinces.open-api.vn/api/');
+        } else {
+            response = await fetch('/location/province.json');
+        }
         const responseJSON = await response.json();
         return responseJSON;
     } catch (error) {
@@ -134,8 +139,8 @@ const getWardList = async (code: any) => {
     }
 };
 
-const getListExitPosition = async (p: number, d: number) => {
-    const listProvince: any[] = await getProvinceList();
+const getListExitPosition = async (p: number, d: number, all: boolean = true) => {
+    const listProvince: any[] = await getProvinceList(all);
     const listDistrict: any[] = (await getDistrictList(p)).districts;
     const listWard: any[] = (await getWardList(d)).wards;
     const data: [any[], any[], any[]] = [listProvince, listDistrict, listWard];

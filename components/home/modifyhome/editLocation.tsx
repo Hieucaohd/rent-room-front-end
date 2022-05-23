@@ -36,6 +36,7 @@ import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import { HomeData } from '@lib/interface';
 import { getListExitPosition } from '@lib/getPosition';
 import useResize from '@lib/use-resize';
+import Nprogress from 'nprogress';
 
 const hideFormAnimate: Variants = {
     showForm: {
@@ -269,13 +270,24 @@ const EditHomeLocation = ({
     const isHaveLocation = province && district && ward;
 
     useEffect(() => {
+        let isRunningInside = false;
+        if (!Nprogress.isStarted()) {
+            Nprogress.start();
+            isRunningInside = true;
+        }
         if (isHaveLocation) {
-            getListExitPosition(province, district).then((res) => {
+            getListExitPosition(province, district, false).then((res) => {
                 setListLocation(res);
                 setOpen(true);
+                if (isRunningInside) {
+                    Nprogress.done();
+                }
             });
         } else {
             setOpen(true);
+            if (isRunningInside) {
+                Nprogress.done();
+            }
         }
     }, [province, district, ward]);
 
@@ -508,6 +520,7 @@ const EditHomeLocation = ({
                                 </Box>
                                 <div className="addhome-form__location">
                                     <FormLocation
+                                        allProvince={false}
                                         provinceField={register('province')}
                                         districtField={register('district')}
                                         wardField={register('ward')}

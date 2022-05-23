@@ -149,7 +149,7 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
         // console.log(router.asPath);
         const path = router.asPath.split('/')[1];
 
-        if (!mount.current || path != 'user') {
+        if (!mount.current || !path.includes('profile')) {
             return;
         }
         if (page && typeof page == 'string') {
@@ -355,7 +355,7 @@ export default function MyHomes({ data: homeData }: ProfileProps) {
                         onClick={() => {
                             router.push(
                                 `${router.pathname.replace('[userid]', `${userid}`)}?page=${
-                                    route.totalPages - 1
+                                    route.totalPages
                                 }`
                             );
                         }}

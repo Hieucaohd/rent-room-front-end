@@ -2,7 +2,6 @@ import { useLazyQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { LOGIN } from '@lib/apollo/auth';
-import { User } from '@lib/withAuth';
 import { motion } from 'framer-motion';
 import {
     Box,
@@ -196,6 +195,7 @@ export default function SignIn() {
     };
 
     if (user) {
+        location.replace('/');
         return <></>;
     }
 
@@ -328,10 +328,7 @@ export default function SignIn() {
                             <ForgotPopup />
                         </Box>
 
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Button isLoading={loading} type="submit">
                                 Đăng Nhập
                             </Button>

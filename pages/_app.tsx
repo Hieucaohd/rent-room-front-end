@@ -29,7 +29,7 @@ const getPath = (path: string) => {
 };
 
 function MyApp({ Component, pageProps, myProps }: MyAppProps) {
-    const { user, addUser, removeUser, imageprev, closeImages, popup } = useStore();
+    const { user, addUser, removeUser, imageprev, removePopup, popup } = useStore();
     const router = useRouter();
     useEffect(() => {
         console.log(myProps);
@@ -41,8 +41,18 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
     }, [user.SSR]);
 
     useEffect(() => {
-        const onChnageStart = () => Nprogress.start();
-        const onChnageStop = () => Nprogress.done();
+        const onChnageStart = () => {
+            Nprogress.start();
+            if (popup) {
+                removePopup();
+            }
+        };
+        const onChnageStop = () => {
+            Nprogress.done();
+            if (popup) {
+                removePopup();
+            }
+        };
         router.events.on('routeChangeStart', onChnageStart);
         router.events.on('routeChangeComplete', onChnageStop);
         router.events.on('routeChangeError', onChnageStop);
@@ -52,7 +62,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
             router.events.off('routeChangeComplete', onChnageStop);
             router.events.off('routeChangeError', onChnageStop);
         };
-    }, []);
+    }, [popup]);
 
     const withoutPage = useCallback((router: NextRouter) => {
         const path = getPath(router.pathname);

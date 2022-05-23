@@ -421,5 +421,6 @@ const ModifyHomePrices = ({
 
 export * from './editDescription';
 export * from './editLocation';
+export * from './deleteHome';
 
 export default ModifyHomePrices;

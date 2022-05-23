@@ -4,15 +4,12 @@ const data = require('../fixtures/data.json');
 const { acc } = require('../fixtures/account.json');
 describe('Login Test', () => {
     it('thêm trọ', () => {
-        cy.server().route(
-            'GET',
-            '*mapbox.com*'
-        ).as('MAPBOX')
+        cy.server().route('GET', '*mapbox.com*').as('MAPBOX');
         cy.login(acc[0].user, acc[0].password);
         cy.url({
             timeout: 10000,
         }).should('eq', `${data.FE_URL}/`);
-        cy.visit(`${data.FE_URL}/user/homes?page=1`);
+        cy.visit(`${data.FE_URL}/user?page=1`);
         cy.get('button[class*="chakra-button"]').contains('Thêm trọ').click();
         cy.get('select[name="province"]', {
             timeout: 10000,

@@ -203,7 +203,7 @@ export default function Header({ user }: IHeaderProps) {
                                 {mobilemode && <div className="username">{user.fullname}</div>}
                                 <MenuItem
                                     onClick={() => {
-                                        router.push(`/user/yourprofile?page=1`);
+                                        router.push(`/profile?page=1`);
                                     }}
                                     icon={<i className="fa-solid fa-user"></i>}
                                 >

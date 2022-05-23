@@ -157,15 +157,8 @@ export default function MapBox({
 
             map.on('click', mapboxClick);
 
-            const mapboxZoom = (e: any) => {
-                console.log(e.target.style.z);
-            };
-
-            map.on('zoomend', mapboxZoom);
-
             return () => {
                 map.off('click', mapboxClick);
-                map.off('zoomend', mapboxZoom);
                 if (mapbox.current) {
                     mapbox.current.remove();
                 }
