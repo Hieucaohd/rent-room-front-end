@@ -14,6 +14,7 @@ import { getRoomSaved, updateRoom as updateRoomSaved } from '@lib/apollo/profile
 import useStore from '@store/useStore';
 import Slider from '@components/Slider';
 import { RoomData } from '@lib/interface';
+import { formatPrice1 } from '@lib/formatPrice';
 
 interface RoomCardProps {
     width?: any;
@@ -34,7 +35,7 @@ export default function RoomCard(props: RoomCardProps) {
 
                 <div className="zoomcard__name">
                     <div>Phòng số {data?.roomNumber}</div>
-                    <div>{data?.price}&nbsp;VNĐ/tháng</div>
+                    <div>{formatPrice1(data.price)}&nbsp;VNĐ/tháng</div>
                 </div>
                 <div className="zoomcard__moreinfo">
                     <div>
@@ -117,7 +118,8 @@ export function RoomSaveCard(
         <Link href={`/room/${data._id}`}>
             <a className="zoomcard">
                 <Button
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.preventDefault();
                         createPopup(
                             <PopUp
                                 removePopup={removePopup}
@@ -135,7 +137,7 @@ export function RoomSaveCard(
                 />
                 <div className="zoomcard__name">
                     <div>Phòng số {data?.roomNumber}</div>
-                    <div>{data?.price}&nbsp;VNĐ/tháng</div>
+                    <div>{formatPrice1(data?.price)}&nbsp;VNĐ/tháng</div>
                 </div>
                 <div className="zoomcard__moreinfo">
                     <div>
