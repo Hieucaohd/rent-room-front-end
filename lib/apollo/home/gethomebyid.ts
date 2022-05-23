@@ -25,8 +25,8 @@ export const getHomeById = {
                 images
                 internetPrice
                 cleaningPrice
-                # minPrice
-                # maxPrice
+                minPrice
+                maxPrice
                 totalRooms
                 description
                 position {
