@@ -15,6 +15,7 @@ import client from '@lib/apollo/apollo-client';
 import { checkLoggedIn, User } from '@lib/withAuth';
 import useStore from '@store/useStore';
 import 'styles/index.scss';
+import { disableReactDevTools } from '@lib/disableReactDevTools';
 
 interface MyAppProps extends AppProps {
     myProps: {
@@ -37,6 +38,8 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
             addUser(myProps.user);
         } else if (user.SSR) {
             removeUser();
+        } else if (!user.SSR) {
+            disableReactDevTools();
         }
     }, [user.SSR]);
 
