@@ -18,6 +18,7 @@ import client from '@lib/apollo/apollo-client';
 import { User } from '@lib/withAuth';
 import { ErrorAction, ForgotForm } from '@lib/interface';
 import { signUpBtnStyle } from '@chakra';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     let { token } = query;
@@ -179,239 +180,247 @@ export default function ForgotPassword({ token, user }: ForgotProps) {
         }
     }, []);
     return (
-        <motion.div className="forgotpw-base">
-            {!success ? (
-                <motion.div
-                    className="forgotpw"
-                    key={1}
-                    variants={container}
-                    initial="hidden"
-                    animate="visible"
-                    exit="out"
-                >
-                    <motion.div variants={containerChild}>
-                        <Avatar
-                            name={user.fullname}
-                            size="2xl"
-                            position="relative"
-                            children={
-                                <svg
-                                    className="avatar__border"
-                                    width={'calc(100%)'}
-                                    height={'calc(100%)'}
-                                >
-                                    <circle
-                                        strokeLinecap="round"
-                                        stroke-mitterlimit="0"
-                                        cx="50%"
-                                        cy="50%"
-                                        r="calc((100% - 3px)/2)"
-                                        strokeWidth="3px"
-                                        stroke="gray"
-                                        fill="transparent"
+        <>
+            <Head>
+                <title>Đổi mật khẩu</title>
+            </Head>
+            <motion.div className="forgotpw-base">
+                {!success ? (
+                    <motion.div
+                        className="forgotpw"
+                        key={1}
+                        variants={container}
+                        initial="hidden"
+                        animate="visible"
+                        exit="out"
+                    >
+                        <motion.div variants={containerChild}>
+                            <Avatar
+                                name={user.fullname}
+                                size="2xl"
+                                position="relative"
+                                children={
+                                    <svg
+                                        className="avatar__border"
+                                        width={'calc(100%)'}
+                                        height={'calc(100%)'}
+                                    >
+                                        <circle
+                                            strokeLinecap="round"
+                                            stroke-mitterlimit="0"
+                                            cx="50%"
+                                            cy="50%"
+                                            r="calc((100% - 3px)/2)"
+                                            strokeWidth="3px"
+                                            stroke="gray"
+                                            fill="transparent"
+                                        />
+                                    </svg>
+                                }
+                                src={user.avatar}
+                            />
+                        </motion.div>
+                        <motion.div variants={containerChild}>{user.fullname}</motion.div>
+                        <form className="forgotpw-form" onSubmit={handleSubmit(submitForm)}>
+                            <motion.div variants={containerChild}>
+                                <InputGroup className="forgotpw-form__group">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fa-solid fa-key"></i>}
                                     />
-                                </svg>
-                            }
-                            src={user.avatar}
-                        />
+                                    <Input
+                                        borderWidth="3px"
+                                        borderColor={errorAction.password ? 'red.300' : 'gray.300'}
+                                        height="50px"
+                                        width="100%"
+                                        bgColor="white"
+                                        _focus={{
+                                            borderColor: '#80BEFC',
+                                        }}
+                                        placeholder="mật khẩu mới"
+                                        type={showPassword ? 'text' : 'password'}
+                                        {...register('password')}
+                                        onChange={(e) => {
+                                            register('password').onChange(e);
+                                            setErrorAction({
+                                                password: false,
+                                                passwordConfirm: false,
+                                            });
+                                        }}
+                                    />
+                                    <InputRightElement
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        cursor="pointer"
+                                        children={
+                                            <Button
+                                                tabIndex={-1}
+                                                backgroundColor="transparent"
+                                                width="100%"
+                                                _focus={{ outline: 'none' }}
+                                                _active={{ backgroundColor: 'transparent' }}
+                                                _hover={{ backgroundColor: 'transparent' }}
+                                            >
+                                                {showPassword ? (
+                                                    <i className="fa-solid fa-eye"></i>
+                                                ) : (
+                                                    <i className="fa-solid fa-eye-slash"></i>
+                                                )}
+                                            </Button>
+                                        }
+                                    />
+                                    {errorAction.password && (
+                                        <div className="forgotpw-form__group-error">
+                                            Mật khẩu phải có tối thiểu 1 ký tự
+                                        </div>
+                                    )}
+                                </InputGroup>
+                            </motion.div>
+                            <motion.div variants={containerChild}>
+                                <InputGroup className="forgotpw-form__group">
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        children={<i className="fa-solid fa-key"></i>}
+                                    />
+                                    <Input
+                                        borderWidth="3px"
+                                        borderColor={
+                                            errorAction.passwordConfirm ? 'red.300' : 'gray.300'
+                                        }
+                                        height="50px"
+                                        width="100%"
+                                        bgColor="white"
+                                        _focus={{
+                                            borderColor: '#80BEFC',
+                                        }}
+                                        placeholder="nhập lại mật khẩu mới"
+                                        {...register('passwordConfirm')}
+                                        onChange={(e) => {
+                                            register('passwordConfirm').onChange(e);
+                                            setErrorAction({
+                                                ...errorAction,
+                                                passwordConfirm: false,
+                                            });
+                                        }}
+                                        type={showPassword ? 'text' : 'password'}
+                                    />
+                                    <InputRightElement
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        cursor="pointer"
+                                        children={
+                                            <Button
+                                                tabIndex={-1}
+                                                backgroundColor="transparent"
+                                                width="100%"
+                                                _focus={{ outline: 'none' }}
+                                                _active={{ backgroundColor: 'transparent' }}
+                                                _hover={{ backgroundColor: 'transparent' }}
+                                            >
+                                                {showPassword ? (
+                                                    <i className="fa-solid fa-eye"></i>
+                                                ) : (
+                                                    <i className="fa-solid fa-eye-slash"></i>
+                                                )}
+                                            </Button>
+                                        }
+                                    />
+                                    {errorAction.passwordConfirm && (
+                                        <div className="forgotpw-form__group-error">
+                                            Mật khẩu xác nhận sai
+                                        </div>
+                                    )}
+                                </InputGroup>
+                            </motion.div>
+                            <motion.div variants={containerChild} className="forgotpw-form__submit">
+                                <Button
+                                    {...signUpBtnStyle}
+                                    height={'unset'}
+                                    backgroundColor="var(--app-btn-bgcolor)"
+                                    fontWeight="bold"
+                                    type="submit"
+                                    isLoading={loading}
+                                >
+                                    Đổi mật khẩu
+                                </Button>
+                            </motion.div>
+                        </form>
                     </motion.div>
-                    <motion.div variants={containerChild}>{user.fullname}</motion.div>
-                    <form className="forgotpw-form" onSubmit={handleSubmit(submitForm)}>
-                        <motion.div variants={containerChild}>
-                            <InputGroup className="forgotpw-form__group">
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<i className="fa-solid fa-key"></i>}
-                                />
-                                <Input
-                                    borderWidth="3px"
-                                    borderColor={errorAction.password ? 'red.300' : 'gray.300'}
-                                    height="50px"
-                                    width="100%"
-                                    bgColor="white"
-                                    _focus={{
-                                        borderColor: '#80BEFC',
-                                    }}
-                                    placeholder="mật khẩu mới"
-                                    type={showPassword ? 'text' : 'password'}
-                                    {...register('password')}
-                                    onChange={(e) => {
-                                        register('password').onChange(e);
-                                        setErrorAction({
-                                            password: false,
-                                            passwordConfirm: false,
-                                        });
-                                    }}
-                                />
-                                <InputRightElement
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    cursor="pointer"
-                                    children={
-                                        <Button
-                                            tabIndex={-1}
-                                            backgroundColor="transparent"
-                                            width="100%"
-                                            _focus={{ outline: 'none' }}
-                                            _active={{ backgroundColor: 'transparent' }}
-                                            _hover={{ backgroundColor: 'transparent' }}
-                                        >
-                                            {showPassword ? (
-                                                <i className="fa-solid fa-eye"></i>
-                                            ) : (
-                                                <i className="fa-solid fa-eye-slash"></i>
-                                            )}
-                                        </Button>
-                                    }
-                                />
-                                {errorAction.password && (
-                                    <div className="forgotpw-form__group-error">
-                                        Mật khẩu phải có tối thiểu 1 ký tự
-                                    </div>
-                                )}
-                            </InputGroup>
-                        </motion.div>
-                        <motion.div variants={containerChild}>
-                            <InputGroup className="forgotpw-form__group">
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={<i className="fa-solid fa-key"></i>}
-                                />
-                                <Input
-                                    borderWidth="3px"
-                                    borderColor={
-                                        errorAction.passwordConfirm ? 'red.300' : 'gray.300'
-                                    }
-                                    height="50px"
-                                    width="100%"
-                                    bgColor="white"
-                                    _focus={{
-                                        borderColor: '#80BEFC',
-                                    }}
-                                    placeholder="nhập lại mật khẩu mới"
-                                    {...register('passwordConfirm')}
-                                    onChange={(e) => {
-                                        register('passwordConfirm').onChange(e);
-                                        setErrorAction({ ...errorAction, passwordConfirm: false });
-                                    }}
-                                    type={showPassword ? 'text' : 'password'}
-                                />
-                                <InputRightElement
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    cursor="pointer"
-                                    children={
-                                        <Button
-                                            tabIndex={-1}
-                                            backgroundColor="transparent"
-                                            width="100%"
-                                            _focus={{ outline: 'none' }}
-                                            _active={{ backgroundColor: 'transparent' }}
-                                            _hover={{ backgroundColor: 'transparent' }}
-                                        >
-                                            {showPassword ? (
-                                                <i className="fa-solid fa-eye"></i>
-                                            ) : (
-                                                <i className="fa-solid fa-eye-slash"></i>
-                                            )}
-                                        </Button>
-                                    }
-                                />
-                                {errorAction.passwordConfirm && (
-                                    <div className="forgotpw-form__group-error">
-                                        Mật khẩu xác nhận sai
-                                    </div>
-                                )}
-                            </InputGroup>
-                        </motion.div>
-                        <motion.div variants={containerChild} className="forgotpw-form__submit">
-                            <Button
-                                {...signUpBtnStyle}
-                                height={'unset'}
-                                backgroundColor="var(--app-btn-bgcolor)"
-                                fontWeight="bold"
-                                type="submit"
-                                isLoading={loading}
-                            >
-                                Đổi mật khẩu
-                            </Button>
-                        </motion.div>
-                    </form>
-                </motion.div>
-            ) : (
-                <motion.div
-                    className="forgotpw"
-                    key={2}
-                    variants={container}
-                    initial="hidden"
-                    animate="visible"
-                    exit="out"
-                >
-                    <motion.div className="forgotpw__success">
-                        <div>
-                            <motion.div
-                                initial={{
-                                    width: '0%',
-                                }}
-                                animate={{
-                                    width: '100%',
-                                }}
-                                transition={{
-                                    duration: 0.5,
-                                }}
-                            ></motion.div>
-                        </div>
-                        <div>
-                            <motion.div
-                                initial={{
-                                    width: '0%',
-                                }}
-                                animate={{
-                                    width: '100%',
-                                }}
-                                transition={{
-                                    duration: 0.6,
-                                    delay: 0.5,
-                                }}
-                            ></motion.div>
-                        </div>
-                    </motion.div>
+                ) : (
                     <motion.div
-                        initial={{
-                            y: 50,
-                            opacity: 0,
-                        }}
-                        animate={{
-                            y: 0,
-                            opacity: 1,
-                        }}
-                        transition={{
-                            duration: 1,
-                            delay: 1.1,
-                        }}
-                        className="forgotpw__message"
+                        className="forgotpw"
+                        key={2}
+                        variants={container}
+                        initial="hidden"
+                        animate="visible"
+                        exit="out"
                     >
-                        Bạn đã cập nhật mật khẩu thành công!
+                        <motion.div className="forgotpw__success">
+                            <div>
+                                <motion.div
+                                    initial={{
+                                        width: '0%',
+                                    }}
+                                    animate={{
+                                        width: '100%',
+                                    }}
+                                    transition={{
+                                        duration: 0.5,
+                                    }}
+                                ></motion.div>
+                            </div>
+                            <div>
+                                <motion.div
+                                    initial={{
+                                        width: '0%',
+                                    }}
+                                    animate={{
+                                        width: '100%',
+                                    }}
+                                    transition={{
+                                        duration: 0.6,
+                                        delay: 0.5,
+                                    }}
+                                ></motion.div>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            initial={{
+                                y: 50,
+                                opacity: 0,
+                            }}
+                            animate={{
+                                y: 0,
+                                opacity: 1,
+                            }}
+                            transition={{
+                                duration: 1,
+                                delay: 1.1,
+                            }}
+                            className="forgotpw__message"
+                        >
+                            Bạn đã cập nhật mật khẩu thành công!
+                        </motion.div>
+                        <motion.div
+                            initial={{
+                                y: 50,
+                                opacity: 0,
+                            }}
+                            animate={{
+                                y: 0,
+                                opacity: 1,
+                            }}
+                            transition={{
+                                duration: 1,
+                                delay: 2.1,
+                            }}
+                            className="forgotpw__link"
+                        >
+                            <Link href="/signin">
+                                <a>Đi tới đăng nhập {' > '}</a>
+                            </Link>
+                        </motion.div>
                     </motion.div>
-                    <motion.div
-                        initial={{
-                            y: 50,
-                            opacity: 0,
-                        }}
-                        animate={{
-                            y: 0,
-                            opacity: 1,
-                        }}
-                        transition={{
-                            duration: 1,
-                            delay: 2.1,
-                        }}
-                        className="forgotpw__link"
-                    >
-                        <Link href="/signin">
-                            <a>Đi tới đăng nhập {' > '}</a>
-                        </Link>
-                    </motion.div>
-                </motion.div>
-            )}
-        </motion.div>
+                )}
+            </motion.div>
+        </>
     );
 }

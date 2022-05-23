@@ -44,6 +44,8 @@ function getPages(data: any) {
     return data?.paginator;
 }
 
+const payBtnStyle = { ...signUpBtnStyle, height: undefined, fontWeight: 700 };
+
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     const Cookie = getSecurityCookie(req);
     let user: { _id: string } | null = null;
@@ -311,12 +313,14 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                         </Button>
                     </div>
                 ) : (
-                    <Button {...signUpBtnStyle}>
-                        <a href={`tel:${homeData.owner.numberPhone}`}>
-                            <i className="fa-solid fa-phone-flip"></i>
-                            {homeData.owner.numberPhone}
-                        </a>
-                    </Button>
+                    <div className="homepage-sprice__action homepage-sprice__action--guest">
+                        <Button {...payBtnStyle}>
+                            <a href={`tel:${homeData.owner.numberPhone}`}>
+                                <i className="fa-solid fa-phone-flip"></i>
+                                {homeData.owner.numberPhone}
+                            </a>
+                        </Button>
+                    </div>
                 )}
             </div>
         );

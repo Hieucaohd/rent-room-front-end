@@ -162,13 +162,23 @@
         flex-flow: column;
         justify-content: space-between;
 
-        & > div {
+        &__action {
             display: flex;
             --gap: 10px;
             gap: var(--gap);
 
             & > button {
                 width: calc(50% - var(--gap) / 2);
+            }
+
+            &--guest {
+                & > button {
+                    width: 100%;
+                    & > a {
+                        display: flex;
+                        gap: 10px;
+                    }
+                }
             }
         }
 
