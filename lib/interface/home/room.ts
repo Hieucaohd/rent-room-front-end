@@ -8,6 +8,9 @@ export interface RoomData {
     floor: number;
     images: [string];
     description: string;
+    amenities: {
+        title: string;
+    }[];
     roomNumber: string;
     createdAt: string;
     title: string;

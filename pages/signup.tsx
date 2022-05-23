@@ -313,13 +313,8 @@ export default function SignUp() {
             });
     }, []);
 
-    useEffect(() => {
-        if (user?.info) {
-            location.href = '/';
-        }
-    }, [user]);
-
     if (user?.info) {
+        location.replace('/');
         return <></>;
     }
 

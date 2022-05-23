@@ -115,7 +115,7 @@ export const deleteHome = {
             deleteHome(id: $deleteHomeId)
         }
     `,
-    variable: (_id: string) => ({
+    variables: (_id: string) => ({
         deleteHomeId: _id,
     }),
 };

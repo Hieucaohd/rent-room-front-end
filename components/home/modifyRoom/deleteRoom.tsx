@@ -11,22 +11,22 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { InputStyle } from '@chakra';
-import { deleteHome } from '@lib/apollo/home';
-import { HomeData } from '@lib/interface';
+import { RoomData } from '@lib/interface';
 import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import { useMemo, useRef, useState } from 'react';
 import { removeVietnameseTones } from '@lib/removeVietnamese';
+import { deleteRoomById } from '@lib/apollo/home/room';
 import useResize from '@lib/use-resize';
 
 interface Props {
     closeForm: () => void;
     callback?: () => any;
-    homeData: HomeData;
+    roomData: RoomData;
 }
 
-export function DeleteHome({ closeForm, homeData }: Props) {
-    const [deleteCurrentHome] = useMutation(deleteHome.command, {
-        variables: deleteHome.variables(homeData._id),
+export function DeleteRoom({ closeForm, roomData }: Props) {
+    const [deleteRoom] = useMutation(deleteRoomById.command, {
+        variables: deleteRoomById.variables(roomData._id),
     });
     const ref = useRef(null);
     const toast = useToast();
@@ -62,11 +62,11 @@ export function DeleteHome({ closeForm, homeData }: Props) {
                             : {})}
                     >
                         <AlertDialogHeader fontSize="lg" paddingBottom="5px" fontWeight="bold">
-                            Xóa trọ
+                            Xóa phòng
                         </AlertDialogHeader>
 
                         <AlertDialogBody display="flex" flexFlow="column" gap="10px">
-                            <div>Nhập "Tôi chắc chắn" để xóa trọ này?</div>
+                            <div>Nhập "Tôi chắc chắn" để xóa phòng này?</div>
                             <div>
                                 <Input
                                     {...InputStyle}
@@ -86,19 +86,21 @@ export function DeleteHome({ closeForm, homeData }: Props) {
                                 isDisabled={!isTrue}
                                 onClick={() => {
                                     setDeleting(true);
-                                    const listPath = homeData.images.map((item) => {
+                                    const listPath = roomData.images.map((item) => {
                                         return getPathFileFromLink(item);
                                     });
                                     deleteAllFile(listPath)
                                         .then(() => {
-                                            deleteCurrentHome().then(() => {
+                                            deleteRoom().then(() => {
                                                 toast({
-                                                    title: `Xóa trọ thành công`,
+                                                    title: `Xóa phòng thành công`,
                                                     position: 'bottom-left',
                                                     status: 'success',
                                                     isClosable: true,
                                                 });
-                                                location.replace('/profile?page=1');
+                                                window.location.replace(
+                                                    `/home/${roomData.home._id}`
+                                                );
                                             });
                                         })
                                         .catch((e) => {

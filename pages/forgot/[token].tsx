@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import client from '@lib/apollo/apollo-client';
 import { User } from '@lib/withAuth';
 import { ErrorAction, ForgotForm } from '@lib/interface';
+import { signUpBtnStyle } from '@chakra';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     let { token } = query;
@@ -107,7 +108,7 @@ export default function ForgotPassword({ token, user }: ForgotProps) {
         password: false,
         passwordConfirm: false,
     });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const submitForm = useCallback((e: ForgotForm) => {
         let hasError = false;
@@ -322,16 +323,16 @@ export default function ForgotPassword({ token, user }: ForgotProps) {
                             </InputGroup>
                         </motion.div>
                         <motion.div variants={containerChild} className="forgotpw-form__submit">
-                            <motion.button
-                                whileHover={{
-                                    scale: 1.05,
-                                }}
-                                whileTap={{
-                                    scale: 0.95,
-                                }}
+                            <Button
+                                {...signUpBtnStyle}
+                                height={'unset'}
+                                backgroundColor="var(--app-btn-bgcolor)"
+                                fontWeight="bold"
+                                type="submit"
+                                isLoading={loading}
                             >
-                                Xác nhận
-                            </motion.button>
+                                Đổi mật khẩu
+                            </Button>
                         </motion.div>
                     </form>
                 </motion.div>

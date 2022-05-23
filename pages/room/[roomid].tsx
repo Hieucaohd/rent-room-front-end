@@ -1,39 +1,33 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import {
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay,
-    Avatar,
-    Button,
-    Tooltip,
-    useDisclosure,
-} from '@chakra-ui/react';
+import { Avatar, Button, Tooltip } from '@chakra-ui/react';
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '@chakra';
 import AppAbout from '@components/app-about';
 import EmptyData from '@components/emptydata';
 import Gallery from '@components/gallery';
-import { EditRoomAmenity, EditRoomDescription, EditRoomTitle } from '@components/home/modifyRoom';
+import {
+    DeleteRoom,
+    EditRoomAmenity,
+    EditRoomDescription,
+    EditRoomTitle,
+} from '@components/home/modifyRoom';
 import { RoomImagePreivew } from '@components/image-preview';
 import MapBox from '@components/mapbox';
 import listAmenityIcon from '@lib/amenities';
 import client from '@lib/apollo/apollo-client';
 import { Amenity, deleteRoomById } from '@lib/apollo/home/room';
-import { getSSRRoomById, RoomData } from '@lib/apollo/home/room/getroombyid';
+import { getSSRRoomById } from '@lib/apollo/home/room/getroombyid';
 import { getRoomSaved, saveRoom, updateRoom as updateRoomSaved } from '@lib/apollo/profile';
 import getTitleHome from '@lib/getNameHome';
-import { deleteAllFile, getPathFileFromLink } from '@lib/upLoadAllFile';
 import useResize from '@lib/use-resize';
 import getSecurityCookie from '@security';
 import useStore from '@store/useStore';
+import { RoomData } from '@lib/interface';
 
 export interface RoomPageProps {
     roomSSRData: RoomData;
@@ -118,19 +112,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
     });
     const [roomData, setRoomData] = useState(roomSSRData);
     const homeData = roomData.home;
-
-    const { isOpen: isOpenDialog, onOpen: onOpenDialog, onClose: onCloseDialog } = useDisclosure();
-    const cancelDeleteRef = useRef(null);
-    const [listPath, setListPath] = useState<(string | null)[]>([]);
-
-    useEffect(() => {
-        const paths = roomData.images.map((item) => {
-            return getPathFileFromLink(item);
-        });
-        if (paths) {
-            setListPath(paths);
-        }
-    }, [roomData]);
 
     const [roomDeleting, setRoomDeleting] = useState(false);
     const { user, isServerSide, showImagePreview, closeImagePreview, createPopup, closePopup } =
@@ -426,7 +407,12 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                                 width={'100%'}
                                                 colorScheme="red"
                                                 onClick={() => {
-                                                    onOpenDialog();
+                                                    createPopup(
+                                                        <DeleteRoom
+                                                            closeForm={closePopup}
+                                                            roomData={roomData}
+                                                        />
+                                                    );
                                                 }}
                                             >
                                                 Xóa phòng
@@ -649,45 +635,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                     marginBottom: aboutpageMarginBottom,
                 }}
             />
-            <AlertDialog
-                isOpen={isOpenDialog}
-                leastDestructiveRef={cancelDeleteRef}
-                onClose={onCloseDialog}
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                            Xóa phòng
-                        </AlertDialogHeader>
-
-                        <AlertDialogBody>Bạn có chắc chắn muốn xóa phòng này?</AlertDialogBody>
-
-                        <AlertDialogFooter>
-                            <Button ref={cancelDeleteRef} onClick={onCloseDialog}>
-                                Hủy
-                            </Button>
-                            <Button
-                                colorScheme="red"
-                                isLoading={roomDeleting}
-                                onClick={() => {
-                                    setRoomDeleting(true);
-                                    deleteRoom().then(async () => {
-                                        try {
-                                            await deleteAllFile(listPath);
-                                        } catch (error) {
-                                            console.log(error);
-                                        }
-                                        window.location.replace(`/home/${homeData._id}`);
-                                    });
-                                }}
-                                ml={3}
-                            >
-                                Xóa
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
         </>
     );
 }

@@ -44,7 +44,10 @@
         white-space: nowrap;
 
         @media screen and (max-width: 500px) {
-            max-width: 120px;
+            max-width: 110px;
+            & > div:not(.navbar-menu) {
+                margin-top: 3px;
+            }
         }
 
         & svg {
@@ -73,6 +76,10 @@
         &__menutoggle {
             padding-left: 5px;
             padding-right: 5px;
+        }
+
+        @media screen and (max-width: 500px) {
+            gap: 5px;
         }
     }
 

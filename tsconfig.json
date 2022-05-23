@@ -18,8 +18,7 @@
         "paths": {
             "@lib/*": ["./lib/*"],
             "@store/*": ["./store/*"],
-            "@chakra/*": ["./chakra/*"],
-            "@chakra": ["./chakra"],
+            "@chakra": ["./chakra/index"],
             "@components/*": ["./components/*"],
             "@security": ["./security"],
             "@firebase": ["./firebase"],

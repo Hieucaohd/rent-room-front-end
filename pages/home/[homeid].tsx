@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import { Avatar, Box, Button, Skeleton } from '@chakra-ui/react';
+import { Avatar, Button, Skeleton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { signUpBtnStyle } from '@chakra';
@@ -21,14 +21,10 @@ import AppAbout from '@components/app-about';
 import Link from 'next/link';
 import { HomeData, ListZoomData, Paginator } from '@lib/interface';
 import useResize from '@lib/use-resize';
-import DeleteHome from '@components/home/modifyhome/deleteHome';
+import { DeleteHome } from '@components/home/modifyhome';
 
 const getData = (data: any) => {
     const dt = data?.getHomeById;
-    /* const cloneData = {...dt}
-    if (dt && dt.description){
-        dt.description = JSON.parse(dt.description)
-    } */
     return dt;
 };
 
@@ -295,8 +291,8 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                     <div className="homepage-sprice__action">
                         <Button
                             {...signUpBtnStyle}
+                            height={'unset'}
                             backgroundColor="var(--app-btn-bgcolor)"
-                            height="35px"
                             fontWeight="bold"
                             onClick={() => setModifyPrice(true)}
                         >
@@ -304,7 +300,6 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                         </Button>
                         <Button
                             colorScheme="red"
-                            height="35px"
                             className="homepage__delete"
                             onClick={() => {
                                 createPopup(
