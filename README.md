@@ -27,7 +27,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
             └─ [homeid].tsx: thông tin từng trọ theo homeid
         ├─ room
             └─ [roomid].tsx: thông tin từng phòng theo roomid
-        ├─ user
+        ├─ profile
             └─ [id].tsx: trang cá nhân của người dùng theo id
             ├─ yourprofile
                 └─ index.tsx: trang cá nhân của người dùng hiện tại
@@ -40,3 +40,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
     ├─ lib: chứa các xử lí logic của component
     ├─ public: chứa logo, ảnh, style, ...
     ├─ styles: chứa style của các component
+    ├─ security: kiểm tra cookies
+    ├─ charka: một số style cho charka ui
+    ├─ cypress: test cho client
+    ├─ store: lưu trữ state bằng zustand
