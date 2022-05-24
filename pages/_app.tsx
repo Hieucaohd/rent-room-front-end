@@ -90,6 +90,8 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
             <ApolloProvider client={client}>
                 <Head>
                     <title>Tìm phòng trọ</title>
+                    <link rel="icon" href="/home.png" />
+                    <link rel="apple-touch-icon" href="/home.png" />
                 </Head>
                 <AnimatePresence>
                     {withoutPage(router) && <Header user={user.info} />}

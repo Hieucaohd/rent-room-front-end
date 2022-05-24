@@ -1,4 +1,5 @@
 import { Button, Input } from '@chakra-ui/react';
+import { getPlace } from '@lib/getPosition';
 import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
 import styles from './styles.module.scss';
@@ -63,7 +64,7 @@ export default function SearchBox(props: ISearchBoxProps) {
             </div>
             {showDropDown && (
                 <ul>
-                    <li>
+                    <li >
                         <i className="fa-solid fa-location-crosshairs"></i> Tìm quanh đây
                     </li>
                     {searchResult.map(({ doc }, index) => (

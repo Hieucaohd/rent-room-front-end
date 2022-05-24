@@ -2,6 +2,7 @@ import { useMediaQuery } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { timeAgo } from '@lib/date';
+import listAmenityIcon from '@lib/amenities';
 import { formatPrice } from '@lib/formatPrice';
 import { formatAddressName } from '@lib/getPosition';
 import { RoomData } from '@lib/interface';
@@ -63,6 +64,8 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
                             {room.square && `Diện tích ${room.square}m²`}{' '}
                             {room.floor && room.square && electricityPrice && '∙'}{' '}
                             {room.floor && `Tầng ${room.floor}`}{' '}
+                            <br/>
+                            {getAmenitiesName(room.amenities)}
                         </div>
                         <h3>{formatPrice(room.price)}/tháng</h3>
                     </div>
@@ -70,4 +73,8 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
             </Link>
         </li>
     );
+}
+
+const getAmenitiesName = (amenities: any[]) => {
+    return amenities?.map(({title}) => listAmenityIcon[title].des).join(" ∙ ")
 }

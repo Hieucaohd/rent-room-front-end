@@ -30,6 +30,9 @@ export const getFilterRoom = async (conditions: any, page: number, limit: number
                     price
                     square
                     isRented
+                    amenities {
+                        title
+                    }
                     floor
                     images
                     description
