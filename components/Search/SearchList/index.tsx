@@ -37,7 +37,7 @@ export default function SearchList({
     return (
         <ul className={styles.list} ref={listRef}>
             <p className={styles.list__address}>
-                Có <strong>{paginator.totalDocs || 0}</strong> phòng trọ tại
+                Có <strong>{paginator.totalDocs || 0}</strong> phòng trọ tại {' '}
                 <strong onClick={() => onShowSelect()}>
                     {address} {isMobile && <i className="fa-solid fa-pen-to-square"></i>}
                 </strong>
