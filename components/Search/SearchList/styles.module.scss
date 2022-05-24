@@ -7,7 +7,6 @@
         font-size: 16px;
 
         & strong {
-            margin: 0px 4px;
             font-size: 16px;
 
             & i {
@@ -17,7 +16,7 @@
                 &:before {
                     position: absolute;
                     left: -2px;
-                    bottom: 0px;
+                    bottom: -2px;
                 }
             }
         }
@@ -86,6 +85,7 @@
 
     &__description {
         opacity: 0.8;
+        line-height: 1.7;
     }
 }
 
