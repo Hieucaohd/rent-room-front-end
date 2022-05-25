@@ -126,7 +126,7 @@ export default function ChangePassword({ user }: Props) {
                 hasError = true;
                 errorHandle.password = true;
             }
-            if (isPassword(e.newPassword)) {
+            if (e.newPassword && isPassword(e.newPassword)) {
                 hasError = true;
                 errorHandle.newPassword = true;
             }
