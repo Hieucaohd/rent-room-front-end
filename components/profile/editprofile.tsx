@@ -6,6 +6,7 @@ import {
     ModalBody,
     ModalCloseButton,
     ModalContent,
+    ModalFooter,
     ModalHeader,
     ModalOverlay,
     Text,
@@ -19,26 +20,9 @@ import { User } from '@lib/withAuth';
 import FormLocation from '@components/location';
 import { getListExitPosition } from '@lib/getPosition';
 import AvatarUpload from '@components/avatar/AvatarUpload';
-
-const container: Variants = {
-    show: {
-        opacity: 1,
-    },
-    hidden: {
-        opacity: 0,
-    },
-};
-
-const formAnimate: Variants = {
-    show: {
-        opacity: 1,
-        y: 0,
-    },
-    hidden: {
-        opacity: 0,
-        y: -100,
-    },
-};
+import headerStyle from '@chakra';
+import { useRouter } from 'next/router';
+import useResize from '@lib/use-resize';
 
 interface RoomAmenityProps {
     closeForm: () => void;
@@ -47,6 +31,8 @@ interface RoomAmenityProps {
 }
 
 export const EditProfile = ({ closeForm, callback, user }: RoomAmenityProps) => {
+    const router = useRouter();
+    const [mobilemode] = useResize();
     const [updateUserProfile] = useMutation(updateProfile.command, {
         onCompleted: () => {
             callback && callback();
@@ -54,7 +40,7 @@ export const EditProfile = ({ closeForm, callback, user }: RoomAmenityProps) => 
         },
     });
     const [isOpen, setOpen] = useState(false);
-    const { register, handleSubmit, watch, setValue } = useForm<UpdateProfile>();
+    const { register, handleSubmit, watch, setValue, getValues } = useForm<UpdateProfile>();
     const provinceData = watch('province');
     const districtData = watch('district');
     const wardData = watch('ward');
@@ -115,9 +101,17 @@ export const EditProfile = ({ closeForm, callback, user }: RoomAmenityProps) => 
 
     return (
         <>
-            <Modal onClose={closeForm} isOpen={isOpen} scrollBehavior="outside">
+            <Modal
+                onClose={closeForm}
+                isOpen={isOpen}
+                {...(mobilemode ? { size: 'full' } : {})}
+                scrollBehavior="outside"
+            >
                 <ModalOverlay overflowY="scroll" />
-                <ModalContent minWidth="min(500px, 100%)">
+                <ModalContent
+                    minWidth="min(500px, 100%)"
+                    {...(mobilemode ? { borderRadius: 0 } : {})}
+                >
                     <ModalHeader>Profile</ModalHeader>
                     <ModalCloseButton
                         _focus={{
@@ -208,21 +202,39 @@ export const EditProfile = ({ closeForm, callback, user }: RoomAmenityProps) => 
                                         : {})}
                                 />
                             </div>
-                            <div className="addhome-form__submit">
-                                <Button
-                                    type="button"
-                                    onClick={() => {
-                                        closeForm();
-                                    }}
-                                >
-                                    Hủy
-                                </Button>
-                                <Button isLoading={loading} type="submit" colorScheme="red">
-                                    Cập nhật
-                                </Button>
-                            </div>
                         </form>
                     </ModalBody>
+                    <ModalFooter>
+                        <div className="addhome-form__submit">
+                            <Button
+                                type="button"
+                                onClick={() => {
+                                    closeForm();
+                                }}
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                onClick={() => router.push('/profile/changepassword')}
+                                {...headerStyle.signUpBtnStyle}
+                                height="unset"
+                                fontWeight="700"
+                            >
+                                Đổi mật khẩu
+                            </Button>
+                            <Button
+                                isLoading={loading}
+                                onClick={() => {
+                                    const data = getValues();
+                                    submitUpdateProfile(data);
+                                }}
+                                type="submit"
+                                colorScheme="red"
+                            >
+                                Cập nhật
+                            </Button>
+                        </div>
+                    </ModalFooter>
                 </ModalContent>
             </Modal>
         </>

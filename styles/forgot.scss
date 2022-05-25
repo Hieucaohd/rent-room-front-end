@@ -90,6 +90,11 @@
         flex-flow: column;
         gap: 30px;
 
+        &--changepw {
+            padding-top: 15px;
+            gap: 17px;
+        }
+
         &__group {
             & > div:not(&-error) {
                 height: 100%;
