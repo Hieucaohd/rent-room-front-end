@@ -73,7 +73,7 @@ export function DeleteRoom({ closeForm, roomData }: Props) {
                                     height="40px"
                                     value={value}
                                     onChange={(e) => typing(e.target.value)}
-                                    placeholder="Tôi chắc chắn?"
+                                    placeholder="Bạn chắc chắn?"
                                 />
                             </div>
                         </AlertDialogBody>

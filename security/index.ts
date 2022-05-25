@@ -30,3 +30,5 @@ export default function getSecurityCookie(
         } catch (error) {}
     }
 }
+
+export * from './validatePassword';

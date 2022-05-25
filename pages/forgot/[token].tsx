@@ -55,12 +55,18 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
             }
         } catch (error) {
             return {
-                notFound: true,
+                redirect: {
+                    permanent: false,
+                    destination: '404',
+                },
             };
         }
     }
     return {
-        notFound: true,
+        redirect: {
+            permanent: true,
+            destination: '404',
+        },
     };
 };
 
@@ -353,7 +359,7 @@ export default function ForgotPassword({ token, user }: ForgotProps) {
                         animate="visible"
                         exit="out"
                     >
-                        <motion.div className="forgotpw__success">
+                        <motion.div className="forgotpw__status forgotpw__status--success">
                             <div>
                                 <motion.div
                                     initial={{

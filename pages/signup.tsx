@@ -17,6 +17,8 @@ import { SIGNUP } from '@lib/apollo/auth';
 import useStore from '@store/useStore';
 import { useRouter } from 'next/router';
 import { FormSignUpError, FormSignUp } from '@lib/interface';
+import useResize from '@lib/use-resize';
+import { isPassword } from '@security';
 
 const formError: FormSignUpError = {
     email: false,
@@ -112,10 +114,23 @@ const containerMore = {
     },
 };
 
+type FocusAble =
+    | 'email'
+    | 'password'
+    | 'passwordConfirm'
+    | 'fullname'
+    | 'callNumber'
+    | 'province'
+    | 'district'
+    | 'ward'
+    | 'none';
+
 export default function SignUp() {
     const [signUpHandle] = useMutation(SIGNUP);
     const { user } = useStore();
     const router = useRouter();
+    const [mobilemode] = useResize();
+    const [focusable, setFocusable] = useState<FocusAble>('none');
     //#region form
     const { register, handleSubmit, watch, setValue } = useForm<FormSignUp>();
     const emailField = register('email');
@@ -223,7 +238,7 @@ export default function SignUp() {
             errorSet.email = true;
             error = true;
         }
-        if (e.password == '') {
+        if (isPassword(e.password)) {
             errorSet.password = true;
             error = true;
         }
@@ -350,7 +365,7 @@ export default function SignUp() {
                     </motion.div>
                     <motion.form
                         className="signup-form"
-                        autoComplete="off"
+                        autoComplete="do-not-autofill"
                         onSubmit={handleSubmit(submitForm)}
                     >
                         <motion.div variants={containerChild}>
@@ -363,7 +378,10 @@ export default function SignUp() {
                                 borderRadius="3px"
                                 isDisabled={!errorState.email}
                                 placement="bottom"
-                                bg="red"
+                                {...(!mobilemode ? { bg: 'red' } : {})}
+                                {...(mobilemode
+                                    ? { isOpen: errorState.email && focusable == 'email' }
+                                    : {})}
                                 hasArrow
                             >
                                 <InputGroup className="signup-form__child">
@@ -375,6 +393,12 @@ export default function SignUp() {
                                         {...InputStyle}
                                         {...emailField}
                                         {...(errorState.email ? { borderColor: 'red' } : {})}
+                                        onFocus={() => {
+                                            setFocusable('email');
+                                        }}
+                                        onBlur={() => {
+                                            setFocusable('none');
+                                        }}
                                         onChange={(e) => {
                                             if (errorState.email) {
                                                 dispatch({
@@ -383,7 +407,7 @@ export default function SignUp() {
                                             }
                                             emailField.onChange(e);
                                         }}
-                                        autoComplete="off"
+                                        autoComplete="do-not-autofill"
                                         type="email"
                                         placeholder="email"
                                     />
@@ -392,11 +416,15 @@ export default function SignUp() {
                         </motion.div>
                         <motion.div variants={containerChild}>
                             <Tooltip
-                                label="Bạn chưa nhập mật khẩu"
+                                label="mật khẩu phải có tối thiểu 6 ký tự, ít nhất một chữ cái và một số"
                                 borderRadius="3px"
                                 isDisabled={!errorState.password}
                                 placement="bottom"
-                                bg="red"
+                                {...(!mobilemode ? { bg: 'red' } : {})}
+                                maxWidth="220px"
+                                {...(mobilemode
+                                    ? { isOpen: errorState.password && focusable == 'password' }
+                                    : {})}
                                 hasArrow
                             >
                                 <InputGroup className="signup-form__child">
@@ -407,6 +435,13 @@ export default function SignUp() {
                                     <Input
                                         {...InputStyle}
                                         {...passwordField}
+                                        onFocus={() => {
+                                            setFocusable('password');
+                                        }}
+                                        onBlur={() => {
+                                            setFocusable('none');
+                                        }}
+                                        autoComplete="new-password"
                                         onChange={(e) => {
                                             passwordField.onChange(e);
                                             dispatch({
@@ -445,7 +480,14 @@ export default function SignUp() {
                                 borderRadius="3px"
                                 isDisabled={!errorState.passwordConfirm}
                                 placement="bottom"
-                                bg="red"
+                                {...(!mobilemode ? { bg: 'red' } : {})}
+                                {...(mobilemode
+                                    ? {
+                                          isOpen:
+                                              errorState.passwordConfirm &&
+                                              focusable == 'passwordConfirm',
+                                      }
+                                    : {})}
                                 hasArrow
                             >
                                 <InputGroup className="signup-form__child">
@@ -459,6 +501,12 @@ export default function SignUp() {
                                         {...(errorState.passwordConfirm
                                             ? { borderColor: 'red' }
                                             : {})}
+                                        onFocus={() => {
+                                            setFocusable('passwordConfirm');
+                                        }}
+                                        onBlur={() => {
+                                            setFocusable('none');
+                                        }}
                                         onChange={(e) => {
                                             if (errorState.passwordConfirm) {
                                                 dispatch({
@@ -522,7 +570,10 @@ export default function SignUp() {
                                 borderRadius="3px"
                                 isDisabled={!errorState.fullname}
                                 placement="bottom"
-                                bg="red"
+                                {...(!mobilemode ? { bg: 'red' } : {})}
+                                {...(mobilemode
+                                    ? { isOpen: errorState.fullname && focusable == 'fullname' }
+                                    : {})}
                                 hasArrow
                             >
                                 <InputGroup className="signup-form__child">
@@ -534,6 +585,12 @@ export default function SignUp() {
                                         {...InputStyle}
                                         {...fullnameField}
                                         {...(errorState.fullname ? { borderColor: 'red' } : {})}
+                                        onFocus={() => {
+                                            setFocusable('fullname');
+                                        }}
+                                        onBlur={() => {
+                                            setFocusable('none');
+                                        }}
                                         onChange={(e) => {
                                             if (errorState.fullname) {
                                                 dispatch({ fullname: false });
@@ -551,7 +608,10 @@ export default function SignUp() {
                                 borderRadius="3px"
                                 isDisabled={!errorState.callNumber}
                                 placement="bottom"
-                                bg="red"
+                                {...(!mobilemode ? { bg: 'red' } : {})}
+                                {...(mobilemode
+                                    ? { isOpen: errorState.callNumber && focusable == 'callNumber' }
+                                    : {})}
                                 hasArrow
                             >
                                 <InputGroup className="signup-form__child">
@@ -563,6 +623,12 @@ export default function SignUp() {
                                         {...InputStyle}
                                         {...numberPhoneField}
                                         {...(errorState.callNumber ? { borderColor: 'red' } : {})}
+                                        onFocus={() => {
+                                            setFocusable('callNumber');
+                                        }}
+                                        onBlur={() => {
+                                            setFocusable('none');
+                                        }}
                                         onChange={(e) => {
                                             if (errorState.callNumber) {
                                                 dispatch({
@@ -598,7 +664,7 @@ export default function SignUp() {
                                                     borderRadius="3px"
                                                     isDisabled={!errorState.province}
                                                     placement="bottom"
-                                                    bg="red"
+                                                    {...(!mobilemode ? { bg: 'red' } : {})}
                                                     hasArrow
                                                 >
                                                     <Select
@@ -632,7 +698,7 @@ export default function SignUp() {
                                                     borderRadius="3px"
                                                     isDisabled={!errorState.district}
                                                     placement="bottom"
-                                                    bg="red"
+                                                    {...(!mobilemode ? { bg: 'red' } : {})}
                                                     hasArrow
                                                 >
                                                     <Select
@@ -666,7 +732,7 @@ export default function SignUp() {
                                                     borderRadius="3px"
                                                     isDisabled={!errorState.ward}
                                                     placement="bottom"
-                                                    bg="red"
+                                                    {...(!mobilemode ? { bg: 'red' } : {})}
                                                     hasArrow
                                                 >
                                                     <Select

@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps, myProps }: MyAppProps) {
         } else if (user.SSR) {
             removeUser();
         } else if (!user.SSR) {
-            disableReactDevTools();
+            process.env.NODE_ENV == 'production' && disableReactDevTools();
         }
     }, [user.SSR]);
 
