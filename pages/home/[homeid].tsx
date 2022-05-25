@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { HomeData, ListZoomData, Paginator } from '@lib/interface';
 import useResize from '@lib/use-resize';
 import { DeleteHome } from '@components/home/modifyhome';
+import { formatPrice1 } from '@lib/formatPrice';
 
 const getData = (data: any) => {
     const dt = data?.getHomeById;
@@ -260,32 +261,36 @@ const Home = ({ homeSSRData, homeId, isOwner, page }: HomePageProps) => {
                         <br />
                         &nbsp;&nbsp;
                         {' ● Tối thiểu: ' +
-                            (homeData.minPrice ? homeData.minPrice + ' VNĐ' : 'chưa có dữ liệu')}
+                            (homeData.minPrice
+                                ? formatPrice1(homeData.minPrice) + ' VNĐ'
+                                : 'chưa có dữ liệu')}
                         <br />
                         &nbsp;&nbsp;
                         {' ● Tối đa: ' +
-                            (homeData.maxPrice ? homeData.maxPrice + ' VNĐ' : 'chưa có dữ liệu')}
+                            (homeData.maxPrice
+                                ? formatPrice1(homeData.maxPrice) + ' VNĐ'
+                                : 'chưa có dữ liệu')}
                     </div>
                     <div>
                         <span>{'Tiền điện: '}</span>
-                        {homeData.electricityPrice}
+                        {formatPrice1(homeData.electricityPrice)}
                         {' VNĐ'}
                     </div>
                     <div>
                         <span>{'Tiền nước: '}</span>
-                        {homeData.waterPrice}
+                        {formatPrice1(homeData.waterPrice)}
                         {' VNĐ'}
                     </div>
                     <div>
                         <span>{'Tiền vệ sinh: '}</span>
                         {homeData.cleaningPrice
-                            ? homeData.cleaningPrice + ' VNĐ'
+                            ? formatPrice1(homeData.cleaningPrice) + ' VNĐ'
                             : 'chưa có thông tin'}
                     </div>
                     <div>
                         <span>{'Tiền mạng: '}</span>
                         {homeData.internetPrice
-                            ? homeData.internetPrice + ' VNĐ'
+                            ? formatPrice1(homeData.internetPrice) + ' VNĐ'
                             : 'chưa có thông tin'}
                     </div>
                 </div>

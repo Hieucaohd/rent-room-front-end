@@ -2,6 +2,7 @@ import { Text } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef } from 'react';
 import Slider from '@components/Slider';
 import Link from 'next/link';
+import { formatPrice1 } from '@lib/formatPrice';
 
 export interface HomeCardProps {
     _id: string;
@@ -53,8 +54,8 @@ export default function HomeCard(props: HomeCardProps) {
                 </div>
                 <div className="homecard-main">
                     <Text className="homecard-main__label">{homeTitle}</Text>
-                    <Text>Tiền điện: {props.electricityPrice} VNĐ</Text>
-                    <Text>Tiền nước: {props.waterPrice} VNĐ</Text>
+                    <Text>Tiền điện: {formatPrice1(props.electricityPrice!)} VNĐ</Text>
+                    <Text>Tiền nước: {formatPrice1(props.waterPrice!)} VNĐ</Text>
                 </div>
             </a>
         </Link>

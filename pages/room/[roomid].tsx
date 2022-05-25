@@ -28,6 +28,7 @@ import useResize from '@lib/use-resize';
 import getSecurityCookie from '@security';
 import useStore from '@store/useStore';
 import { RoomData } from '@lib/interface';
+import { formatPrice1 } from '@lib/formatPrice';
 
 export interface RoomPageProps {
     roomSSRData: RoomData;
@@ -113,7 +114,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
     const [roomData, setRoomData] = useState(roomSSRData);
     const homeData = roomData.home;
 
-    const [roomDeleting, setRoomDeleting] = useState(false);
     const { user, isServerSide, showImagePreview, closeImagePreview, createPopup, closePopup } =
         useStore((state) => ({
             user: state.user.info,
@@ -124,10 +124,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
             createPopup: state.createPopup,
             closePopup: state.removePopup,
         }));
-
-    const [deleteRoom] = useMutation(deleteRoomById.command, {
-        variables: deleteRoomById.variables(roomId),
-    });
 
     const [roomDescription, setRoomDescription] = useState<
         {
@@ -310,59 +306,63 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                     <i className="fa-solid fa-pen-to-square"></i>
                                 </Button>
                             ) : (
-                                <Button
-                                    variant="link"
-                                    _focus={{
-                                        boxShadow: 'none',
-                                    }}
-                                    marginLeft="10px"
-                                    color="var(--app-color)"
-                                    height="100%"
-                                    gap="5px"
-                                    onClick={() => {
-                                        if (user) {
-                                            if (!isSavedRoom) {
-                                                if (
-                                                    confirm('Bạn có chắc chắn muốn lưu phòng này?')
-                                                ) {
-                                                    saveRoom(user._id, roomId);
-                                                    reRender();
+                                (user?.userType == 'TENANT' || !user) && (
+                                    <Button
+                                        variant="link"
+                                        _focus={{
+                                            boxShadow: 'none',
+                                        }}
+                                        marginLeft="10px"
+                                        color="var(--app-color)"
+                                        height="100%"
+                                        gap="5px"
+                                        onClick={() => {
+                                            if (user) {
+                                                if (!isSavedRoom) {
+                                                    if (
+                                                        confirm(
+                                                            'Bạn có chắc chắn muốn lưu phòng này?'
+                                                        )
+                                                    ) {
+                                                        saveRoom(user._id, roomId);
+                                                        reRender();
+                                                    }
+                                                } else {
+                                                    if (
+                                                        confirm(
+                                                            'Bạn có chắc chắn muốn bỏ lưu phòng này?'
+                                                        )
+                                                    ) {
+                                                        const listSaved = getRoomSaved(user._id);
+                                                        const newList = listSaved.filter(
+                                                            (item) => item != roomId
+                                                        );
+                                                        updateRoomSaved(user._id, newList);
+                                                        reRender();
+                                                    }
                                                 }
                                             } else {
                                                 if (
                                                     confirm(
-                                                        'Bạn có chắc chắn muốn bỏ lưu phòng này?'
+                                                        'Bạn phải đăng nhập để thực hiện thao tác này!'
                                                     )
                                                 ) {
-                                                    const listSaved = getRoomSaved(user._id);
-                                                    const newList = listSaved.filter(
-                                                        (item) => item != roomId
-                                                    );
-                                                    updateRoomSaved(user._id, newList);
-                                                    reRender();
+                                                    router.push('/signin');
                                                 }
                                             }
-                                        } else {
-                                            if (
-                                                confirm(
-                                                    'Bạn phải đăng nhập để thực hiện thao tác này!'
-                                                )
-                                            ) {
-                                                router.push('/signin');
-                                            }
-                                        }
-                                    }}
-                                >
-                                    {isSavedRoom ? (
-                                        <>
-                                            <i className="fa-solid fa-heart"></i>Đã lưu
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="fa-regular fa-heart"></i>Lưu lại
-                                        </>
-                                    )}
-                                </Button>
+                                        }}
+                                    >
+                                        {isSavedRoom ? (
+                                            <>
+                                                <i className="fa-solid fa-heart"></i>Đã lưu
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fa-regular fa-heart"></i>Lưu lại
+                                            </>
+                                        )}
+                                    </Button>
+                                )
                             )}
                         </h1>
                         <div className="roompage-header__detail">
@@ -385,7 +385,7 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                 </h3>
                             </div>
                             <div>
-                                <span>{roomData.price} đ/tháng</span>
+                                <span>{formatPrice1(roomData.price)} đ/tháng</span>
                                 <Tooltip
                                     label="Phòng đã được cho thuê"
                                     borderRadius="3px"
@@ -403,7 +403,6 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                             </Button>
                                         ) : (
                                             <Button
-                                                isLoading={roomDeleting}
                                                 width={'100%'}
                                                 colorScheme="red"
                                                 onClick={() => {
@@ -462,25 +461,35 @@ function Room({ roomSSRData, roomId, isOwner }: RoomPageProps) {
                                         {homeData?.electricityPrice && (
                                             <div>
                                                 <i className="fa-solid fa-bolt"></i>
-                                                Tiền điện: {homeData.electricityPrice} VNĐ/tháng
+                                                Tiền điện: {formatPrice1(
+                                                    homeData.electricityPrice
+                                                )}{' '}
+                                                VNĐ/tháng
                                             </div>
                                         )}
                                         {homeData?.waterPrice && (
                                             <div>
                                                 <i className="fa-solid fa-faucet-drip"></i>
-                                                Tiền nước: {homeData.waterPrice} VNĐ/tháng
+                                                Tiền nước: {formatPrice1(homeData.waterPrice)}{' '}
+                                                VNĐ/tháng
                                             </div>
                                         )}
                                         {homeData?.cleaningPrice && (
                                             <div>
                                                 <i className="fa-solid fa-spray-can-sparkles"></i>
-                                                Tiền dọn dẹp: {homeData.cleaningPrice} VNĐ/tháng
+                                                Tiền dọn dẹp: {formatPrice1(
+                                                    homeData.cleaningPrice
+                                                )}{' '}
+                                                VNĐ/tháng
                                             </div>
                                         )}
                                         {homeData?.internetPrice && (
                                             <div>
                                                 <i className="fa-solid fa-wifi"></i>
-                                                Tiền mạng: {homeData.internetPrice} VNĐ/tháng
+                                                Tiền mạng: {formatPrice1(
+                                                    homeData.internetPrice
+                                                )}{' '}
+                                                VNĐ/tháng
                                             </div>
                                         )}
                                         {roomData.floor && (
