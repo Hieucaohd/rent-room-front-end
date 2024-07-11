@@ -23,11 +23,11 @@ export default function AppAbout({ style }: AppAboutProps) {
                     </div>
                     <div className="homepage-about__developer">
                         <h1>Developer</h1>
-                        <div>Unknown</div>
-                        <div>Unknown</div>
-                        <div>Unknown</div>
-                        <div>Unknown</div>
-                        <div>Unknown</div>
+                        <div>Cao Trung Hiếu</div>
+                        <div>Nguyễn Quốc Đại</div>
+                        <div>Nguyễn Khắc Hiệp</div>
+                        <div>Bùi Tuấn Anh</div>
+                        <div>Nguyễn Thế Anh</div>
                     </div>
                 </div>
                 <hr />
