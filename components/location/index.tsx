@@ -1,4 +1,5 @@
 import { Select, Tooltip } from '@chakra-ui/react';
+import { VIETNAM_ADDRESS_URL } from '@lib/address/address-api';
 import { useEffect, useMemo, useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
@@ -48,7 +49,7 @@ export default function FormLocation({
     useEffect(() => {
         if (!defaultValue) {
             if (allProvince) {
-                fetch('https://provinces.open-api.vn/api/p/?depth=2')
+                fetch(`${VIETNAM_ADDRESS_URL}/provinces`)
                     .then((res) => res.json())
                     .then((data) => {
                         if (data?.length) {
@@ -83,7 +84,7 @@ export default function FormLocation({
 
     useEffect(() => {
         if (provinceActive) {
-            fetch(`https://provinces.open-api.vn/api/p/${provinceActive}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/province/${provinceActive}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data?.districts) {
@@ -109,7 +110,7 @@ export default function FormLocation({
 
     useEffect(() => {
         if (districtActive) {
-            fetch(`https://provinces.open-api.vn/api/d/${districtActive}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/district/${districtActive}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data?.wards) {

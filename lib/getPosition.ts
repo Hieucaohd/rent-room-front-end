@@ -1,3 +1,5 @@
+import { VIETNAM_ADDRESS_URL } from './address/address-api';
+
 interface Position {
     center: [number, number];
 }
@@ -16,7 +18,7 @@ const getPosition = async (
                 return pos[1].center;
             });
     };
-    return fetch(`https://provinces.open-api.vn/api/p/${province}?depth=2`)
+    return fetch(`${VIETNAM_ADDRESS_URL}/province/${province}?depth=2`)
         .then((res) => res.json())
         .then((p) => {
             let name = p.name.replace('Thành phố ', '').replace('Tỉnh ', '') + ', Viet Nam';
@@ -24,7 +26,7 @@ const getPosition = async (
                 name = name.replaceAll(' ', '%20');
                 return mapboxApi(name);
             } else {
-                return fetch(`https://provinces.open-api.vn/api/d/${district}?depth=2`)
+                return fetch(`${VIETNAM_ADDRESS_URL}/district/${district}`)
                     .then((res) => res.json())
                     .then((d) => {
                         name = d.name.replace('Quận ', '').replace('Huyện ', '') + ', ' + name;
@@ -32,7 +34,7 @@ const getPosition = async (
                             name = name.replaceAll(' ', '%20');
                             return mapboxApi(name);
                         } else {
-                            return fetch(`https://provinces.open-api.vn/api/w/${ward}?depth=2`)
+                            return fetch(`${VIETNAM_ADDRESS_URL}/ward/${ward}`)
                                 .then((res) => res.json())
                                 .then((w) => {
                                     name =
@@ -57,13 +59,13 @@ const getPlace = async (lng: number, lat: number) => {
 
 const getPlaceName = async (p: number, d: number, w: number) => {
     return Promise.all([
-        fetch(`https://provinces.open-api.vn/api/p/${p}?depth=2`)
+        fetch(`${VIETNAM_ADDRESS_URL}/province/${p}`)
             .then((res) => res.json())
             .then((data) => data.name),
-        fetch(`https://provinces.open-api.vn/api/d/${d}?depth=2`)
+        fetch(`${VIETNAM_ADDRESS_URL}/district/${d}`)
             .then((res) => res.json())
             .then((data) => data.name),
-        fetch(`https://provinces.open-api.vn/api/w/${w}?depth=2`)
+        fetch(`${VIETNAM_ADDRESS_URL}/ward/${w}`)
             .then((res) => res.json())
             .then((data) => data.name),
     ]);
@@ -85,18 +87,21 @@ const getSearchPlaceName = async (p: any, d: any, w: any) => {
     if (!p) {
         throw new Error('Need province field');
     }
+    console.log(p);
+    console.log(d);
+    console.log(w);
 
     const listAddress = await Promise.all([
         w &&
-            fetch(`https://provinces.open-api.vn/api/w/${w}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/ward/${w}`)
                 .then((res) => res.json())
                 .then((data) => data.name),
         d &&
-            fetch(`https://provinces.open-api.vn/api/d/${d}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/district/${d}`)
                 .then((res) => res.json())
                 .then((data) => data.name),
         p &&
-            fetch(`https://provinces.open-api.vn/api/p/${p}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/province/${p}`)
                 .then((res) => res.json())
                 .then((data) => data.name),
     ]);
@@ -108,7 +113,7 @@ const getProvinceList = async (all: boolean = true) => {
     try {
         let response = null;
         if (all) {
-            response = await fetch('https://provinces.open-api.vn/api/');
+            response = await fetch(`${VIETNAM_ADDRESS_URL}/`);
         } else {
             response = await fetch('/location/province.json');
         }
@@ -119,9 +124,9 @@ const getProvinceList = async (all: boolean = true) => {
     }
 };
 
-const getDistrictList = async (code: any) => {
+const getDistrictList = async (provinceCode: any) => {
     try {
-        const response = await fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`);
+        const response = await fetch(`${VIETNAM_ADDRESS_URL}/districts/${provinceCode}`);
         const responseJSON = await response.json();
         return responseJSON;
     } catch (error) {
@@ -129,9 +134,9 @@ const getDistrictList = async (code: any) => {
     }
 };
 
-const getWardList = async (code: any) => {
+const getWardList = async (districtCode: any) => {
     try {
-        const response = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`);
+        const response = await fetch(`${VIETNAM_ADDRESS_URL}/wards/${districtCode}`);
         const responseJSON = await response.json();
         return responseJSON;
     } catch (error) {

@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import { FormSignUpError, FormSignUp } from '@lib/interface';
 import useResize from '@lib/use-resize';
 import { isPassword } from '@security';
+import { VIETNAM_ADDRESS_URL } from '@lib/address/address-api';
 
 const formError: FormSignUpError = {
     email: false,
@@ -156,7 +157,7 @@ export default function SignUp() {
     const [provinceList, setProvinceList] = useState<any[]>([]);
     const [provinceActive, setProvinceActive] = useState<any>(null);
     useEffect(() => {
-        fetch('https://provinces.open-api.vn/api/p/')
+        fetch(`${VIETNAM_ADDRESS_URL}/`)
             .then((res) => res.json())
             .then((data) => {
                 if (data?.length) {
@@ -181,7 +182,7 @@ export default function SignUp() {
     const [districtActive, setDistrictActive] = useState<any>(null);
     useEffect(() => {
         if (provinceActive) {
-            fetch(`https://provinces.open-api.vn/api/p/${provinceActive}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/province/${provinceActive}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data?.districts) {
@@ -206,7 +207,7 @@ export default function SignUp() {
     const [wardList, setWardList] = useState<any[]>([]);
     useEffect(() => {
         if (districtActive) {
-            fetch(`https://provinces.open-api.vn/api/d/${districtActive}?depth=2`)
+            fetch(`${VIETNAM_ADDRESS_URL}/district/${districtActive}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data?.wards) {
