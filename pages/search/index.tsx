@@ -59,7 +59,8 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     try {
         const { province, district, ward, page } = query;
         const address = await getSearchPlaceName(province, district, ward);
-        const { filterRoom } = await getFilterRoom(searchQuery(query), Number(page), 10);
+        const searchQuery_ = searchQuery(query)
+        const { filterRoom } = await getFilterRoom(searchQuery_, Number(page), 10);
         console.log(filterRoom);
         return {
             props: {

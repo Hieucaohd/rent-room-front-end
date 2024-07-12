@@ -45,18 +45,20 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
                 query: gql`
                     query GetUserById($getUserByIdId: ID!) {
                         getUserById(id: $getUserByIdId) {
-                            _id
-                            email
-                            fullname
-                            avatar
-                            userType
-                            province
-                            district
-                            ward
-                            provinceName
-                            districtName
-                            wardName
-                            numberPhone
+                            ... on User {
+                                _id
+                                email
+                                fullname
+                                avatar
+                                userType
+                                province
+                                district
+                                ward
+                                provinceName
+                                districtName
+                                wardName
+                                numberPhone
+                            }
                         }
                     }
                 `,

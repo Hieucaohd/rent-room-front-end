@@ -179,13 +179,15 @@ export const useSubmitProfile = (
 export const updateProfile = {
     command: gql`
         mutation UpdateUser($updateInfo: UserUpdateInput!) {
-            updateUser(updateInfo: $updateInfo) {
-                email
-                fullname
-                numberPhone
-                provinceName
-                districtName
-                wardName
+            updateUser(input: $updateInfo) {
+                ... on User {
+                    email
+                    fullname
+                    numberPhone
+                    provinceName
+                    districtName
+                    wardName
+                }
             }
         }
     `,

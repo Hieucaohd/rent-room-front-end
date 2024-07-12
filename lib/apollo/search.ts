@@ -1,7 +1,13 @@
 import { gql } from '@apollo/client';
 import client from '@lib/apollo/apollo-client';
 
-export const getFilterRoom = async (conditions: any, page: number, limit: number) => {
+export const getFilterRoom = async (conditions: any, page: number = 1, limit: number) => {
+    if (!page) {
+        page = 1;
+    }
+    if (!limit) {
+        limit = 10;
+    }
     const SEARCH = gql`
         query filterRoom($conditions: FilterRoomInput!, $page: Int, $limit: Int) {
             filterRoom(conditions: $conditions, page: $page, limit: $limit) {

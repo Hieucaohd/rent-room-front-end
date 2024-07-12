@@ -19,41 +19,47 @@ export interface RoomData {
 export const getSSRRoomById = {
     command: gql`
         query GetZoomById($roomId: ID!) {
-            getRoomById(roomId: $roomId) {
-                _id
-                home {
+            getRoomById(id: $roomId) {
+                ... on Room {
                     _id
-                    owner {
+                    home {
                         _id
-                        fullname
-                        avatar
-                        numberPhone
+                        owner {
+                            _id
+                            fullname
+                            avatar
+                            numberPhone
+                        }
+                        title
+                        provinceName
+                        districtName
+                        wardName
+                        province
+                        district
+                        ward
+                        electricityPrice
+                        waterPrice
+                        internetPrice
+                        cleaningPrice
+                        position {
+                            lng
+                            lat
+                        }
                     }
-                    title
-                    provinceName
-                    districtName
-                    wardName
-                    province
-                    district
-                    ward
-                    electricityPrice
-                    waterPrice
-                    internetPrice
-                    cleaningPrice
-                    position {
-                        lng
-                        lat
+                    price
+                    square
+                    isRented
+                    floor
+                    images
+                    description
+                    roomNumber
+                    amenities {
+                        title
                     }
                 }
-                price
-                square
-                isRented
-                floor
-                images
-                description
-                roomNumber
-                amenities {
-                    title
+                ... on InstanceNotExistError {
+                    errorCode
+                    message
                 }
             }
         }
@@ -68,7 +74,10 @@ export const getSSRRoomById = {
 export const getRoomByIds = {
     command: gql`
         query GetListRoomByIds($listIds: [ID!]!, $page: Int, $limit: Int) {
-            getListRoomByIds(listIds: $listIds, page: $page, limit: $limit) {
+            getListRoomByIds(
+                query: { ids: $listIds }
+                paginatorOptions: { page: $page, limit: $limit }
+            ) {
                 docs {
                     _id
                     price

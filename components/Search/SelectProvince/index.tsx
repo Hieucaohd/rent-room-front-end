@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { getDistrictList, getWardList } from '@lib/getPosition';
 import styles from './styles.module.scss';
+import { VIETNAM_ADDRESS_URL } from '@lib/address/address-api';
 
 export interface ISelectProvinceProps {
     disableSelect: () => void;
@@ -17,7 +18,7 @@ export default function SelectProvince({ disableSelect }: ISelectProvinceProps) 
 
     useEffect(() => {
         const getProvinces = async () => {
-            const response = await fetch('/location/province.json');
+            const response = await fetch(`${VIETNAM_ADDRESS_URL}/provinces/`);
             const listProvince = await response.json();
             setProvinceList(listProvince);
         };
@@ -35,13 +36,13 @@ export default function SelectProvince({ disableSelect }: ISelectProvinceProps) 
         getDefaultAddress();
     }, []);
 
-    const handleChangeProvince = async (code: any) => {
-        const { districts } = await getDistrictList(code);
+    const handleChangeProvince = async (provinceCode: any) => {
+        const districts = await getDistrictList(provinceCode);
         setDistrictList(districts || []);
     };
 
-    const handleChangeDistrict = async (code: any) => {
-        const { wards } = await getWardList(code);
+    const handleChangeDistrict = async (districtCode: any) => {
+        const wards = await getWardList(districtCode);
         setWardList(wards || []);
     };
 

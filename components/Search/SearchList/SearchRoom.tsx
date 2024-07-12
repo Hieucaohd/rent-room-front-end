@@ -76,5 +76,11 @@ export default function SearchRoom({ room, index, isSearchPage }: ISearchRoomPro
 }
 
 const getAmenitiesName = (amenities: any[]) => {
-    return amenities?.map(({title}) => listAmenityIcon[title].des).join(" ∙ ")
+    if (!(amenities instanceof Array)) {
+        amenities = [amenities]
+    }
+
+    return amenities?.map(
+        ({title}) => listAmenityIcon[Number(title)].des
+    ).join(" ∙ ")
 }

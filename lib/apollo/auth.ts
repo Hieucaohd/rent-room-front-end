@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 export const LOGIN = gql`
     query LOGIN($email: String!, $password: String!) {
         login(email: $email, password: $password) {
-            user {
+            ... on User {
                 _id
                 email
                 fullname
@@ -13,9 +13,9 @@ export const LOGIN = gql`
 `;
 
 export const SIGNUP = gql`
-    mutation Register($newUser: UserInput!) {
-        register(newUser: $newUser) {
-            user {
+    mutation Register($newUser: UserCreateInput!) {
+        register(input: $newUser) {
+            ... on User {
                 _id
             }
         }
@@ -25,7 +25,13 @@ export const SIGNUP = gql`
 export const LOGOUT = gql`
     mutation LOGOUT {
         logout {
-            status
+            ... on UserNotAuthenticatedError {
+                errorCode
+                message
+            }
+            ... on LogoutStatus {
+                success
+            }
         }
     }
 `;

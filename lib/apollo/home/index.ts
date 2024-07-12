@@ -58,7 +58,7 @@ export const getUserHomes = {
                     districtName
                     wardName
                     numberPhone
-                    listHomes(page: $page, limit: $limit) {
+                    listHomes(paginatorOptions: {page: $page, limit: $limit}) {
                         docs {
                             _id
                             province
