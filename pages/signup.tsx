@@ -340,15 +340,13 @@ export default function SignUp() {
             })
             .catch(({ message }: { message: string }) => {
                 setLoading(false);
-                if (message.includes('position')) {
-                    toast({
-                        title: `Lỗi kết nối`,
-                        status: 'error',
-                        position: 'bottom-left',
-                        description: 'Có sự cố khi kết nối với server',
-                        isClosable: true,
-                    });
-                }
+                toast({
+                    title: `Lỗi kết nối`,
+                    status: 'error',
+                    position: 'bottom-left',
+                    description: 'Có sự cố khi kết nối với server',
+                    isClosable: true,
+                });
             });
     }, []);
 
