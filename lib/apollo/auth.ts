@@ -17,6 +17,17 @@ export const SIGNUP = gql`
         register(input: $newUser) {
             ... on User {
                 _id
+                __typename
+            }
+            ... on EmailDuplicateError {
+                errorCode
+                message
+                __typename
+            }
+            ... on PasswordInvalidError {
+                errorCode
+                message
+                __typename
             }
         }
     }

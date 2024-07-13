@@ -21,6 +21,7 @@ import useResize from '@lib/use-resize';
 import { isPassword } from '@security';
 import { VIETNAM_ADDRESS_URL } from '@lib/address/address-api';
 
+
 const formError: FormSignUpError = {
     email: false,
     password: false,
@@ -298,14 +299,11 @@ export default function SignUp() {
                 newUser: newUser,
             },
         })
-            .then(() => {
-                console.log(newUser);
-                location.href = '/';
-            })
-            .catch(({ message }: { message: string }) => {
-                setLoading(false);
-                console.log(message);
-                if (message.includes('duplicate key error collection')) {
+            .then((res: any) => {
+                console.log(res.data.register)
+                
+                if (res.data.register.__typename === 'EmailDuplicateError') {
+                    setLoading(false);
                     dispatch({
                         email: true,
                     });
@@ -313,13 +311,38 @@ export default function SignUp() {
                         title: `Đăng nhập`,
                         status: 'error',
                         position: 'bottom-left',
-                        description: 'Email đã tồn tại',
+                        description: 'Email đã được đăng ký',
                         isClosable: true,
                     });
+                    location.href = '/signin';
+                } else if (res.data.register.__typename === 'PasswordInvalidError') {
+                    dispatch({
+                        password: true,
+                        passwordConfirm: true
+                    });
+                    toast({
+                        title: `Lỗi mật khẩu`,
+                        status: 'error',
+                        position: 'bottom-left',
+                        description: 'Mật khẩu không thỏa mãn điều kiện bảo mật',
+                        isClosable: true,
+                    });
+                } else {
+                    toast({
+                        title: `Thành công`,
+                        status: 'success',
+                        position: 'bottom-left',
+                        description: 'Đăng ký tài khoản thành công',
+                        isClosable: true,
+                    });
+                    location.href = '/';
                 }
+            })
+            .catch(({ message }: { message: string }) => {
+                setLoading(false);
                 if (message.includes('position')) {
                     toast({
-                        title: `Server time out`,
+                        title: `Lỗi kết nối`,
                         status: 'error',
                         position: 'bottom-left',
                         description: 'Có sự cố khi kết nối với server',
