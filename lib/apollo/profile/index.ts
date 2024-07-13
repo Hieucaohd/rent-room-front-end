@@ -200,51 +200,53 @@ export const getUserById = {
     command: gql`
         query GetUserById($getUserByIdId: ID!, $page: Int, $limit: Int) {
             getUserById(id: $getUserByIdId) {
-                _id
-                email
-                fullname
-                avatar
-                userType
-                province
-                district
-                ward
-                provinceName
-                districtName
-                wardName
-                numberPhone
-                listHomes(page: $page, limit: $limit) {
-                    docs {
-                        _id
-                        province
-                        district
-                        ward
-                        provinceName
-                        districtName
-                        wardName
-                        liveWithOwner
-                        electricityPrice
-                        waterPrice
-                        images
-                        totalRooms
-                        internetPrice
-                        cleaningPrice
-                        totalRooms
-                        title
-                        position {
-                            lng
-                            lat
+                ... on User {
+                    _id
+                    email
+                    fullname
+                    avatar
+                    userType
+                    province
+                    district
+                    ward
+                    provinceName
+                    districtName
+                    wardName
+                    numberPhone
+                    listHomes(paginatorOptions: { page: $page, limit: $limit }) {
+                        docs {
+                            _id
+                            province
+                            district
+                            ward
+                            provinceName
+                            districtName
+                            wardName
+                            liveWithOwner
+                            electricityPrice
+                            waterPrice
+                            images
+                            totalRooms
+                            internetPrice
+                            cleaningPrice
+                            totalRooms
+                            title
+                            position {
+                                lng
+                                lat
+                            }
                         }
-                    }
-                    paginator {
-                        limit
-                        page
-                        nextPage
-                        prevPage
-                        totalPages
-                        pagingCounter
-                        hasPrevPage
-                        hasNextPage
-                        totalDocs
+                        paginator {
+                            limit
+                            page
+                            nextPage
+                            prevPage
+                            totalPages
+                            pagingCounter
+                            hasPrevPage
+                            hasNextPage
+                            totalDocs
+                        }
                     }
                 }
             }
