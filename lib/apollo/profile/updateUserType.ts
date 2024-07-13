@@ -3,8 +3,10 @@ import { gql } from '@apollo/client';
 export const updateUserType = {
     command: gql`
         mutation UpdateUser($updateInfo: UserUpdateInput!) {
-            updateUser(updateInfo: $updateInfo) {
-                userType
+            updateUser(input: $updateInfo) {
+                ... on User {
+                    userType
+                }
             }
         }
     `,

@@ -13,9 +13,11 @@ export interface NewHome {
 
 export const createNewHome = {
     command: gql`
-        mutation CreateNewHome($newHome: HomeInput!) {
-            createNewHome(newHome: $newHome) {
-                _id
+        mutation CreateNewHome($newHome: HomeCreateInput!) {
+            createHome(input: $newHome) {
+                ... on Home {
+                    _id
+                }
             }
         }
     `,
@@ -58,7 +60,7 @@ export const getUserHomes = {
                     districtName
                     wardName
                     numberPhone
-                    listHomes(paginatorOptions: {page: $page, limit: $limit}) {
+                    listHomes(paginatorOptions: { page: $page, limit: $limit }) {
                         docs {
                             _id
                             province
@@ -112,7 +114,20 @@ export const getUserHomes = {
 export const deleteHome = {
     command: gql`
         mutation DeleteHome($deleteHomeId: ID!) {
-            deleteHome(id: $deleteHomeId)
+            deleteHome(id: $deleteHomeId) {
+                ... on AfterDelete {
+                    id
+                    success
+                }
+                ... on InstanceNotExistError {
+                    errorCode
+                    message
+                }
+                ... on PermissionDeninedError {
+                    errorCode
+                    message
+                }
+            }
         }
     `,
     variables: (_id: string) => ({

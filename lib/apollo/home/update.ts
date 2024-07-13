@@ -9,28 +9,31 @@ export interface HomePrices {
 
 export const updateHomePrices = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
-            updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
-                electricityPrice
-                waterPrice
-                internetPrice
-                cleaningPrice
+        mutation UpdateHome($updatedHome: HomeUpdateInput!) {
+            updateHome(input: $updatedHome) {
+                ... on Home {
+                    electricityPrice
+                    waterPrice
+                    internetPrice
+                    cleaningPrice
+                }
             }
         }
     `,
     variables: (updatedHome: HomePrices, updateHomeId: any) => {
         return {
-            updatedHome: updatedHome,
-            updateHomeId: updateHomeId,
+            updatedHome: { ...updatedHome, id: updateHomeId },
         };
     },
 };
 
 export const updateHomeImages = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
-            updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
-                images
+        mutation UpdateHome($updatedHome: HomeUpdateInput!) {
+            updateHome(input: $updatedHome) {
+                ... on Home {
+                    images
+                }
             }
         }
     `,
@@ -38,8 +41,8 @@ export const updateHomeImages = {
         return {
             updatedHome: {
                 images: images,
+                id: updateHomeId,
             },
-            updateHomeId: updateHomeId,
         };
     },
 };
@@ -63,34 +66,37 @@ export interface HomeLocation {
 
 export const updateHomeLocation = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
-            updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
-                title
-                province
-                district
-                ward
-                liveWithOwner
-                position {
-                    lng
-                    lat
+        mutation UpdateHome($updatedHome: HomeUpdateInput!) {
+            updateHome(input: $updatedHome) {
+                ... on Home {
+                    title
+                    province
+                    district
+                    ward
+                    liveWithOwner
+                    position {
+                        lng
+                        lat
+                    }
+                    images
                 }
-                images
             }
         }
     `,
     variables: (updatedHome: HomeLocation, updateHomeId: any) => {
         return {
-            updatedHome: updatedHome,
-            updateHomeId: updateHomeId,
+            updatedHome: { ...updatedHome, id: updateHomeId },
         };
     },
 };
 
 export const updateHomeDescription = {
     command: gql`
-        mutation UpdateHome($updatedHome: HomeUpdateInput!, $updateHomeId: ID!) {
-            updateHome(updatedHome: $updatedHome, id: $updateHomeId) {
-                description
+        mutation UpdateHome($updatedHome: HomeUpdateInput!) {
+            updateHome(input: $updatedHome) {
+                ... on Home {
+                    description
+                }
             }
         }
     `,
@@ -98,8 +104,8 @@ export const updateHomeDescription = {
         return {
             updatedHome: {
                 description: des,
+                id: updateHomeId,
             },
-            updateHomeId: updateHomeId,
         };
     },
 };

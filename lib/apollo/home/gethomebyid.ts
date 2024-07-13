@@ -4,55 +4,57 @@ import client from '@lib/apollo/apollo-client';
 export const getHomeById = {
     command: gql`
         query GetHomeById($homeId: ID!, $page: Int!, $limit: Int!) {
-            getHomeById(homeId: $homeId) {
-                _id
-                title
-                owner {
+            getHomeById(id: $homeId) {
+                ... on Home {
                     _id
-                    fullname
-                    avatar
-                    numberPhone
-                }
-                provinceName
-                districtName
-                wardName
-                province
-                district
-                ward
-                liveWithOwner
-                electricityPrice
-                waterPrice
-                images
-                internetPrice
-                cleaningPrice
-                minPrice
-                maxPrice
-                totalRooms
-                description
-                position {
-                    lng
-                    lat
-                }
-                listRooms(page: $page, limit: $limit) {
-                    docs {
+                    title
+                    owner {
                         _id
-                        price
-                        square
-                        isRented
-                        floor
-                        images
-                        roomNumber
+                        fullname
+                        avatar
+                        numberPhone
                     }
-                    paginator {
-                        limit
-                        page
-                        nextPage
-                        prevPage
-                        totalPages
-                        pagingCounter
-                        hasPrevPage
-                        hasNextPage
-                        totalDocs
+                    provinceName
+                    districtName
+                    wardName
+                    province
+                    district
+                    ward
+                    liveWithOwner
+                    electricityPrice
+                    waterPrice
+                    images
+                    internetPrice
+                    cleaningPrice
+                    minPrice
+                    maxPrice
+                    totalRooms
+                    description
+                    position {
+                        lng
+                        lat
+                    }
+                    listRooms(paginatorOptions: { page: $page, limit: $limit }) {
+                        docs {
+                            _id
+                            price
+                            square
+                            isRented
+                            floor
+                            images
+                            roomNumber
+                        }
+                        paginator {
+                            limit
+                            page
+                            nextPage
+                            prevPage
+                            totalPages
+                            pagingCounter
+                            hasPrevPage
+                            hasNextPage
+                            totalDocs
+                        }
                     }
                 }
             }

@@ -10,9 +10,11 @@ export interface AddZoomForm {
 
 export const createZoom = {
     command: gql`
-        mutation Mutation($newRoom: RoomInput!, $homeId: ID!) {
-            createNewRoom(newRoom: $newRoom, homeId: $homeId) {
-                _id
+        mutation Mutation($newRoom: RoomCreateInput!) {
+            createRoom(input: $newRoom) {
+                ... on Room {
+                    _id
+                }
             }
         }
     `,
@@ -24,15 +26,28 @@ export const createZoom = {
             floor: e.floor,
             images: e.images,
             roomNumber: e.zoomnumber,
+            home: homeId,
         },
-        homeId,
     }),
 };
 
 export const deleteRoomById = {
     command: gql`
         mutation UpdateRoom($deleteRoomId: ID!) {
-            deleteRoom(id: $deleteRoomId)
+            deleteRoom(id: $deleteRoomId) {
+                ... on AfterDelete {
+                    id
+                    success
+                }
+                ... on InstanceNotExistError {
+                    errorCode
+                    message
+                }
+                ... on PermissionDeninedError {
+                    errorCode
+                    message
+                }
+            }
         }
     `,
     variables: (roomId: string) => ({

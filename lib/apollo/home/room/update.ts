@@ -2,9 +2,11 @@ import { gql } from '@apollo/client';
 
 export const updateRoomImages = {
     command: gql`
-        mutation Mutation($updatedRoom: RoomUpdateInput!, $updateRoomId: ID!) {
-            updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
-                images
+        mutation Mutation($updatedRoom: RoomUpdateInput!) {
+            updateRoom(input: $updatedRoom) {
+                ... on Room {
+                    images
+                }
             }
         }
     `,
@@ -12,8 +14,8 @@ export const updateRoomImages = {
         return {
             updatedRoom: {
                 images,
+                id: updateRoomId,
             },
-            updateRoomId,
         };
     },
 };
@@ -29,27 +31,30 @@ export interface UpdateRoomTitle {
 
 export const updateRoomTitle = {
     command: gql`
-        mutation Mutation($updatedRoom: RoomUpdateInput!, $updateRoomId: ID!) {
-            updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
-                roomNumber
-                price
-                square
-                isRented
-                floor
+        mutation Mutation($updatedRoom: RoomUpdateInput!) {
+            updateRoom(input: $updatedRoom) {
+                ... on Room {
+                    roomNumber
+                    price
+                    square
+                    isRented
+                    floor
+                }
             }
         }
     `,
     variables: (updatedRoom: any, updateRoomId: string) => ({
-        updatedRoom,
-        updateRoomId,
+        updatedRoom: { ...updatedRoom, id: updateRoomId },
     }),
 };
 
 export const updateRoomDescription = {
     command: gql`
-        mutation Mutation($updatedRoom: RoomUpdateInput!, $updateRoomId: ID!) {
-            updateRoom(updatedRoom: $updatedRoom, id: $updateRoomId) {
-                description
+        mutation Mutation($updatedRoom: RoomUpdateInput!) {
+            updateRoom(input: $updatedRoom) {
+                ... on Room {
+                    description
+                }
             }
         }
     `,
@@ -57,8 +62,8 @@ export const updateRoomDescription = {
         return {
             updatedRoom: {
                 description: des,
+                id: updateRoomId,
             },
-            updateRoomId,
         };
     },
 };
@@ -69,10 +74,12 @@ export interface Amenity {
 
 export const updateRoomAmenity = {
     command: gql`
-        mutation UpdateRoom($updateRoomUpdatedRoom2: RoomUpdateInput!, $updateRoomId2: ID!) {
-            updateRoom(updatedRoom: $updateRoomUpdatedRoom2, id: $updateRoomId2) {
-                amenities {
-                    title
+        mutation UpdateRoom($updateRoomUpdatedRoom2: RoomUpdateInput!) {
+            updateRoom(input: $updateRoomUpdatedRoom2) {
+                ... on Room {
+                    amenities {
+                        title
+                    }
                 }
             }
         }
@@ -80,7 +87,7 @@ export const updateRoomAmenity = {
     variables: (amenities: Amenity[], roomId: string) => ({
         updateRoomUpdatedRoom2: {
             amenities: amenities,
+            id: roomId,
         },
-        updateRoomId2: roomId,
     }),
 };
